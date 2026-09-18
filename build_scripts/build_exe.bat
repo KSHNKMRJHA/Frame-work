@@ -27,6 +27,12 @@ REM                           server can die on its first write. Keep the
 REM                           console window; see the note at the bottom for
 REM                           hiding it properly if you want that.
 
+REM Stamp the build number first. A frozen .exe has no .git, so utils/branding.py
+REM reads utils/_build_stamp.txt (bundled below via --add-data "utils;utils")
+REM instead -- without this the packaged app would not know its own commit.
+python build_scripts\stamp_build.py
+if errorlevel 1 goto :stamp_failed
+
 pyinstaller --name FrameWork --onefile --console ^
   --add-data "app.py;." ^
   --add-data "data;data" ^
@@ -51,3 +57,8 @@ echo.
 echo To hide the console window, build a proper windowed launcher that
 echo redirects sys.stdout/sys.stderr to a log file before starting Streamlit,
 echo rather than just swapping --console for --noconsole.
+exit /b 0
+
+:stamp_failed
+echo ERROR: build_scripts\stamp_build.py failed. Is Python on PATH?
+exit /b 1

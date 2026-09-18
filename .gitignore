@@ -9,6 +9,9 @@ venv/
 # Ruff
 .ruff_cache/
 
+# Generated at packaging time by build_scripts/stamp_build.py
+/utils/_build_stamp.txt
+
 # Streamlit
 .streamlit/secrets.toml
 

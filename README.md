@@ -6,6 +6,7 @@
 
 [![CI](https://github.com/KSHNKMRJHA/Frame-work/actions/workflows/ci.yml/badge.svg)](https://github.com/KSHNKMRJHA/Frame-work/actions/workflows/ci.yml)
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Last commit](https://img.shields.io/github/last-commit/KSHNKMRJHA/Frame-work)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Streamlit](https://img.shields.io/badge/built%20with-Streamlit-ff4b4b)
@@ -183,6 +184,7 @@ FrameWork/
 │   └── state.py                  # XP / badges / progress persistence (atomic writes)
 ├── build_scripts/
 │   ├── desktop_launcher.py       # Frozen-app entry point (starts server + opens browser)
+│   ├── stamp_build.py            # Writes the commit stamp for packaged builds
 │   ├── build_exe.bat             # Windows .exe build
 │   ├── build_exe.sh              # macOS / Linux binary build
 │   ├── check_data.py             # Referential integrity, uniqueness, schema checks
@@ -272,20 +274,43 @@ still matches `build_data.py` output, so drift fails the build.
 
 ---
 
-## 🔖 Branding, versioning & releases
+## 🔖 Branding, versioning & build number
 
 Project name, version, build metadata, links, and credits live in exactly one place —
 [`utils/branding.py`](utils/branding.py). Every page renders from it, so the name and
 version can never drift apart.
 
-A release can stamp its real values through environment variables:
+**The build number is the short git commit tag** (e.g. `1999bc7`) and changes by itself
+with every commit — it is never hand-maintained. It is resolved in this order:
+
+| # | Source | When it applies |
+|---|---|---|
+| 1 | `FRAMEWORK_BUILD_COMMIT` env var | Always wins — CI release stamping |
+| 2 | Live `.git` in the working tree | Running from source / Streamlit Cloud — always the commit you are actually on |
+| 3 | `utils/_build_stamp.txt` | Packaged builds with no `.git`, written by `build_scripts/stamp_build.py` |
+
+So running locally or on the web, the UI shows the exact commit you are on; a frozen
+`.exe` shows the commit it was built from. If nothing can be resolved it falls back to
+`dev`.
+
+```
+v1.0.0 · stable · built 2026-09-18 · commit 1999bc7
+```
+
+Other release values can be stamped the same way:
 
 | Variable | Example | Purpose |
 |---|---|---|
+| `FRAMEWORK_BUILD_COMMIT` | `a1b2c3d` | Override the auto-detected build number |
 | `FRAMEWORK_BUILD_DATE` | `2026-09-18` | Build date shown in the UI |
 | `FRAMEWORK_BUILD_CHANNEL` | `stable` | Release channel |
-| `FRAMEWORK_BUILD_COMMIT` | `a1b2c3d` | Git commit ref (shown only when set) |
 | `FRAMEWORK_WEB_URL` | `https://…` | Public web app URL (empty until deployed) |
+
+When packaging a desktop build, stamp the commit first so the frozen app knows it:
+
+```bash
+python build_scripts/stamp_build.py    # writes utils/_build_stamp.txt (gitignored)
+```
 
 ---
 
