@@ -5,6 +5,7 @@ Home / Landing page.
 
 Run with:  streamlit run app.py
 """
+
 import datetime
 
 import streamlit as st
@@ -80,15 +81,20 @@ st.divider()
 
 # --------------------------------------------------------- QUICK SEARCH ----
 st.subheader("🔎 Quick Jump")
-q = st.text_input("Search any protocol by name, keyword, inventor, or year...", placeholder="e.g. CAN, Modbus, 1996, Bosch, Ethernet")
+q = st.text_input(
+    "Search any protocol by name, keyword, inventor, or year...", placeholder="e.g. CAN, Modbus, 1996, Bosch, Ethernet"
+)
 if q:
     from utils.data_loader import search_protocols
+
     results = search_protocols(protocols, q)[:8]
     if results:
         for p in results:
             with st.expander(f"**{p['name']}** — {p['category']} ({p['year']})"):
                 st.write(p["description"])
-                st.caption("Open the 📚 Encyclopedia page from the sidebar for the full interactive profile, diagrams, and examples.")
+                st.caption(
+                    "Open the 📚 Encyclopedia page from the sidebar for the full interactive profile, diagrams, and examples."
+                )
     else:
         st.info("No matches found. Try a broader term.")
 
@@ -98,16 +104,48 @@ st.divider()
 st.subheader("🧭 Explore the Academy")
 
 cards = [
-    ("📚 Encyclopedia", "Browse, search & filter all protocols with full technical profiles — history, diagrams, pinouts, use-cases, limitations, examples.", "pages/1_📚_Encyclopedia.py"),
-    ("🕰️ History & Timeline", "Travel through the decades — who invented what, where, and why, on an interactive timeline.", "pages/2_🕰️_Timeline_History.py"),
+    (
+        "📚 Encyclopedia",
+        "Browse, search & filter all protocols with full technical profiles — history, diagrams, pinouts, use-cases, limitations, examples.",
+        "pages/1_📚_Encyclopedia.py",
+    ),
+    (
+        "🕰️ History & Timeline",
+        "Travel through the decades — who invented what, where, and why, on an interactive timeline.",
+        "pages/2_🕰️_Timeline_History.py",
+    ),
     ("🗺️ Mind Map", "Visualize how every protocol category and protocol relates to each other.", "pages/3_🗺️_Mindmap.py"),
     ("⚖️ Compare", "Put 2-4 protocols side-by-side: speed, pins, topology, use-cases and more.", "pages/4_⚖️_Compare.py"),
-    ("🧠 Quiz & Assessment", "Auto-generated MCQs across every protocol, filterable by category & difficulty, with XP & badges.", "pages/5_🧠_Quiz_Assessment.py"),
-    ("🎮 Puzzles & Games", "Frame-field reordering, protocol-speed matching, and 'guess the protocol' challenges.", "pages/6_🎮_Puzzles_Games.py"),
-    ("🔬 Science & Math Lab", "Interactive calculators: baud rate & bit-timing, Nyquist/Shannon capacity, CRC, frequency↔wavelength.", "pages/7_🔬_Science_Math_Lab.py"),
-    ("🌍 Geography & Origins", "See which countries and organizations invented the protocols that run the modern world.", "pages/8_🌍_Geography_Origins.py"),
-    ("⚙️ Settings & Profile", "Your profile, XP, badges, theme accent, and progress reset.", "pages/9_⚙️_Settings_Profile.py"),
-    ("ℹ️ About, Roadmap & Credits", "Deployment roadmap (web/EXE/APK), GitHub setup, license, and credits.", "pages/10_ℹ️_About_Roadmap_Credits.py"),
+    (
+        "🧠 Quiz & Assessment",
+        "Auto-generated MCQs across every protocol, filterable by category & difficulty, with XP & badges.",
+        "pages/5_🧠_Quiz_Assessment.py",
+    ),
+    (
+        "🎮 Puzzles & Games",
+        "Frame-field reordering, protocol-speed matching, and 'guess the protocol' challenges.",
+        "pages/6_🎮_Puzzles_Games.py",
+    ),
+    (
+        "🔬 Science & Math Lab",
+        "Interactive calculators: baud rate & bit-timing, Nyquist/Shannon capacity, CRC, frequency↔wavelength.",
+        "pages/7_🔬_Science_Math_Lab.py",
+    ),
+    (
+        "🌍 Geography & Origins",
+        "See which countries and organizations invented the protocols that run the modern world.",
+        "pages/8_🌍_Geography_Origins.py",
+    ),
+    (
+        "⚙️ Settings & Profile",
+        "Your profile, XP, badges, theme accent, and progress reset.",
+        "pages/9_⚙️_Settings_Profile.py",
+    ),
+    (
+        "ℹ️ Info",
+        "About, deployment (local / desktop / web), links, audience guide, credits & license.",
+        "pages/10_ℹ️_Info.py",
+    ),
 ]
 
 cols = st.columns(2)
@@ -116,7 +154,7 @@ for i, (title, desc, path) in enumerate(cards):
         with st.container(border=True):
             st.markdown(f"### {title}")
             st.write(desc)
-            st.page_link(path, label=f"Open {title.split(' ',1)[1]}", icon="➡️")
+            st.page_link(path, label=f"Open {title.split(' ', 1)[1]}", icon="➡️")
 
 st.divider()
 
@@ -139,7 +177,7 @@ with st.container(border=True):
 
 st.divider()
 st.subheader("📊 Coverage Overview")
-st.pyplot(category_bar_chart(protocols), width='stretch')
+st.pyplot(category_bar_chart(protocols), width="stretch")
 
 st.caption(
     "Built for students, hobbyists & professionals · No internet required · "

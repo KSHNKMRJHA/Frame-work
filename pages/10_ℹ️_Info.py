@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import datetime
+
 import streamlit as st
 from utils.data_loader import load_protocols
 from utils import branding
@@ -12,26 +14,30 @@ from utils.branding import (
     LINKEDIN_URL,
     REPO_URL,
     VERSION,
+    WEB_URL,
 )
 
-branding.page_config("About", "ℹ️")
+branding.page_config("Info", "ℹ️")
 branding.sidebar_identity()
 
 protocols = load_protocols()
 
-st.title(f"ℹ️ About {APP_NAME}")
-st.caption(f"Publication build: **{branding.build_line()}**")
+st.title("ℹ️ Info")
+st.caption(f"Build: **{branding.build_line()}**")
 
-tabs = st.tabs(["📖 About", "🚀 Deployment Roadmap", "🐙 GitHub & Links", "👥 Audience Guide", "🙏 Credits & License"])
+tabs = st.tabs(["📖 About", "🚀 Deployment", "🔗 Links & Web", "👥 Audience", "🙏 Credits & License"])
 
 # ================================================================ ABOUT ====
 with tabs[0]:
     st.subheader(f"{APP_ICON} {APP_NAME}")
-    st.markdown(f"**Build:** {branding.build_line()}")
+    st.markdown(
+        f"**Build number:** `{branding.build_number()}` · {branding.version_label()} · {branding.BUILD_CHANNEL}"
+    )
     st.caption(APP_TAGLINE)
-    b1, b2 = st.columns(2)
-    b1.link_button("🐙 Source on GitHub", REPO_URL, width="stretch")
-    b2.link_button("💼 Connect on LinkedIn", LINKEDIN_URL, width="stretch")
+    b1, b2, b3 = st.columns(3)
+    b1.link_button("🐙 GitHub", REPO_URL, width="stretch")
+    b2.link_button("🌐 Web app", WEB_URL, width="stretch")
+    b3.link_button("💼 LinkedIn", LINKEDIN_URL, width="stretch")
 
     st.write(
         f"""
@@ -72,7 +78,7 @@ with tabs[1]:
         st.caption("Frozen with PyInstaller into a double-click Windows/macOS/Linux app.")
     with t3:
         st.markdown("#### 🌐 3. Web page")
-        st.caption(f"Hosted online via Streamlit Community Cloud. **{branding.web_status()}**")
+        st.caption(f"Live on Streamlit Community Cloud — [open the web app]({WEB_URL}).")
 
     if branding.WEB_URL:
         st.link_button("🌐 Open the live web app", branding.WEB_URL, width="stretch")
@@ -95,7 +101,7 @@ with tabs[1]:
     st.caption("Opens automatically in your browser at http://localhost:8501")
 
     st.markdown("### 🌐 2️⃣ Deploy to the web (free options)")
-    st.caption(f"Current web status: **{branding.web_status()}**")
+    st.caption(f"Live at [{WEB_URL}]({WEB_URL}) — hosted on Streamlit Community Cloud.")
     st.markdown(
         f"""
 - **Streamlit Community Cloud** — point it at [this repo]({REPO_URL}) on [share.streamlit.io](https://share.streamlit.io), pick `app.py` as the entry point, and it deploys automatically on every push. Free for public repos.
@@ -153,10 +159,10 @@ with tabs[2]:
 | | |
 |---|---|
 | **Repository** | [{REPO_URL}]({REPO_URL}) |
+| **Web app** | [{WEB_URL}]({WEB_URL}) |
 | **LinkedIn** | [{LINKEDIN_URL}]({LINKEDIN_URL}) |
 | **Version** | {branding.version_label()} ({branding.BUILD_CHANNEL}) |
-| **Build** | {branding.BUILD_DATE}{" · commit `" + branding.BUILD_COMMIT + "`" if branding.BUILD_COMMIT else ""} |
-| **Web app** | {branding.web_status()} |
+| **Build number** | `{branding.build_number()}` |
         """
     )
 
@@ -235,7 +241,7 @@ with tabs[4]:
     st.subheader("📄 License")
     st.write(
         f"Released under the **MIT License** — free to use, modify, and redistribute, including "
-        f"commercially. See `LICENSE` in the project root. © {branding.BUILD_DATE[:4]} {AUTHOR_NAME}."
+        f"commercially. See `LICENSE` in the project root. © {datetime.date.today().year} {AUTHOR_NAME}."
     )
     st.caption(
         f"{APP_NAME} {branding.version_label()} — made for engineers who want to actually understand the wires and waveforms behind every buzzword."

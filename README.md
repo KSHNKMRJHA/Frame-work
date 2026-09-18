@@ -2,7 +2,7 @@
 
 ### The interactive academy for every communication protocol an embedded engineer will meet in a career.
 
-**v1.0.0** · stable · built 2026-09-18
+**v1.0.0** · stable
 
 [![CI](https://github.com/KSHNKMRJHA/Frame-work/actions/workflows/ci.yml/badge.svg)](https://github.com/KSHNKMRJHA/Frame-work/actions/workflows/ci.yml)
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
@@ -173,7 +173,7 @@ FrameWork/
 │   ├── 7_🔬_Science_Math_Lab.py
 │   ├── 8_🌍_Geography_Origins.py
 │   ├── 9_⚙️_Settings_Profile.py
-│   └── 10_ℹ️_About_Roadmap_Credits.py
+│   └── 10_ℹ️_Info.py
 ├── utils/
 │   ├── branding.py               # ⭐ Name, version, build metadata, links, credits
 │   ├── data_loader.py            # Cached JSON loading, search, category helpers
@@ -212,7 +212,7 @@ FrameWork ships in **three forms** — the same code, three ways to use it.
 |---|---|---|
 | 1 | 🖥️ **Local** | Run from source. Fastest way to try it, fully offline. |
 | 2 | 📦 **Desktop .exe** | Frozen with PyInstaller — double-click to launch, no Python needed on the target machine. |
-| 3 | 🌐 **Web page** | Hosted online via Streamlit Community Cloud. *Web deployment in progress — live link to follow.* |
+| 3 | 🌐 **Web page** | Live at **[frame-work.streamlit.app](https://frame-work.streamlit.app/)** — hosted on Streamlit Community Cloud. |
 
 Plus a bonus 📱 **Android APK** via the Kivy companion.
 
@@ -280,7 +280,7 @@ Project name, version, build metadata, links, and credits live in exactly one pl
 [`utils/branding.py`](utils/branding.py). Every page renders from it, so the name and
 version can never drift apart.
 
-**The build number is the short git commit tag** (e.g. `1999bc7`) and changes by itself
+**The build number is the short git commit tag** (e.g. `015f212`) and changes by itself
 with every commit — it is never hand-maintained. It is resolved in this order:
 
 | # | Source | When it applies |
@@ -294,7 +294,7 @@ So running locally or on the web, the UI shows the exact commit you are on; a fr
 `dev`.
 
 ```
-v1.0.0 · stable · built 2026-09-18 · commit 1999bc7
+v1.0.0 · stable · commit 015f212
 ```
 
 Other release values can be stamped the same way:
@@ -302,9 +302,8 @@ Other release values can be stamped the same way:
 | Variable | Example | Purpose |
 |---|---|---|
 | `FRAMEWORK_BUILD_COMMIT` | `a1b2c3d` | Override the auto-detected build number |
-| `FRAMEWORK_BUILD_DATE` | `2026-09-18` | Build date shown in the UI |
 | `FRAMEWORK_BUILD_CHANNEL` | `stable` | Release channel |
-| `FRAMEWORK_WEB_URL` | `https://…` | Public web app URL (empty until deployed) |
+| `FRAMEWORK_WEB_URL` | `https://…` | Point the UI and footer at a different web deployment |
 
 When packaging a desktop build, stamp the commit first so the frozen app knows it:
 
@@ -339,7 +338,7 @@ covers:
 
 - **Repository:** https://github.com/KSHNKMRJHA/Frame-work
 - **LinkedIn:** https://www.linkedin.com/in/kshnkmrjha/
-- **Web app:** *deployment in progress — link to follow*
+- **Web app:** https://frame-work.streamlit.app/
 
 ---
 

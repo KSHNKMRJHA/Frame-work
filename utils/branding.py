@@ -2,25 +2,24 @@
 """
 branding.py
 Single source of truth for FrameWork's public identity: the project name,
-version, build metadata, canonical links, and credits.
+version, build number, canonical links, and credits.
 
-Every surface — the Streamlit pages, the README, the packaged executables,
-and the mobile companion — reads from here, so the name, version, links, and
-build number can never drift out of sync with one another.
+Every surface — the Streamlit pages, the README, the packaged executables, and
+the mobile companion — reads from here, so nothing can drift out of sync.
 
-The build number is the short git commit tag (e.g. ``1999bc7``) and is resolved
-automatically, in this order:
+**The build number is the short git commit tag** (e.g. ``015f212``) and changes
+by itself with every commit. It is resolved in this order:
 
 1. ``FRAMEWORK_BUILD_COMMIT`` — an explicit stamp. Wins always, and is the only
    mechanism available to a frozen/packaged build, which has no ``.git``.
-2. The live repository — ``utils/_detect_git_commit()`` reads ``.git`` directly,
-   so running from source always shows the commit you are actually on and the
-   number changes by itself with every new commit.
-3. ``utils/_build_stamp.py`` — a generated file the packaging scripts write so a
-   frozen ``.exe``/binary still reports the commit it was built from.
+2. The live repository — ``_detect_git_commit()`` reads ``.git`` directly, so
+   running from source (or on Streamlit Cloud) always shows the commit you are
+   actually on.
+3. ``utils/_build_stamp.txt`` — a generated file the packaging scripts write so
+   a frozen ``.exe``/binary still reports the commit it was built from.
 
-``FRAMEWORK_BUILD_DATE`` and ``FRAMEWORK_BUILD_CHANNEL`` are stamped the same
-way; the constants below are the sensible defaults for a local build.
+``FRAMEWORK_BUILD_CHANNEL`` is read from the environment; everything else below
+is a constant.
 """
 
 import os
@@ -87,7 +86,7 @@ def _detect_git_commit(short=7):
     return ""
 
 
-def _stamped():
+def _stamped_commit():
     """Read the packaging-time stamp file, if the build scripts generated one.
 
     A frozen build has no ``.git`` to inspect, so ``build_scripts/stamp_build.py``
@@ -97,21 +96,16 @@ def _stamped():
     """
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     path = os.path.join(root, "utils", "_build_stamp.txt")
-    values = {}
     try:
         with open(path, "r", encoding="utf-8") as fh:
             for line in fh:
                 line = line.strip()
-                if not line or line.startswith("#") or "=" not in line:
-                    continue
-                key, value = line.split("=", 1)
-                values[key.strip().lower()] = value.strip()
+                if line.lower().startswith("commit="):
+                    return line.split("=", 1)[1].strip()
     except OSError:
-        return "", ""
-    return values.get("commit", ""), values.get("date", "")
+        return ""
+    return ""
 
-
-_STAMPED_COMMIT, _STAMPED_DATE = _stamped()
 
 # ------------------------------------------------------------------ identity
 APP_NAME = "FrameWork"
@@ -120,26 +114,20 @@ APP_TAGLINE = "The interactive academy for every communication protocol an embed
 
 VERSION = "1.0.0"
 BUILD_CHANNEL = os.environ.get("FRAMEWORK_BUILD_CHANNEL", "stable")
-BUILD_DATE = os.environ.get("FRAMEWORK_BUILD_DATE", "").strip() or _STAMPED_DATE or "2026-09-18"
 # Explicit stamp > live git working tree > packaging-time stamp > nothing.
-BUILD_COMMIT = os.environ.get("FRAMEWORK_BUILD_COMMIT", "").strip() or _detect_git_commit() or _STAMPED_COMMIT
+BUILD_COMMIT = os.environ.get("FRAMEWORK_BUILD_COMMIT", "").strip() or _detect_git_commit() or _stamped_commit()
 
 # --------------------------------------------------------------------- links
 REPO_URL = "https://github.com/KSHNKMRJHA/Frame-work"
 LINKEDIN_URL = "https://www.linkedin.com/in/kshnkmrjha/"
 
-# Public web app URL. Left empty until the Streamlit Community Cloud / hosted
-# deployment is live — when it is, set FRAMEWORK_WEB_URL (or paste it here) and
-# every surface that mentions the web build starts linking to it.
-WEB_URL = os.environ.get("FRAMEWORK_WEB_URL", "")
+# The live web app. Set FRAMEWORK_WEB_URL to deploy the same build elsewhere.
+WEB_URL = os.environ.get("FRAMEWORK_WEB_URL", "").strip() or "https://frame-work.streamlit.app/"
 
 # ------------------------------------------------------------------- credits
 AUTHOR_NAME = "Kishan J."
 DESIGNER_NAME = "Piston"
 CREDIT_LINE = "Made with love and AI"
-
-# The three places this project ships to, in the order most users meet them.
-DEPLOY_TARGETS = ("local", "desktop .exe", "web page")
 
 
 def version_label():
@@ -148,19 +136,13 @@ def version_label():
 
 
 def build_number():
-    """The build number: the short commit tag, or a placeholder for a dirty tree."""
+    """The build number: the short commit tag, or a placeholder for an unversioned tree."""
     return BUILD_COMMIT or "dev"
 
 
 def build_line():
-    """One-line, publishable build string, e.g.
-    'v1.0.0 · stable · built 2026-09-18 · commit 1999bc7'."""
-    return " · ".join([version_label(), BUILD_CHANNEL, f"built {BUILD_DATE}", f"commit {build_number()}"])
-
-
-def web_status():
-    """Human-readable state of the web deployment (a URL once it is live)."""
-    return WEB_URL or "web deployment in progress — link to follow"
+    """One-line, publishable build string, e.g. 'v1.0.0 · stable · commit 015f212'."""
+    return " · ".join([version_label(), BUILD_CHANNEL, f"commit {build_number()}"])
 
 
 def credit_line():
@@ -187,7 +169,7 @@ def sidebar_identity():
             <div style="padding:0.15rem 0 0.6rem 0; line-height:1.35;">
                 <div style="font-size:1.12rem; font-weight:700;">{APP_ICON} {APP_NAME}</div>
                 <div style="font-size:0.78rem; color:#94a3b8;">{version_label()} · {BUILD_CHANNEL}</div>
-                <div style="font-size:0.70rem; color:#64748b;">build {build_number()} · built {BUILD_DATE}</div>
+                <div style="font-size:0.70rem; color:#64748b;">build {build_number()}</div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -195,6 +177,7 @@ def sidebar_identity():
         st.markdown(
             f"<div style='font-size:0.78rem;'>"
             f"<a href='{REPO_URL}' target='_blank'>GitHub</a> · "
+            f"<a href='{WEB_URL}' target='_blank'>Web</a> · "
             f"<a href='{LINKEDIN_URL}' target='_blank'>LinkedIn</a>"
             f"</div>",
             unsafe_allow_html=True,
@@ -205,10 +188,9 @@ def page_footer():
     """Render the standard publication footer (version, build, links, credits)."""
     import streamlit as st
 
-    web = f" · [Web app]({WEB_URL})" if WEB_URL else ""
     st.divider()
     st.caption(
         f"**{APP_NAME}** {build_line()}  \n"
-        f"[GitHub repository]({REPO_URL}) · [LinkedIn]({LINKEDIN_URL}){web}  \n"
+        f"[GitHub repository]({REPO_URL}) · [Web app]({WEB_URL}) · [LinkedIn]({LINKEDIN_URL})  \n"
         f"{credit_line()}"
     )
