@@ -1,0 +1,71 @@
+# Packaging and project metadata for FrameWork.
+#
+# This project is an application, not a library: you run it with
+# `streamlit run app.py`. The metadata below still matters — it powers the
+# GitHub dependency graph, `pip install .`, and tooling that reads PEP 621.
+# Version and dependencies are single-sourced so they cannot drift.
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "framework-academy"
+dynamic = ["version", "dependencies"]
+description = "Offline-first interactive academy covering 118 embedded communication protocols — encyclopedia, timelines, mind maps, quizzes, and verified engineering calculators."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Kishan J.", email = "33089583+KSHNKMRJHA@users.noreply.github.com" }]
+keywords = [
+    "embedded",
+    "protocols",
+    "uart",
+    "i2c",
+    "spi",
+    "can",
+    "modbus",
+    "ethernet",
+    "usb",
+    "streamlit",
+    "education",
+    "engineering",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Education",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Embedded Systems",
+]
+
+[project.urls]
+Homepage = "https://frame-work.streamlit.app/"
+Repository = "https://github.com/KSHNKMRJHA/Frame-work"
+Issues = "https://github.com/KSHNKMRJHA/Frame-work/issues"
+Changelog = "https://github.com/KSHNKMRJHA/Frame-work/releases"
+LinkedIn = "https://www.linkedin.com/in/kshnkmrjha/"
+
+[project.optional-dependencies]
+desktop = ["pyinstaller>=6.0"]
+mobile = ["kivy>=2.3"]
+dev = ["ruff>=0.6"]
+
+[tool.setuptools]
+packages = ["utils"]
+
+[tool.setuptools.dynamic]
+# Both read from the existing single sources of truth rather than duplicating
+# them here, so `pip install .` can never disagree with the running app.
+version = { attr = "utils.branding.VERSION" }
+dependencies = { file = ["requirements.txt"] }

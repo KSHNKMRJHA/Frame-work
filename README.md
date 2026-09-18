@@ -1,110 +1,92 @@
+<div align="center">
+
 # 🛰️ FrameWork
 
-### The interactive academy for every communication protocol an embedded engineer will meet in a career.
+**Every embedded communication protocol an engineer will meet — in one offline, interactive academy.**
 
-**v1.0.0** · stable
+118 protocols · 12 categories · 10 learning modules · zero setup
 
 [![CI](https://github.com/KSHNKMRJHA/Frame-work/actions/workflows/ci.yml/badge.svg)](https://github.com/KSHNKMRJHA/Frame-work/actions/workflows/ci.yml)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![Last commit](https://img.shields.io/github/last-commit/KSHNKMRJHA/Frame-work)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/KSHNKMRJHA/Frame-work/releases)
+[![Last commit](https://img.shields.io/github/last-commit/KSHNKMRJHA/Frame-work)](https://github.com/KSHNKMRJHA/Frame-work/commits/main)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-blue)
-![Streamlit](https://img.shields.io/badge/built%20with-Streamlit-ff4b4b)
 ![Offline](https://img.shields.io/badge/offline-100%25-brightgreen)
 
-FrameWork is a complete, **offline-first**, interactive learning platform covering
-**118 communication protocols** — every bus, fieldbus, network, wireless standard,
-audio/video link, USB class, high-speed serial link, sensor bus, security protocol,
-and aerospace/defense bus an embedded or hardware engineer is likely to meet.
+**Run it locally · Package it as a desktop app · Use it on the web → [frame-work.streamlit.app](https://frame-work.streamlit.app/)**
 
-Everything runs **100% locally**. No internet connection, account, sign-up, or cloud
-service is required — progress is stored in a plain JSON file on your own machine.
+</div>
 
 ---
 
-## 📑 Table of contents
+## Why FrameWork
 
-- [✨ Feature tour](#-feature-tour)
-- [📡 Protocol coverage](#-protocol-coverage)
-- [🧰 Tech stack](#-tech-stack)
-- [🚀 Quick start](#-quick-start)
-- [📦 Project structure](#-project-structure)
-- [🖥️ Deployment options](#️-deployment-options)
-- [🔄 Updating the protocol database](#-updating-the-protocol-database)
-- [🔖 Branding, versioning & releases](#-branding-versioning--releases)
-- [✅ Quality gates](#-quality-gates)
-- [🔗 Links](#-links)
-- [🙏 Credits & license](#-credits--license)
+Protocol knowledge is scattered across datasheets, vendor PDFs, and terse wiki pages — each covering one bus, in one style, with no way to compare them or check what you actually retained.
+
+FrameWork turns that fragmented landscape into a single, structured academy: a searchable reference where every protocol gets the same treatment, diagrams that are generated rather than hand-drawn, and practice tools that keep producing new questions instead of a fixed quiz bank.
+
+**Designed around four principles:**
+
+| Principle | What it means in practice |
+|---|---|
+| 🔌 **Offline-first** | No account, no network, no telemetry. Progress is a local JSON file you own. |
+| ⚙️ **Generated, not hand-drawn** | Frame, topology, and pinout diagrams are produced from the database — every protocol gets consistent depth automatically. |
+| 🧠 **Built for retention** | A procedural quiz engine and puzzle modes that never run out of new combinations. |
+| 🧮 **Real engineering math** | Calculators verified against standard CRC check values and textbook formulas, not approximations. |
 
 ---
 
-## ✨ Feature tour
+## At a glance
 
-Ten modules, each driven live from a single master database — no hand-written pages,
-so every protocol gets the same depth automatically.
+| | |
+|---|---|
+| **Protocols** | 118, across 12 categories |
+| **Modules** | 10 (encyclopedia, timeline, mind map, compare, quiz, puzzles, science lab, geography, profile, info) |
+| **Runtime** | Python 3.10+ · Streamlit |
+| **Data** | One JSON database, regenerated from `build_data.py` |
+| **Persistence** | Atomic local JSON — corruption-safe, no server |
+| **Licence** | MIT |
+| **Live app** | [frame-work.streamlit.app](https://frame-work.streamlit.app/) |
+
+---
+
+## Feature tour
 
 ### 📚 Encyclopedia
-The core reference. Search by name, keyword, inventor, or year; filter by category and
-difficulty; then open a full per-protocol profile:
-- **Overview**, **How it works**, and an **Origin story** (inventor / standards body / country)
-- **Typical speed**, **pins/wires**, and a **real-world example**
-- **Use cases**, **advantages**, and **limitations**
-- **Related protocols** with cross-links
-- **Three auto-generated diagrams**: frame/packet structure, network topology, and pinout/wiring
+The core reference. Search by name, keyword, inventor, or year; filter by category and difficulty; then open a full profile with overview, how-it-works, origin story, typical speed, pins, real-world example, use cases, advantages, limitations, and related protocols — plus three generated diagrams (frame, topology, pinout).
 
 ### 🕰️ Timeline & History
-An interactive Plotly timeline from **1937 (PCM)** to **2022 (Matter)**, plus a
-decade-by-decade narrative and the milestones worth knowing.
+An interactive Plotly timeline from **1937 (PCM)** to **2022 (Matter)**, a decade-by-decade narrative, and the milestones worth knowing.
 
 ### 🗺️ Mind Map
-NetworkX-powered visual maps: a full graph of every category → protocol → relative, and a
-per-category graph that also draws cross-links between related protocols (CAN ↔ CAN FD ↔
-CANopen, and friends). Includes a plain list view.
+NetworkX-powered maps of how categories, protocols, and their relatives connect — including cross-links such as CAN ↔ CAN FD ↔ CANopen.
 
 ### ⚖️ Compare
-Put **2–4 protocols head-to-head** on speed, pins, topology, use cases, advantages, and
-limitations — with a log-scale speed comparison chart.
+Put 2–4 protocols head-to-head on speed, pins, topology, use cases, and trade-offs, with a log-scale speed chart.
 
 ### 🧠 Quiz & Assessment
-A **procedurally generated** multiple-choice engine: questions are built from the live
-database, so it never runs out of new combinations. Filter by category and difficulty,
-choose the question count, and earn **XP, levels, and badges**. Tracks quizzes taken,
-best score, and current level.
+Procedurally generated multiple-choice questions built live from the database. Filter by category and difficulty, track XP, levels, badges, best score, and full history.
 
 ### 🎮 Puzzles & Games
-- **Speed matching** — pair protocols with their throughput
-- **Frame-field reordering** — rebuild a protocol frame in the right order
-- **Guess the protocol** — identify a protocol from progressive clues (wrong guesses cost XP)
+Speed matching, frame-field reordering, and "guess the protocol" from progressive clues.
 
 ### 🔬 Science & Math Lab
-Real, verified engineering calculators — not approximations:
-- **UART baud rate & bit-timing** (with framing error analysis)
-- **Shannon & Nyquist capacity** theorems
-- **CRC-16 / CRC-32** calculator with standard catalogue check values
-- **Frequency ↔ wavelength** conversion
-- **CAN bit timing** with prescaler realizability checks
-- Byte-string parsing helpers
+Verified calculators: UART baud rate and bit timing, Shannon and Nyquist capacity, CRC-16/CRC-32 with catalogue check values, frequency ↔ wavelength, and CAN bit timing with prescaler realizability checks.
 
 ### 🌍 Geography & Origins
-Which countries and organizations invented what — with a world map, origin breakdowns,
-and an explore-by-country view.
+Which countries and organisations invented what — with a world map and an explore-by-country view.
 
 ### ⚙️ Settings & Profile
-Your username, accent colour, XP/level/badges, full activity history, **export progress as
-JSON**, and a safe reset.
+Username, accent colour, XP and badges, JSON export, and a safe reset.
 
-### ℹ️ About, Deployment & Credits
-Five tabs covering what the project is, how to deploy it (local / .exe / web / APK),
-repos and links, audience guidance, and full credits and licensing.
+### ℹ️ Info
+What the project is, the three ways to run it, canonical links, audience guidance, credits, and licence.
 
-### 🔒 Offline-first persistence
-Progress is saved to a local JSON file using **atomic writes** (temp file + `os.replace`),
-so an interrupted write can never truncate your data. A damaged or hand-edited file is
-**repaired or recovered with a visible warning** rather than silently resetting your XP.
+> **Robust by design:** progress is written with a temp-file + `os.replace` swap, so an interrupted write cannot truncate your data. A damaged file is repaired with a visible warning instead of silently resetting your XP.
 
 ---
 
-## 📡 Protocol coverage
+## Protocol coverage
 
 **118 protocols across 12 categories:**
 
@@ -125,36 +107,34 @@ so an interrupted write can never truncate your data. A damaged or hand-edited f
 
 ---
 
-## 🧰 Tech stack
+## Tech stack
 
 | Layer | Used |
 |---|---|
 | App framework | [Streamlit](https://streamlit.io) |
-| Diagrams | [Matplotlib](https://matplotlib.org) (frame, topology, pinout, charts) |
+| Diagrams | [Matplotlib](https://matplotlib.org) |
 | Mind maps | [NetworkX](https://networkx.org) |
-| Timelines / maps / charts | [Plotly](https://plotly.com) |
-| Data handling | [Pandas](https://pandas.pydata.org), [NumPy](https://numpy.org) |
-| Mobile companion | [Kivy](https://kivy.org) (→ Android APK via Buildozer) |
+| Timelines, maps, charts | [Plotly](https://plotly.com) |
+| Data | [Pandas](https://pandas.pydata.org), [NumPy](https://numpy.org) |
+| Mobile companion | [Kivy](https://kivy.org) → Android APK via Buildozer |
 | Packaging | [PyInstaller](https://pyinstaller.org) |
-| CI | GitHub Actions (reproducibility, integrity, unit tests, lint) |
+| CI | GitHub Actions — reproducibility, integrity, unit tests, lint |
 
 ---
 
-## 🚀 Quick start
+## Quick start
 
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Your browser opens automatically at `http://localhost:8501`.
-
-**Requirements:** Python 3.10+ and the packages in `requirements.txt`. Nothing else —
-no database, no API keys, no network access.
+Your browser opens at `http://localhost:8501`. Requirements are Python 3.10+ and the
+packages in `requirements.txt` — no database, API keys, or network access.
 
 ---
 
-## 📦 Project structure
+## Project structure
 
 ```
 FrameWork/
@@ -175,7 +155,7 @@ FrameWork/
 │   ├── 9_⚙️_Settings_Profile.py
 │   └── 10_ℹ️_Info.py
 ├── utils/
-│   ├── branding.py               # ⭐ Name, version, build metadata, links, credits
+│   ├── branding.py               # ⭐ Name, version, build number, links, credits
 │   ├── data_loader.py            # Cached JSON loading, search, category helpers
 │   ├── diagrams.py               # Frame / topology / pinout / chart generators
 │   ├── mindmap.py                # NetworkX mind-map builders
@@ -191,20 +171,18 @@ FrameWork/
 │   ├── check_logic.py            # Unit tests: CRC vectors, formulas, boundary guards
 │   └── sync_mobile.py            # Keeps the Kivy mobile copy in sync
 ├── kivy_mobile/                  # Cross-platform mobile companion (→ Android .apk)
-│   ├── main.py
-│   ├── quiz_logic.py
-│   ├── buildozer.spec
-│   └── data/protocols.json
 ├── .github/workflows/ci.yml      # CI: reproducibility, integrity, tests, lint
+├── pyproject.toml                # Packaging metadata (version + deps single-sourced)
 ├── requirements.txt
 ├── ruff.toml                     # Pinned lint policy
+├── .gitattributes                # Deterministic line endings across platforms
 ├── LICENSE (MIT)
 └── .streamlit/config.toml        # Theme configuration
 ```
 
 ---
 
-## 🖥️ Deployment options
+## Deployment
 
 FrameWork ships in **three forms** — the same code, three ways to use it.
 
@@ -258,7 +236,7 @@ See `kivy_mobile/README.md` for full steps, including release/Play Store signing
 
 ---
 
-## 🔄 Updating the protocol database
+## Updating the protocol database
 
 All content lives in `build_data.py` as structured Python. Edit or extend the `add(...)`
 calls, then regenerate:
@@ -269,51 +247,43 @@ python build_scripts/sync_mobile.py   # keep the Kivy mobile copy in sync
 ```
 
 One source of truth keeps the encyclopedia, quiz engine, mind map, diagrams, timeline,
-geography module, and the mobile app all consistent. CI verifies that the committed JSON
-still matches `build_data.py` output, so drift fails the build.
+geography module, and the mobile app consistent. CI verifies the committed JSON still
+matches `build_data.py` output, so drift fails the build.
 
 ---
 
-## 🔖 Branding, versioning & build number
+## Versioning & build number
 
-Project name, version, build metadata, links, and credits live in exactly one place —
-[`utils/branding.py`](utils/branding.py). Every page renders from it, so the name and
-version can never drift apart.
+Project identity lives in exactly one place — [`utils/branding.py`](utils/branding.py) —
+and the package metadata in [`pyproject.toml`](pyproject.toml) reads its version straight
+from there, so they cannot disagree.
 
-**The build number is the short git commit tag** (e.g. `015f212`) and changes by itself
-with every commit — it is never hand-maintained. It is resolved in this order:
+**The build number is the short git commit tag** — seven hex characters such as
+`a1b2c3d` — and it changes with every commit; it is never hand-maintained. It is
+resolved in this order:
 
 | # | Source | When it applies |
 |---|---|---|
 | 1 | `FRAMEWORK_BUILD_COMMIT` env var | Always wins — CI release stamping |
-| 2 | Live `.git` in the working tree | Running from source / Streamlit Cloud — always the commit you are actually on |
+| 2 | Live `.git` in the working tree | Running from source and on Streamlit Cloud |
 | 3 | `utils/_build_stamp.txt` | Packaged builds with no `.git`, written by `build_scripts/stamp_build.py` |
 
-So running locally or on the web, the UI shows the exact commit you are on; a frozen
-`.exe` shows the commit it was built from. If nothing can be resolved it falls back to
-`dev`.
+Running locally or on the web, the UI shows the exact commit you are on; a frozen `.exe`
+shows the commit it was built from. Unresolvable builds report `dev`.
 
 ```
-v1.0.0 · stable · commit 015f212
+v1.0.0 · stable · commit a1b2c3d     # the commit the running app is on
 ```
 
-Other release values can be stamped the same way:
-
-| Variable | Example | Purpose |
-|---|---|---|
-| `FRAMEWORK_BUILD_COMMIT` | `a1b2c3d` | Override the auto-detected build number |
-| `FRAMEWORK_BUILD_CHANNEL` | `stable` | Release channel |
-| `FRAMEWORK_WEB_URL` | `https://…` | Point the UI and footer at a different web deployment |
-
-When packaging a desktop build, stamp the commit first so the frozen app knows it:
-
-```bash
-python build_scripts/stamp_build.py    # writes utils/_build_stamp.txt (gitignored)
-```
+| Variable | Purpose |
+|---|---|
+| `FRAMEWORK_BUILD_COMMIT` | Override the auto-detected build number |
+| `FRAMEWORK_BUILD_CHANNEL` | Release channel (default `stable`) |
+| `FRAMEWORK_WEB_URL` | Point the UI and footer at a different web deployment |
 
 ---
 
-## ✅ Quality gates
+## Quality gates
 
 Run the same checks CI runs:
 
@@ -323,8 +293,8 @@ python build_scripts/check_logic.py   # unit tests: CRC, formulas, boundaries
 ruff check .                          # lint (policy in ruff.toml)
 ```
 
-The GitHub Actions workflow (`.github/workflows/ci.yml`) runs on Python 3.10 and 3.11 and
-covers:
+CI runs on Python 3.10 and 3.11 and covers:
+
 1. **Reproducibility** — `data/protocols.json` must match `build_data.py` output
 2. **No drift** — the mobile companion copies must match the desktop source
 3. **Syntax** — every Python file compiles
@@ -334,15 +304,16 @@ covers:
 
 ---
 
-## 🔗 Links
+## Links
 
-- **Repository:** https://github.com/KSHNKMRJHA/Frame-work
-- **LinkedIn:** https://www.linkedin.com/in/kshnkmrjha/
-- **Web app:** https://frame-work.streamlit.app/
+- 🌐 **Live app:** https://frame-work.streamlit.app/
+- 📦 **Repository:** https://github.com/KSHNKMRJHA/Frame-work
+- 🏷️ **Releases:** https://github.com/KSHNKMRJHA/Frame-work/releases
+- 💼 **LinkedIn:** https://www.linkedin.com/in/kshnkmrjha/
 
 ---
 
-## 🙏 Credits & license
+## Credits & licence
 
 - **Created by** [Kishan J.](https://www.linkedin.com/in/kshnkmrjha/)
 - **Design by** Piston

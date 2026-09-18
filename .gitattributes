@@ -1,0 +1,16 @@
+# Normalise line endings in the repository to LF, then re-apply what each
+# platform actually needs. Without this, Windows checkouts turn the bash build
+# scripts into CRLF and they fail to run on macOS/Linux/WSL ("bad interpreter").
+* text=auto eol=lf
+
+# Windows batch files genuinely require CRLF.
+*.bat text eol=crlf
+
+# Shell scripts must stay LF to be executable.
+*.sh text eol=lf
+
+# Binary assets — never touch.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
