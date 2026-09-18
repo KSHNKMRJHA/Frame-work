@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # This step must VERIFY reproducibility, never perform it. Running
+      # build_data.py over the committed protocols.json would silently revert
+      # any hand-edit to the JSON and still report success.
+      - name: Verify protocol database is reproducible from build_data.py
+        run: |
+          cp data/protocols.json /tmp/committed.json
+          python build_data.py
+          if ! diff -u /tmp/committed.json data/protocols.json; then
+            echo "::error::data/protocols.json is out of sync with build_data.py. Run 'python build_data.py' and commit the result."
+            exit 1
+          fi
+          echo "protocols.json matches build_data.py output."
+
+      - name: Mobile companion must not drift from the desktop source
+        run: |
+          diff -q data/protocols.json kivy_mobile/data/protocols.json \
+            || { echo "::error::kivy_mobile/data/protocols.json is stale — run 'python build_scripts/sync_mobile.py'"; exit 1; }
+          diff -q utils/quiz_engine.py kivy_mobile/quiz_logic.py \
+            || { echo "::error::kivy_mobile/quiz_logic.py has drifted from utils/quiz_engine.py — run 'python build_scripts/sync_mobile.py'"; exit 1; }
+
+      - name: Syntax-check every Python file
+        run: |
+          python -m py_compile app.py utils/*.py pages/*.py build_data.py \
+            build_scripts/*.py kivy_mobile/*.py
+
+      - name: Data integrity — referential, uniqueness and schema checks
+        run: python build_scripts/check_data.py
+
+      - name: Unit tests — CRC vectors, formulas, boundary guards, generators
+        run: python build_scripts/check_logic.py
+
+      - name: Lint
+        run: |
+          pip install ruff
+          ruff check --output-format=github app.py build_data.py utils/ pages/ build_scripts/ kivy_mobile/

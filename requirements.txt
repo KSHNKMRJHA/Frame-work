@@ -1,0 +1,14 @@
+# Core web/desktop app (Streamlit edition)
+streamlit>=1.38
+matplotlib>=3.8
+networkx>=3.2
+plotly>=5.22
+pandas>=2.0
+numpy>=1.24
+
+# Optional: only needed if you package a standalone .exe/.app (see build_scripts/)
+# pyinstaller>=6.0
+
+# Optional: only needed for the mobile companion app in kivy_mobile/
+# kivy>=2.3
+# buildozer>=1.5   # Android APK builds only, Linux/WSL2 required

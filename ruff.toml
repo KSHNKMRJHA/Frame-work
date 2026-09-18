@@ -1,0 +1,21 @@
+# Lint policy for FrameWork.
+#
+# Pinned deliberately: ruff's built-in defaults have grown over time, and CI
+# must not start failing because a contributor has a different ruff version or
+# a personal global config. `select` here is the set of rules we actually
+# enforce — correctness and real-bug rules, not stylistic churn across a
+# codebase this size.
+target-version = "py310"
+line-length = 120
+
+[lint]
+select = [
+    "E4",  # import conventions
+    "E7",  # statement-level issues
+    "E9",  # runtime errors (syntax, etc.)
+    "F",   # pyflakes: undefined names, unused imports/vars, etc.
+    "W",   # pycodestyle warnings
+]
+ignore = [
+    "E501",  # line length is a formatter concern, not a lint gate
+]

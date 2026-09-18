@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Ruff
+.ruff_cache/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# User data / local progress (don't commit personal learning progress)
+data/user_state.json
+
+# PyInstaller build artifacts (generated .spec files at repo root only —
+# the tracked kivy_mobile/buildozer.spec is explicitly kept below)
+/*.spec
+build/
+dist/
+
+# Buildozer / Android build artifacts
+kivy_mobile/.buildozer/
+kivy_mobile/bin/
+*.apk
+
+# Local-only working notes & internal review artifacts (never published)
+/Claude outputs/
+/audit_findings/
+/AUDIT_REPORT.md
+/audit_validation_enhancement_prompt.md
+/ENHANCEMENT_BACKLOG.md
+/PROTOCOL_TAXONOMY_REVIEW.md
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
