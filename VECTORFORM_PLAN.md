@@ -293,6 +293,39 @@ The Settings toggle became **Follow OS / Dark / Light** and writes the native
 `base` key, noting that a restart is needed because Streamlit reads
 config.toml at startup.
 
+### Correction: the responsive check was not actually enforced
+`visual_check.py` logged the tablet column result but never asserted on it, so
+a run could print `ok: False` for tablet and still report "ALL VISUAL CHECKS
+PASSED". The probe also only compared `cols[0]` against `cols[1]`, which cannot
+see partial wrapping, and it counted inactive `st.tabs` columns as zero-width.
+
+Rewrote it as `probe_columns`, which measures **every** visible column, counts
+distinct row offsets, excludes zero-width tab panels, and reports the narrowest
+column and any horizontal overflow. Both breakpoints are now enforced:
+
+| width | min column | rows | overflow |
+|---|---|---|---|
+| 390px | 326px | 8 | 0 |
+| 900px | 196px | 4 | 0 |
+| 1440px | - | - | 0 |
+
+Enforcing it exposed a real defect the dead assertion had been hiding: at 900px
+the sidebar leaves only ~440px of content, and the spec sheet squeezed metric
+values to **62px** - "Beginner" rendered as "Begin...". Three fixes, none of
+which need injected CSS (Streamlit only auto-stacks below ~640px):
+
+1. The `st.columns([2.2, 1])` profile split became full-width single column.
+   At tablet the split itself was the cause; full width costs only vertical
+   space on desktop.
+2. `st.columns([1, 3])[0]` around the Difficulty filter became
+   `st.selectbox(..., width=240)`. Three quarters of that row were an empty
+   placeholder.
+3. `st.metric` was dropped for the long free-text fields (Topology, OSI layer,
+   Standard). It renders a large font and clips with an ellipsis, so
+   "Star (Host + Hub)" became "Star (Host ...". These now print as text and
+   wrap. Short values stay as metrics, and Impedance was added as a genuine
+   short electrical figure to keep the grid even.
+
 ## Open / Follow-up
 - **`st.navigation` migration (task 1.1) was intentionally skipped** — see
   Phase 1 note above. The sidebar is grouped visually instead.
@@ -301,6 +334,6 @@ config.toml at startup.
   NOT reaching the browser, and therefore not claimed: custom focus rings,
   `prefers-reduced-motion`, and the bespoke font stack. These would need inline
   styles per element or a future delivery route.
-- Responsive stacking verified at 390px in Chromium only (Streamlit's own
-  flexbox handles it, not our CSS).
+- Responsive verified at 390/900/1440px in Chromium only, and now enforced
+  rather than merely logged.
 - Light and dark both verified in Chromium; other engines untested.

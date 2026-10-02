@@ -8,6 +8,7 @@ from utils.code_snippets import get_snippets
 from utils.troubleshooting import get_troubleshooting
 from utils import signal_engine
 import electrical_specs
+from parametric import format_bps, format_m
 from utils import ui_state
 from utils import branding
 
@@ -117,10 +118,12 @@ st.markdown('<div class="fw-fieldlabel">Category</div>', unsafe_allow_html=True)
 cat = st.pills("Category", categories, default="All",
                selection_mode="single", key="fw_cat", label_visibility="collapsed")
 
-dc = st.columns([1, 3])[0]
-with dc:
-    diffs = ["All"] + sorted(set(p.get("difficulty", "Beginner") for p in protocols))
-    diff = st.selectbox("Difficulty", diffs, key="fw_diff")
+# An explicit width replaces the old `st.columns([1, 3])[0]`, whose remaining
+# three quarters were an empty placeholder. That layout left the selectbox at
+# ~102px at tablet widths, too narrow to read the option. A fixed 240px is
+# comfortable at every viewport and needs no breakpoint.
+diffs = ["All"] + sorted(set(p.get("difficulty", "Beginner") for p in protocols))
+diff = st.selectbox("Difficulty", diffs, key="fw_diff", width=240)
 
 filtered = protocols
 if cat != "All":
@@ -176,62 +179,70 @@ with st.expander("🖨️ Export this protocol", expanded=False):
         )
 
 # --------------------------------------------------------------- PROFILE ---
-left, right = st.columns([2.2, 1])
-with left:
-    st.header(selected["name"])
-    badge_cols = st.columns(4)
-    badge_cols[0].metric("Category", selected["category"])
-    badge_cols[1].metric("Invented", selected["year"])
-    badge_cols[2].metric("Difficulty", selected.get("difficulty", "—"))
-    badge_cols[3].metric("Topology", selected.get("topology", "—"))
+# Single-column, full width. This used to be st.columns([2.2, 1]), but
+# Streamlit only auto-stacks columns below ~640px, so at tablet widths the
+# sidebar left barely ~450px of usable content and the split squeezed every
+# metric until values truncated to "Begin..." / "Star (...". With injected CSS
+# unavailable there is no viewport hook, so the layout is built for the narrow
+# case instead: full width reads correctly everywhere and costs only vertical
+# space on wide screens.
+st.header(selected["name"])
+# Two columns per row: readable at tablet, and Streamlit stacks 2-up to 1-up
+# on phones by itself. Only short values go in a metric - st.metric renders a
+# large font and clips with an ellipsis, which turned "Star (Host + Hub)" into
+# "Star (Host ...". Long free-text fields are printed as text below so they
+# wrap instead of truncating.
+badge_cols = st.columns(2)
+badge_cols[0].metric("Category", selected["category"])
+badge_cols[1].metric("Invented", selected["year"])
+badge_cols[0].metric("Difficulty", selected.get("difficulty", "—"))
+badge_cols[1].metric("Lifecycle", (selected.get("lifecycle") or "—").capitalize())
 
-    from parametric import format_bps, format_m
+spec_cols = st.columns(2)
+spec_cols[0].metric("Max rate", format_bps(selected.get("data_rate_max_bps")))
+spec_cols[1].metric("Max reach", format_m(selected.get("distance_max_m")))
+spec_cols[0].metric(
+    "Max nodes",
+    selected.get("nodes_max") if selected.get("nodes_max") is not None else "carrier-defined",
+)
+_impedance = (selected.get("electrical") or {}).get("impedance_ohm")
+spec_cols[1].metric("Impedance", f"{_impedance} Ω" if _impedance else "—")
 
-    spec_cols = st.columns(4)
-    spec_cols[0].metric("Max rate", format_bps(selected.get("data_rate_max_bps")))
-    spec_cols[1].metric("Max reach", format_m(selected.get("distance_max_m")))
-    spec_cols[2].metric(
-        "Max nodes",
-        selected.get("nodes_max") if selected.get("nodes_max") is not None else "carrier-defined",
-    )
-    spec_cols[3].metric("Lifecycle", (selected.get("lifecycle") or "—").capitalize())
-    # OSI layer and the governing standard are what an engineer looks up first,
-    # and they were missing from the summary row.
-    id_cols = st.columns(2)
-    id_cols[0].metric("OSI layer", selected.get("osi_layer") or "—")
-    id_cols[1].metric("Standard", (selected.get("standard_doc") or "—")[:38])
-    st.caption(
-        f"**OSI scope:** {selected.get('osi_layer', '—')} · "
-        f"**Standard:** {selected.get('standard_doc', '—')} · "
-        "maxima are representative, never simultaneous."
-    )
+# These three are sentences, not values - they wrap rather than clip.
+st.markdown(
+    f"**Topology:** {selected.get('topology') or '—'}  \n"
+    f"**OSI layer:** {selected.get('osi_layer') or '—'}  \n"
+    f"**Standard:** {selected.get('standard_doc') or '—'}"
+)
+st.caption("Maxima are representative and never simultaneous.")
 
-    st.markdown("#### 📖 Overview")
-    st.write(selected["description"])
+st.markdown("#### 🚀 Speed")
+st.success(selected.get("speed", "Not specified"))
 
-    st.markdown("#### ⚙️ How It Works")
-    st.write(selected.get("how_it_works", "—"))
+st.markdown("#### 📖 Overview")
+st.write(selected["description"])
 
-    st.markdown("#### 🕰️ Origin Story")
-    origin_bits = []
-    if selected.get("inventor"):
-        origin_bits.append(f"**Inventor / Organization:** {selected['inventor']}")
-    if selected.get("organization"):
-        origin_bits.append(f"**Standards Body:** {selected['organization']}")
-    if selected.get("place"):
-        origin_bits.append(f"**Origin:** {selected['place']}")
-    st.markdown("  \n".join(origin_bits))
-    if selected.get("fun_fact"):
-        st.info(f"💡 **Fun fact:** {selected['fun_fact']}")
+st.markdown("#### ⚙️ How It Works")
+st.write(selected.get("how_it_works", "—"))
 
-with right:
-    st.markdown("#### 🚀 Speed")
-    st.success(selected.get("speed", "Not specified"))
-    if selected.get("pins"):
-        st.markdown("#### 🔌 Pins / Wires")
-        st.code(", ".join(selected["pins"]))
-    st.markdown("#### 🌍 Real-World Example")
-    st.write(selected.get("real_world_example", "—"))
+st.markdown("#### 🕰️ Origin Story")
+origin_bits = []
+if selected.get("inventor"):
+    origin_bits.append(f"**Inventor / Organization:** {selected['inventor']}")
+if selected.get("organization"):
+    origin_bits.append(f"**Standards Body:** {selected['organization']}")
+if selected.get("place"):
+    origin_bits.append(f"**Origin:** {selected['place']}")
+st.markdown("  \n".join(origin_bits))
+if selected.get("fun_fact"):
+    st.info(f"💡 **Fun fact:** {selected['fun_fact']}")
+
+if selected.get("pins"):
+    st.markdown("#### 🔌 Pins / Wires")
+    st.code(", ".join(selected["pins"]))
+
+st.markdown("#### 🌍 Real-World Example")
+st.write(selected.get("real_world_example", "—"))
 
 st.divider()
 

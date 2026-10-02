@@ -107,16 +107,33 @@ def probe_tabular(page):
     )
 
 
-def probe_stacked(page):
-    """Are st.column flex children laid out one above the other?"""
+def probe_columns(page):
+    """Measure the st.column flex layout across every column on the page.
+
+    Checking only columns[0] and columns[1] misses partial wrapping, where some
+    columns drop to a second row while others stay put. Distinct `top` values
+    expose that, and the narrowest column is reported because a layout can
+    "stack" while still being unusably thin.
+    """
     return page.evaluate(
         """() => {
             const cols = [...document.querySelectorAll(
                 '[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]')];
-            if (cols.length < 2) return {ok: null, n: cols.length};
-            const a = cols[0].getBoundingClientRect();
-            const b = cols[1].getBoundingClientRect();
-            return {ok: b.top >= a.bottom - 2, n: cols.length};
+            if (cols.length < 2) return {ok: null, n: cols.length, rows: 0,
+                                         minWidth: null, hidden: 0, overflow: 0};
+            // Streamlit keeps inactive st.tabs mounted with zero width, so they
+            // must be excluded or they make every layout look unusably narrow.
+            const rects = cols.map(c => c.getBoundingClientRect());
+            const visible = rects.filter(r => r.width > 0);
+            if (visible.length < 2) return {ok: null, n: cols.length, rows: 0,
+                                            minWidth: null, hidden: cols.length,
+                                            overflow: 0};
+            const rows = new Set(visible.map(r => Math.round(r.top))).size;
+            return {ok: rows > 1, n: visible.length, rows: rows,
+                    minWidth: Math.round(Math.min(...visible.map(r => r.width))),
+                    hidden: cols.length - visible.length,
+                    overflow: document.documentElement.scrollWidth
+                              - document.documentElement.clientWidth};
         }"""
     )
 
@@ -219,19 +236,32 @@ def run(url):
         log(rows, "shot 02 encyclopedia USB")
 
         # --- 3. Responsive -------------------------------------------------
-        page.set_viewport_size(PHONE)
-        page.wait_for_timeout(1500)
-        st_phone = probe_stacked(page)
-        log(rows, f"phone {PHONE['width']}px columns: {st_phone}")
-        if st_phone["ok"] is False:
-            failures.append(f"columns did NOT stack at {PHONE['width']}px")
-        page.screenshot(path=str(SHOTS / "03_usb_phone.png"))
-
-        page.set_viewport_size(TABLET)
-        page.wait_for_timeout(1200)
-        st_tab = probe_stacked(page)
-        log(rows, f"tablet {TABLET['width']}px columns: {st_tab}")
-        page.screenshot(path=str(SHOTS / "04_usb_tablet.png"))
+        # Phone MUST stack. Tablet is wide enough that Streamlit legitimately
+        # keeps columns side by side, so it is asserted for overflow and
+        # usability instead of stacking. Both are enforced - a logged-but-
+        # unchecked result previously let a tablet failure pass unnoticed.
+        for label, size, must_stack, shot in (
+            ("phone", PHONE, True, "03_usb_phone.png"),
+            ("tablet", TABLET, False, "04_usb_tablet.png"),
+        ):
+            page.set_viewport_size(size)
+            page.wait_for_timeout(1500)
+            got = probe_columns(page)
+            log(rows, f"{label} {size['width']}px columns: {got}")
+            if got["ok"] is None:
+                failures.append(f"no st.columns found at {label} width")
+                continue
+            if must_stack and got["ok"] is False:
+                failures.append(f"columns did NOT stack at {size['width']}px")
+            if got["overflow"] > 2:
+                failures.append(
+                    f"horizontal overflow of {got['overflow']}px at "
+                    f"{size['width']}px")
+            if got["minWidth"] is not None and got["minWidth"] < 120:
+                failures.append(
+                    f"column only {got['minWidth']}px wide at {size['width']}px "
+                    "- too narrow to read")
+            page.screenshot(path=str(SHOTS / shot))
 
         # --- 4. Both colour schemes --------------------------------------
         # Streamlit follows prefers-color-scheme natively, so emulate each and
