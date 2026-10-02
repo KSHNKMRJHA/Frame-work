@@ -383,6 +383,46 @@ Fixes:
 All 12 pages now report zero clipped text and zero horizontal overflow at both
 390px and 900px.
 
+### Correction: the sweep had two blind spots, and its detector was broken
+Reviewing the previous "all 12 pages clean" result exposed two problems.
+
+**1. It only measured first paint.** Science Lab keeps its calculators inside a
+collapsed `<details>`, so the sweep was reporting clean while the exact metrics
+that had just been broken sat unmeasured in the DOM. The sweep now opens every
+`<details>` and visits each `st.tab` panel (unselected panels render at zero
+width), measuring every state. Coverage went from 1 state per page to up to 7.
+
+**2. The detector never fired.** Reintroducing the 4-up bug by hand produced
+"no clipped text" - a green result on a broken page. Two causes:
+
+- The walk used `if (e.children.length) return` to visit only leaf elements.
+  Streamlit wraps every metric value in a child `<p>`, so **every
+  `stMetricValue` was skipped**. The earlier manual probes had found the bug
+  because they used no such filter.
+- Rewritten to walk text nodes, `closest()` then matched the inner `<p>`
+  first. That `<p>` sizes itself to its own content, so measuring it against
+  its own width can never fail; the real clipping box is the `stMetricValue`
+  ancestor at 90px.
+
+The working rule is that two different elements matter and must not be
+conflated: the **renderer** (the element the text is painted by - its font
+sizes the glyphs, so canvas `measureText` must use it) and the **owner** (the
+nearest matching ancestor - its `clientWidth` is the box the text is clipped
+against). Owner roles also exclude bare `p`, since body text wraps rather than
+truncates.
+
+This was verified by reverting the fix and confirming the sweep now fails:
+
+```
+Science_Math_Lab [collapsed]: '111111.1' needs 139px but has 90px
+Science_Math_Lab [collapsed]: '-3.55%'   needs 107px but has 90px
+Science_Math_Lab [expanded]:  '9.00 us'  needs 109px but has 90px
+```
+
+Lesson worth keeping: a green check that has never been seen to go red is not
+evidence. The earlier sweep result should be treated as unverified until this
+negative test existed.
+
 ## Open / Follow-up
 - **`st.navigation` migration (task 1.1) was intentionally skipped** — see
   Phase 1 note above. The sidebar is grouped visually instead.
