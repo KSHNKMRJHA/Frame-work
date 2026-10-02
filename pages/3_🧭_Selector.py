@@ -168,7 +168,10 @@ st.divider()
 st.subheader("📖 Read the winner's full profile")
 names = [r["Protocol"] for r in ranked]
 pick = st.selectbox("Open in the Encyclopedia:", names)
-if st.button(f"Open {pick}  ➡️", width="stretch"):
+# No "Open" prefix and no arrow: the selectbox label above already says it, and
+# protocol names are long enough that the extras overflowed the button at tablet
+# width ("Aurora (Xilinx/AMD Protocol)" needs 190px in a 187px button).
+if st.button(pick, width="stretch"):
     st.switch_page("pages/1_📚_Encyclopedia.py")
 st.caption(
     "Reminder: maxima are never simultaneous (RS-485 does 10 Mbps XOR 1200 m). "

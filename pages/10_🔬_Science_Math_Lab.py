@@ -72,7 +72,11 @@ if choice == calculators[0]:
         )
 
         r = science.uart_bit_timing(f_clk, baud, oversample)
-        m1, m2, m3, m4 = st.columns(4)
+        # 2x2 instead of 1x4: at tablet widths the sidebar leaves ~440px, so a
+        # 4-up row squeezed each metric to 90px and ellipsised the values -
+        # "-3.55%" rendered as "-3....". Streamlit stacks 2-up to 1-up on phones.
+        m1, m2 = st.columns(2)
+        m3, m4 = st.columns(2)
         m1.metric("Divisor (rounded)", r["divisor"])
         m2.metric("Actual Baud Rate", f"{r['actual_baud']:.1f}")
         m3.metric("Error", f"{r['error_pct']:.2f}%")
@@ -262,7 +266,11 @@ elif choice == calculators[4]:
         )
 
         ct = science.can_bit_timing(f_clk_can, bitrate, tq_prop=prop, tq_ps1=ps1, tq_ps2=ps2)
-        m1, m2, m3, m4 = st.columns(4)
+        # 2x2 instead of 1x4: at tablet widths the sidebar leaves ~440px, so a
+        # 4-up row squeezed each metric to 90px and ellipsised the values -
+        # "-3.55%" rendered as "-3....". Streamlit stacks 2-up to 1-up on phones.
+        m1, m2 = st.columns(2)
+        m3, m4 = st.columns(2)
         m1.metric("Total Time Quanta / Bit", ct["total_tq"])
         m2.metric("Bit Time", f"{ct['bit_time_ns']:.0f} ns")
         m3.metric("Sample Point", f"{ct['sample_point_pct']:.1f}%")
@@ -339,7 +347,11 @@ elif choice == calculators[5]:
         )
 
         r = science.i2c_recommended_pullups(vdd, cb, mode, vol=vol, iol=iol / 1000.0)
-        m1, m2, m3, m4 = st.columns(4)
+        # 2x2 instead of 1x4: at tablet widths the sidebar leaves ~440px, so a
+        # 4-up row squeezed each metric to 90px and ellipsised the values -
+        # "-3.55%" rendered as "-3....". Streamlit stacks 2-up to 1-up on phones.
+        m1, m2 = st.columns(2)
+        m3, m4 = st.columns(2)
         m1.metric("R_p minimum", f"{r['rp_min_ohm']:.0f} Ω")
         m2.metric("R_p maximum", f"{r['rp_max_ohm']:.0f} Ω")
         m3.metric("Suggested (E24)", f"{r['suggested_ohm']:.0f} Ω" if r["suggested_ohm"] else "—")
@@ -471,7 +483,11 @@ elif choice == calculators[7]:
         )
 
         load = science.can_bus_load(can_br * 1000, fps, data_bytes=dlc, extended=ext)
-        m1, m2, m3, m4 = st.columns(4)
+        # 2x2 instead of 1x4: at tablet widths the sidebar leaves ~440px, so a
+        # 4-up row squeezed each metric to 90px and ellipsised the values -
+        # "-3.55%" rendered as "-3....". Streamlit stacks 2-up to 1-up on phones.
+        m1, m2 = st.columns(2)
+        m3, m4 = st.columns(2)
         m1.metric("Frame (nominal)", f"{load['total_bits']} bits")
         m2.metric("Frame time", f"{load['frame_time_us']:.1f} µs")
         m3.metric("Bus load", f"{load['bus_load_pct']:.1f} %")
@@ -568,7 +584,11 @@ elif choice == calculators[8]:
         )
 
         lb = science.link_budget_db(txp, tg, rg, freq, dist, losses_db=loss, sensitivity_dbm=sens)
-        m1, m2, m3, m4 = st.columns(4)
+        # 2x2 instead of 1x4: at tablet widths the sidebar leaves ~440px, so a
+        # 4-up row squeezed each metric to 90px and ellipsised the values -
+        # "-3.55%" rendered as "-3....". Streamlit stacks 2-up to 1-up on phones.
+        m1, m2 = st.columns(2)
+        m3, m4 = st.columns(2)
         m1.metric("FSPL", f"{lb['fspl_db']:.1f} dB", help="Free-space path loss")
         m2.metric("EIRP", f"{lb['eirp_dbm']:.1f} dBm", help="Effective isotropic radiated power")
         m3.metric("Received power", f"{lb['rx_power_dbm']:.1f} dBm", help="Received power at antenna terminals")
@@ -807,7 +827,11 @@ elif choice == calculators[13]:
             sel = next(p for p in framed if p["id"] == pid)
             res = science.frame_overhead(sel["frame_fields"], payload_bytes * 8)
 
-            m1, m2, m3, m4 = st.columns(4)
+            # 2x2 instead of 1x4: at tablet widths the sidebar leaves ~440px, so a
+            # 4-up row squeezed each metric to 90px and ellipsised the values -
+            # "-3.55%" rendered as "-3....". Streamlit stacks 2-up to 1-up on phones.
+            m1, m2 = st.columns(2)
+            m3, m4 = st.columns(2)
             m1.metric("Fixed overhead", f"{res['fixed_overhead_bits']} bits")
             m2.metric("Total frame", f"{res['total_bits']} bits ({res['total_bytes']} B)")
             m3.metric("Payload efficiency", f"{res['efficiency_pct']:.1f}%")

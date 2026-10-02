@@ -36,9 +36,13 @@ with tab1:
 
     st.markdown("#### 🏅 Badges")
     if us["badges"]:
-        bcols = st.columns(4)
+        # Size the row to the badge count. A fixed st.columns(4) left three
+        # empty quarters whenever fewer than four badges were earned, and at
+        # tablet widths that squeezed the used column to ~98px.
+        ncols = min(4, len(us["badges"]))
+        bcols = st.columns(ncols)
         for i, b in enumerate(us["badges"]):
-            with bcols[i % 4]:
+            with bcols[i % ncols]:
                 st.markdown(f"🏅 **{b}**")
     else:
         st.info("No badges yet — take a quiz or explore the encyclopedia to start earning them!")

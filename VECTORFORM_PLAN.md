@@ -344,6 +344,45 @@ three report zero horizontal overflow. The earlier "Chromium only" caveat is
 resolved; what remains untested is real mobile Safari and Chrome on iOS, which
 cannot be driven from here.
 
+### Correction: page-wide sweep, and a detector that actually works
+The 62px fix was verified on Encyclopedia alone, but the *pattern* behind it -
+`st.columns(4)` and weighted splits - repeats across the app. `build_scripts/
+page_sweep.py` walks all 12 pages at a given width.
+
+Getting a trustworthy signal took three attempts. Streamlit clips with
+`overflow: visible` + `text-overflow: clip`, so `scrollWidth == clientWidth`,
+and `Range.getClientRects()` returns the line box rather than the glyph run -
+**neither detects truncation**. An arbitrary 120px column-width threshold
+produced pure false positives (Science Lab and Settings were "failing" with
+nothing actually cut off). What works is measuring the string with canvas at
+the element's own computed font, restricted to single-line leaf elements.
+
+That detector immediately found a real, severe bug the screenshots had shown
+but the earlier checks missed: Science Lab's UART result metrics rendered
+`-3.55%` as `-3....`. For a baud-rate calculator whose entire purpose is that
+error percentage, the number was unreadable at 900px.
+
+| element | box | needed |
+|---|---|---|
+| `111111.1` (actual baud) | 90px | 139px |
+| `-3.55%` (error) | 90px | 107px |
+| `9.00 µs` (bit time) | 90px | 109px |
+
+Fixes:
+- Six `st.columns(4)` result rows in Science Lab became 2x2. Written as
+  `m1, m2 = st.columns(2)` / `m3, m4 = st.columns(2)` so every downstream
+  `m1..m4` call was untouched. Indentation is captured per site by regex - one
+  of the six is nested a block deeper and a fixed-indent replacement corrupted
+  it into a syntax error.
+- Settings badges: `st.columns(4)` sized to `min(4, len(badges))`, removing
+  three empty quarters whenever fewer than four badges were earned.
+- Selector button: dropped the redundant "Open " prefix and arrow. The selectbox
+  above already says "Open in the Encyclopedia:", and the extras pushed
+  "Aurora (Xilinx/AMD Protocol)" 3px past the button width.
+
+All 12 pages now report zero clipped text and zero horizontal overflow at both
+390px and 900px.
+
 ## Open / Follow-up
 - **`st.navigation` migration (task 1.1) was intentionally skipped** — see
   Phase 1 note above. The sidebar is grouped visually instead.
