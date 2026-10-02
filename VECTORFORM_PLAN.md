@@ -326,6 +326,24 @@ which need injected CSS (Streamlit only auto-stacks below ~640px):
    wrap. Short values stay as metrics, and Impedance was added as a genuine
    short electrical figure to keep the grid even.
 
+### Correction: cross-engine verification
+The responsive fix above was only ever confirmed in Blink. CSS layout is not
+identical between engines, so `build_scripts/cross_browser.py` now runs the two
+engine-sensitive invariants - theme tokens and column layout - in Chromium,
+Firefox and WebKit.
+
+| engine | phone | tablet | desktop | theme tokens |
+|---|---|---|---|---|
+| Chromium 154 | 326px | 196px | 466px | exact match, both schemes |
+| Firefox 155 | 326px | 196px | 466px | exact match, both schemes |
+| WebKit 26.6 | 320px | 193px | 463px | exact match, both schemes |
+
+Firefox is pixel-identical to Chromium and WebKit differs by 3px with an
+identical row structure, so the layout is not relying on a Blink quirk. All
+three report zero horizontal overflow. The earlier "Chromium only" caveat is
+resolved; what remains untested is real mobile Safari and Chrome on iOS, which
+cannot be driven from here.
+
 ## Open / Follow-up
 - **`st.navigation` migration (task 1.1) was intentionally skipped** — see
   Phase 1 note above. The sidebar is grouped visually instead.
@@ -336,4 +354,5 @@ which need injected CSS (Streamlit only auto-stacks below ~640px):
   styles per element or a future delivery route.
 - Responsive verified at 390/900/1440px in Chromium only, and now enforced
   rather than merely logged.
-- Light and dark both verified in Chromium; other engines untested.
+- Light and dark verified in Chromium, Firefox and WebKit. Real mobile
+  Safari / Chrome on iOS still untested - not drivable from this environment.
