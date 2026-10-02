@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/KSHNKMRJHA/Frame-work/blob/main/docs/protocol-database/schema.json",
+  "title": "FrameWork protocol database",
+  "description": "Contract for data/protocols.json. All 37 top-level keys are present on all 140 entries; optionality appears only on nested electrical.inherited_from and signals.extra. Fields documented as nullable-by-emptiness (addressing, year_milestone, fun_fact, fun_fact_source, organization) are intentionally allowed to be empty strings - they are genuinely absent for some protocols, so the UI renders a fallback.",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "id", "name", "category", "difficulty", "osi_layer", "topology", "speed",
+      "year", "inventor", "organization", "place", "year_milestone", "lifecycle",
+      "description", "how_it_works", "real_world_example", "fun_fact",
+      "fun_fact_source", "standard_doc", "addressing", "signal_path",
+      "signal_source", "frame_note", "data_rate_max_bps", "data_rate_min_bps",
+      "distance_max_m", "nodes_max", "electrical", "technical", "advantages",
+      "limitations", "use_cases", "commands", "frame_fields", "pins",
+      "related", "signals"
+    ],
+    "properties": {
+      "id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+      "name": { "type": "string", "minLength": 1 },
+      "category": { "type": "string", "minLength": 1 },
+      "difficulty": { "type": "string", "minLength": 1 },
+      "osi_layer": { "type": "string", "minLength": 1 },
+      "topology": { "type": "string", "minLength": 1 },
+      "speed": { "type": "string", "minLength": 1 },
+      "year": { "type": "integer", "minimum": 1800, "maximum": 2100 },
+      "inventor": { "type": "string", "minLength": 1 },
+      "organization": { "type": "string" },
+      "place": { "type": "string", "minLength": 1 },
+      "year_milestone": { "type": "string" },
+      "lifecycle": { "type": "string", "minLength": 1 },
+      "description": { "type": "string", "minLength": 1 },
+      "how_it_works": { "type": "string", "minLength": 1 },
+      "real_world_example": { "type": "string", "minLength": 1 },
+      "fun_fact": { "type": "string" },
+      "fun_fact_source": { "type": "string" },
+      "standard_doc": { "type": "string", "minLength": 1 },
+      "addressing": { "type": "string" },
+      "signal_path": { "type": "string", "minLength": 1 },
+      "signal_source": { "type": "string", "minLength": 1 },
+      "frame_note": { "type": "string" },
+      "data_rate_max_bps": { "type": ["integer", "null"], "minimum": 0 },
+      "data_rate_min_bps": { "type": ["integer", "null"], "minimum": 0 },
+      "distance_max_m": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+      "nodes_max": { "type": ["integer", "null"], "minimum": 0 },
+      "electrical": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "impedance_ohm", "coding", "bit_period_ns", "signaling",
+          "termination", "vcm_volts", "vol_volts", "voh_volts",
+          "vdiff_high_volts", "vdiff_low_volts", "jitter_ps",
+          "rise_time_ns", "prop_delay_ns_per_m", "pairs", "notes"
+        ],
+        "properties": {
+          "impedance_ohm": { "type": "integer", "exclusiveMinimum": 0 },
+          "coding": { "type": "string" },
+          "bit_period_ns": { "type": "number", "exclusiveMinimum": 0 },
+          "signaling": { "type": "string", "minLength": 1 },
+          "termination": { "type": "string", "minLength": 1 },
+          "vcm_volts": { "type": "number" },
+          "vol_volts": { "type": ["number", "null"] },
+          "voh_volts": { "type": ["number", "null"] },
+          "vdiff_high_volts": { "type": ["number", "null"] },
+          "vdiff_low_volts": { "type": ["number", "null"] },
+          "jitter_ps": { "type": ["integer", "null"] },
+          "rise_time_ns": { "type": "number" },
+          "prop_delay_ns_per_m": { "type": "number" },
+          "inherited_from": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Present when electrical figures are inherited from a parent bus rather than measured; the UI shows a provenance badge."
+          },
+          "pairs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["a", "b", "role"],
+              "properties": {
+                "a": { "type": "string", "minLength": 1 },
+                "b": { "type": "string", "minLength": 1 },
+                "role": { "type": "string", "minLength": 1 }
+              }
+            }
+          },
+          "notes": { "type": "string" }
+        }
+      },
+      "technical": { "type": "object" },
+      "advantages": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+      "limitations": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+      "use_cases": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+      "related": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+      "pins": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+      "commands": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code", "name", "note"],
+          "properties": {
+            "code": { "type": "string", "minLength": 1 },
+            "name": { "type": "string", "minLength": 1 },
+            "note": { "type": "string" }
+          }
+        }
+      },
+      "frame_fields": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["bits", "name"],
+          "properties": {
+            "bits": { "type": ["integer", "string", "null"] },
+            "name": { "type": "string", "minLength": 1 }
+          }
+        }
+      },
+      "signals": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "dir", "description"],
+          "properties": {
+            "name": { "type": "string", "minLength": 1 },
+            "dir": { "type": "string", "minLength": 1 },
+            "description": { "type": "string", "minLength": 1 },
+            "extra": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

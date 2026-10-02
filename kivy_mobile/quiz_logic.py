@@ -5,6 +5,7 @@ Procedurally generates quiz questions, puzzles, and assessments from the
 protocol database — no hardcoded question bank needed, so it scales
 automatically as more protocols are added.
 """
+
 import random
 
 
@@ -26,7 +27,7 @@ def gen_year_question(protocols, rng):
         "options": opts,
         "answer": correct,
         "explain": f"{p['name']} was introduced in {p['year']} by {p['inventor']}."
-                   + (f" ({p['place']})" if p.get("place") else ""),
+        + (f" ({p['place']})" if p.get("place") else ""),
     }
 
 
@@ -131,10 +132,117 @@ def gen_limitation_question(protocols, rng):
     }
 
 
+def _fmt_bps(bps):
+    """Local rate formatter (quiz_engine must stay import-light for mobile)."""
+    if bps is None:
+        return "carrier-defined"
+    if bps >= 1_000_000_000:
+        return f"{bps / 1_000_000_000:g} Gbps"
+    if bps >= 1_000_000:
+        return f"{bps / 1_000_000:g} Mbps"
+    if bps >= 1_000:
+        return f"{bps / 1_000:g} kbps"
+    return f"{bps:g} bps"
+
+
+def gen_technical_question(protocols, rng):
+    """Quiz the deep bus parameters (termination, duplex, encoding, reach)."""
+    fields = [
+        ("max_distance", "maximum bus reach"),
+        ("duplex_mode", "duplex mode"),
+        ("error_detection", "error detection"),
+        ("line_encoding", "line encoding"),
+    ]
+    field, label = rng.choice(fields)
+    pool = [p for p in protocols if (p.get("technical", {}).get(field) or "").strip()]
+    values = sorted({p["technical"][field] for p in pool})
+    if len(values) < 4:
+        raise ValueError("not enough distinct technical values")
+    p = rng.choice(pool)
+    correct = p["technical"][field]
+    opts = _distractors(protocols, correct, values, 3) + [correct]
+    rng.shuffle(opts)
+    return {
+        "type": "mcq",
+        "question": f"What is the {label} of **{p['name']}**?",
+        "options": opts,
+        "answer": correct,
+        "explain": f"{p['name']}: {label} = {correct}.",
+    }
+
+
+def gen_numeric_question(protocols, rng):
+    """Which of these four has the highest maximum data rate?"""
+    pool = [p for p in protocols if p.get("data_rate_max_bps")]
+    if len(pool) < 4:
+        raise ValueError("not enough rated protocols")
+    chosen = rng.sample(pool, 4)
+    winner = max(chosen, key=lambda p: p["data_rate_max_bps"])
+    opts = [p["name"] for p in chosen]
+    detail = ", ".join(f"{p['name']} {_fmt_bps(p['data_rate_max_bps'])}" for p in chosen)
+    return {
+        "type": "mcq",
+        "question": "Which of these has the **highest maximum data rate**?",
+        "options": opts,
+        "answer": winner["name"],
+        "explain": f"Rates compared: {detail}. Representative maxima — see each profile.",
+    }
+
+
+def gen_troubleshoot_question(protocols, rng):
+    """Symptom -> most likely cause, drawn from the troubleshooting bank.
+
+    The bank lives outside quiz_engine so the Kivy mobile copy (which only
+    syncs this file) keeps working: on mobile the import fails and this
+    generator quietly sits out via the ValueError path in generate_quiz.
+    """
+    try:
+        from utils.troubleshooting import TROUBLE
+    except ImportError:
+        try:
+            from troubleshooting import TROUBLE  # noqa: F401
+        except ImportError:
+            raise ValueError("troubleshooting bank unavailable")
+    ids = [pid for pid in TROUBLE if get_ids(protocols, pid)]
+    if not ids:
+        raise ValueError("no bank entries match this pool")
+    pid = rng.choice(ids)
+    entry = rng.choice(TROUBLE[pid])
+    pname = get_ids(protocols, pid)
+    others = []
+    for other_pid, entries in TROUBLE.items():
+        if other_pid != pid:
+            others.extend(e["cause"] for e in entries)
+    opts = _distractors(protocols, entry["cause"], others, 3) + [entry["cause"]]
+    rng.shuffle(opts)
+    return {
+        "type": "mcq",
+        "question": f"**{pname}**: {entry['symptom']}. What is the most likely cause?",
+        "options": opts,
+        "answer": entry["cause"],
+        "explain": f"Fix: {entry['fix']}",
+    }
+
+
+def get_ids(protocols, pid):
+    """Protocol display name for an id within this pool, or None."""
+    for p in protocols:
+        if p.get("id") == pid:
+            return p.get("name")
+    return None
+
+
 GENERATORS = [
-    gen_year_question, gen_inventor_question, gen_category_question,
-    gen_speed_question, gen_usecase_question, gen_identify_by_desc_question,
+    gen_year_question,
+    gen_inventor_question,
+    gen_category_question,
+    gen_speed_question,
+    gen_usecase_question,
+    gen_identify_by_desc_question,
     gen_limitation_question,
+    gen_technical_question,
+    gen_numeric_question,
+    gen_troubleshoot_question,
 ]
 
 
@@ -191,9 +299,9 @@ def generate_frame_order_puzzle(protocols, seed=None):
     """
     rng = random.Random(seed)
     candidates = [
-        p for p in protocols
-        if p.get("frame_fields")
-        and len({f["name"] for f in p["frame_fields"]}) == len(p["frame_fields"]) >= 2
+        p
+        for p in protocols
+        if p.get("frame_fields") and len({f["name"] for f in p["frame_fields"]}) == len(p["frame_fields"]) >= 2
     ]
     if not candidates:
         raise ValueError("no protocol has 2+ uniquely-named frame_fields to build a puzzle from")

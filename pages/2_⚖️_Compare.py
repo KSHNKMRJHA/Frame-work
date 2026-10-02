@@ -13,7 +13,9 @@ protocols = load_protocols()
 names = [p["name"] for p in protocols]
 
 st.title("⚖️ Compare Protocols")
-st.caption("Select 2 to 4 protocols to compare side-by-side across every dimension — speed, topology, pins, use-cases, advantages, and limitations.")
+st.caption(
+    "Select 2 to 4 protocols to compare side-by-side across every dimension — speed, topology, pins, use-cases, advantages, and limitations."
+)
 
 default_sel = names[:2]
 chosen = st.multiselect("Choose protocols to compare (2-4):", names, default=default_sel, max_selections=4)
@@ -33,16 +35,31 @@ rows = {
     "Topology": [p.get("topology", "—") for p in sel_protocols],
     "Speed": [p.get("speed", "—") for p in sel_protocols],
     "Pins": [", ".join(p.get("pins", [])) or "—" for p in sel_protocols],
+    "Logic high / 1": [p.get("technical", {}).get("logic_high", "—") for p in sel_protocols],
+    "Logic low / 0": [p.get("technical", {}).get("logic_low", "—") for p in sel_protocols],
+    "Voltage / reference": [p.get("technical", {}).get("voltage_reference", "—") for p in sel_protocols],
+    "Clocking / timing": [p.get("technical", {}).get("clocking", "—") for p in sel_protocols],
+    "Max distance": [p.get("technical", {}).get("max_distance", "—") for p in sel_protocols],
+    "Max nodes": [p.get("technical", {}).get("max_nodes", "—") for p in sel_protocols],
+    "Duplex": [p.get("technical", {}).get("duplex_mode", "—") for p in sel_protocols],
+    "Addressing": [p.get("technical", {}).get("addressing", "—") for p in sel_protocols],
+    "Error detection": [p.get("technical", {}).get("error_detection", "—") for p in sel_protocols],
+    "Line encoding": [p.get("technical", {}).get("line_encoding", "—") for p in sel_protocols],
+    "Power profile": [p.get("technical", {}).get("power_profile", "—") for p in sel_protocols],
+    "EMC / isolation": [p.get("technical", {}).get("emc_isolation", "—") for p in sel_protocols],
+    "Interface silicon": ["; ".join(p.get("technical", {}).get("transceivers", [])) or "—" for p in sel_protocols],
     "Difficulty": [p.get("difficulty", "—") for p in sel_protocols],
 }
 df = pd.DataFrame(rows, index=[p["name"] for p in sel_protocols]).T
-st.dataframe(df, width='stretch')
+# Mixed int/str cells (e.g. Year Invented vs prose) break Arrow
+# serialization on modern pyarrow — the table is for reading, so strings.
+st.dataframe(df.astype(str), width="stretch")
 
 st.divider()
 st.subheader("📈 Speed Comparison")
 fig = speed_comparison_chart(protocols, ids=ids)
 if fig:
-    st.pyplot(fig, width='stretch')
+    st.pyplot(fig, width="stretch")
 else:
     st.info("Selected protocols don't have directly comparable numeric speed values.")
 

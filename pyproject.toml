@@ -12,7 +12,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "framework-academy"
 dynamic = ["version", "dependencies"]
-description = "Offline-first interactive academy covering 118 embedded communication protocols — encyclopedia, timelines, mind maps, quizzes, and verified engineering calculators."
+description = "Offline-first interactive academy covering 140 embedded communication protocols — encyclopedia, timelines, mind maps, quizzes, and verified engineering calculators."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -38,7 +38,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: Education",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -59,7 +58,15 @@ LinkedIn = "https://www.linkedin.com/in/kshnkmrjha/"
 [project.optional-dependencies]
 desktop = ["pyinstaller>=6.0"]
 mobile = ["kivy>=2.3"]
-dev = ["ruff>=0.6"]
+dev = ["ruff>=0.6", "pre-commit>=3.0"]
+docs = [
+    "mkdocs>=1.5",
+    "mkdocs-material>=9.0",
+    "mkdocstrings[python]>=0.25",
+    "mkdocs-gen-files>=0.5",
+    "mkdocs-literate-nav>=0.5",
+    "pymdown-extensions>=10.0",
+]
 
 [tool.setuptools]
 packages = ["utils"]

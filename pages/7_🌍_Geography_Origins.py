@@ -13,7 +13,9 @@ branding.sidebar_identity()
 protocols = load_protocols()
 
 st.title("🌍 Geography & Origins")
-st.caption("Where in the world did each protocol come from? A geographic tour of the organizations and countries that built the connected world.")
+st.caption(
+    "Where in the world did each protocol come from? A geographic tour of the organizations and countries that built the connected world."
+)
 
 
 def primary_country(place):
@@ -23,8 +25,10 @@ def primary_country(place):
     p = place.split("/")[0].split(",")[0].strip()
     # Normalize a few common variants
     mapping = {
-        "USA": "United States", "US": "United States",
-        "International": "International", "Europe": "Europe (multi-country)",
+        "USA": "United States",
+        "US": "United States",
+        "International": "International",
+        "Europe": "Europe (multi-country)",
     }
     return mapping.get(p, p)
 
@@ -36,19 +40,31 @@ df = pd.DataFrame(sorted(counter.items(), key=lambda x: -x[1]), columns=["Countr
 c1, c2 = st.columns([1.4, 1])
 with c1:
     st.subheader("📊 Protocols Invented by Country/Region")
-    st.dataframe(df, width='stretch', hide_index=True)
+    st.dataframe(df, width="stretch", hide_index=True)
 with c2:
-    fig = px.pie(df.head(10), names="Country/Region", values="Protocol Count", title="Top 10 Contributing Countries/Regions")
-    st.plotly_chart(fig, width='stretch')
+    fig = px.pie(
+        df.head(10), names="Country/Region", values="Protocol Count", title="Top 10 Contributing Countries/Regions"
+    )
+    st.plotly_chart(fig, width="stretch")
 
 st.divider()
 
 # Attempt a choropleth using ISO country name matching (best-effort)
 COUNTRY_ALIASES = {
-    "United States": "United States", "Germany": "Germany", "Netherlands": "Netherlands",
-    "Japan": "Japan", "Sweden": "Sweden", "Finland": "Finland", "Denmark": "Denmark",
-    "France": "France", "Canada": "Canada", "Austria": "Austria", "Switzerland": "Switzerland",
-    "United Kingdom": "United Kingdom", "UK": "United Kingdom",
+    "United States": "United States",
+    "Germany": "Germany",
+    "Netherlands": "Netherlands",
+    "Japan": "Japan",
+    "Sweden": "Sweden",
+    "Finland": "Finland",
+    "Denmark": "Denmark",
+    "France": "France",
+    "Canada": "Canada",
+    "Austria": "Austria",
+    "Switzerland": "Switzerland",
+    "United Kingdom": "United Kingdom",
+    "UK": "United Kingdom",
+    "Belgium": "Belgium",
 }
 map_rows = []
 for country, count in counter.items():
@@ -58,11 +74,15 @@ for country, count in counter.items():
 if map_rows:
     map_df = pd.DataFrame(map_rows).groupby("country", as_index=False).sum()
     fig2 = px.choropleth(
-        map_df, locations="country", locationmode="country names", color="count",
-        color_continuous_scale="Blues", title="World Map: Protocol Origins",
+        map_df,
+        locations="country",
+        locationmode="country names",
+        color="count",
+        color_continuous_scale="Blues",
+        title="World Map: Protocol Origins",
     )
     fig2.update_layout(height=500)
-    st.plotly_chart(fig2, width='stretch')
+    st.plotly_chart(fig2, width="stretch")
 
 st.divider()
 st.subheader("🏢 Standards Organizations You Should Know")
@@ -77,14 +97,14 @@ for i, (org, plist) in enumerate(sorted(orgs.items(), key=lambda x: -len(x[1]))[
     with org_cols[i % 2]:
         with st.container(border=True):
             st.markdown(f"**{org}**")
-            st.caption(", ".join(plist[:6]) + (f" +{len(plist)-6} more" if len(plist) > 6 else ""))
+            st.caption(", ".join(plist[:6]) + (f" +{len(plist) - 6} more" if len(plist) > 6 else ""))
 
 st.divider()
 st.subheader("🔍 Explore by Country")
 selected_country = st.selectbox("Pick a country/region:", sorted(counter.keys()))
 matches = [p for p in protocols if primary_country(p.get("place", "")) == selected_country]
 for p in matches:
-    st.markdown(f"**{p['name']}** ({p['year']}) — {p.get('inventor','')}")
+    st.markdown(f"**{p['name']}** ({p['year']}) — {p.get('inventor', '')}")
     st.caption(p["description"])
 
 branding.page_footer()

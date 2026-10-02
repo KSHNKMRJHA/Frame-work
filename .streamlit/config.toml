@@ -1,9 +1,92 @@
+# StreamWork Vectorform theme.
+#
+# Streamlit 1.64 ships a full native theming system (200+ keys under [theme]),
+# which is the SUPPORTED way to style the app. It is used here instead of an
+# injected <style> block because DOMPurify strips <style>/<script> on every
+# st.markdown/st.html route - verified in Chrome via Playwright. Native theme
+# keys always apply; custom HTML components carry inline styles built from
+# utils/theme.py, which mirrors the palettes below.
+#
+# Token source of truth: utils/theme.py (DARK / LIGHT dicts).
+
 [theme]
-primaryColor = "#5c5ce7"
-backgroundColor = "#0f172a"
-secondaryBackgroundColor = "#1e293b"
+base = "dark"
+primaryColor = "#3b82f6"
+backgroundColor = "#0b1220"
+secondaryBackgroundColor = "#141c2e"
 textColor = "#e2e8f0"
+borderColor = "#243044"
+linkColor = "#3b82f6"
+linkUnderline = true
+codeBackgroundColor = "#1e293b"
+codeTextColor = "#22d3ee"
+showWidgetBorder = true
+showSidebarBorder = true
+baseRadius = "0.5rem"
+buttonRadius = "0.4rem"
+baseFontSize = 16
 font = "sans serif"
+headingFont = "sans serif"
+codeFont = "monospace"
+metricValueFontWeight = 600
+
+# Semantic widget colours
+grayBackgroundColor = "#1e293b"
+grayColor = "#334155"
+greenColor = "#22c55e"
+redColor = "#ef4444"
+yellowColor = "#f59e0b"
+blueColor = "#3b82f6"
+orangeColor = "#f97316"
+violetColor = "#a78bfa"
+greenBackgroundColor = "#052e16"
+redBackgroundColor = "#450a0a"
+yellowBackgroundColor = "#451a03"
+blueBackgroundColor = "#0c2d5c"
+orangeBackgroundColor = "#431407"
+violetBackgroundColor = "#2e1065"
+grayTextColor = "#cbd5e1"
+greenTextColor = "#4ade80"
+redTextColor = "#fca5a5"
+yellowTextColor = "#fcd34d"
+blueTextColor = "#93c5fd"
+orangeTextColor = "#fdba74"
+violetTextColor = "#c4b5fd"
+
+dataframeBorderColor = "#243044"
+dataframeHeaderBackgroundColor = "#1e293b"
+
+[theme.sidebar]
+backgroundColor = "#0f172a"
+secondaryBackgroundColor = "#141c2e"
+borderColor = "#243044"
+textColor = "#e2e8f0"
+primaryColor = "#3b82f6"
+linkColor = "#3b82f6"
+codeBackgroundColor = "#1e293b"
+codeTextColor = "#22d3ee"
+showWidgetBorder = true
+
+# ------------------------------------------------------------- light mode --
+# Selected by the Settings toggle, which rewrites base + this block.
+[theme.light]
+backgroundColor = "#f8fafc"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#0f172a"
+borderColor = "#e2e8f0"
+primaryColor = "#1965d8"
+linkColor = "#1965d8"
+codeBackgroundColor = "#f1f5f9"
+codeTextColor = "#0891b2"
+grayBackgroundColor = "#f1f5f9"
+grayTextColor = "#334155"
+
+[theme.light.sidebar]
+backgroundColor = "#f1f5f9"
+secondaryBackgroundColor = "#ffffff"
+borderColor = "#e2e8f0"
+textColor = "#0f172a"
+primaryColor = "#1965d8"
 
 [server]
 headless = true
