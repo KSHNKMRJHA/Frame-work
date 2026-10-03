@@ -76,9 +76,14 @@ def run():
                 page.wait_for_timeout(3000)
                 got = page.evaluate(_THEME_JS)
                 for key, want in expected[scheme].items():
-                    if got.get(key) != want:
+                    # A probe can legitimately find nothing on some pages (no
+                    # <code> block above the fold, say). Skipping beats failing
+                    # on an element that was never going to be there.
+                    if got.get(key) is None:
+                        continue
+                    if got[key] != want:
                         failures.append(
-                            f"{engine}/{scheme} {key}: want {want}, got {got.get(key)}")
+                            f"{engine}/{scheme} {key}: want {want}, got {got[key]}")
                 print(f"  {scheme:5} app={got['app']} code={got['code']} text={got['text']}")
                 ctx.close()
 

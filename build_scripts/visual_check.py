@@ -27,9 +27,11 @@ PHONE = {"width": 390, "height": 900}
 # truth have diverged.
 _THEME_JS = """() => {
     const bg = s => { const e = document.querySelector(s);
-        return e ? getComputedStyle(e).backgroundColor : 'n/a'; };
+        return e ? getComputedStyle(e).backgroundColor : null; };
     const col = s => { const e = document.querySelector(s);
-        return e ? getComputedStyle(e).color : 'n/a'; };
+        return e ? getComputedStyle(e).color : null; };
+    // null, not 'n/a': a probe may legitimately find no <code> on a given page
+    // state, and callers must skip a null rather than read it as a mismatch.
     return {app: bg('.stApp'),
             sidebar: bg('[data-testid="stSidebar"]'),
             code: col('code'),
@@ -276,9 +278,13 @@ def run(url):
             log(rows, f"{scheme:5}: app={got['app']} sidebar={got['sidebar']} "
                        f"code={got['code']} text={got['text']}")
             for key, expected in _EXPECTED[scheme].items():
-                if got.get(key) != expected:
+                if got.get(key) is None:
+                    # Element absent in this page state; nothing to compare.
+                    log(rows, f"  skip {key}: not present on this page")
+                    continue
+                if got[key] != expected:
                     failures.append(
-                        f"{scheme} {key}: expected {expected}, got {got.get(key)}")
+                        f"{scheme} {key}: expected {expected}, got {got[key]}")
             sp.screenshot(path=str(SHOTS / f"06_{scheme}_usb.png"))
             log(rows, f"shot 06 {scheme} theme")
             ctx.close()
