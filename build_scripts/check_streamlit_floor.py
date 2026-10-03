@@ -31,7 +31,14 @@ from __future__ import annotations
 import pathlib
 import re
 import sys
-import tomllib
+
+try:  # Python 3.11+
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover - Python 3.10 (CI's floor)
+    try:
+        import tomli as tomllib
+    except ModuleNotFoundError:
+        tomllib = None
 
 try:
     import streamlit
@@ -117,6 +124,12 @@ def main() -> int:
     if not CONFIG.exists():
         failures.append(f"missing {CONFIG}")
         data: dict = {}
+    elif tomllib is None:
+        # Cannot read the config without a TOML parser. Say so plainly rather
+        # than reporting a pass we did not actually perform.
+        print("\nSKIPPED: no TOML parser available (install 'tomli' to run this "
+              "check on Python < 3.11). Theme-key validation was NOT run.")
+        data = {}
     else:
         with CONFIG.open("rb") as fh:
             data = tomllib.load(fh)

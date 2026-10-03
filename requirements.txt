@@ -20,6 +20,7 @@
 # ignored silently, which would produce a quietly wrong-looking app).
 # Verified on 1.64.0.
 streamlit>=1.55
+tomli>=2.0; python_version < "3.11"   # tomllib is stdlib only from 3.11
 matplotlib>=3.8
 networkx>=3.2
 plotly>=5.22

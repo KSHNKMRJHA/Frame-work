@@ -16,7 +16,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "build_scripts"))
 
-from visual_check import CHROME  # noqa: E402
+from visual_check import launch_chromium  # noqa: E402
 
 BASE = "http://localhost:8501"
 
@@ -124,8 +124,7 @@ def sweep(width, height=1200):
 
     problems = []
     with sync_playwright() as p:
-        launch = {"executable_path": CHROME} if os.path.exists(CHROME) else {}
-        browser = p.chromium.launch(headless=True, **launch)
+        browser, which = launch_chromium(p)
         ctx = browser.new_context(viewport={"width": width, "height": height})
         page = ctx.new_page()
         for route in PAGES:

@@ -21,7 +21,7 @@ sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "build_scripts"))
 
 from visual_check import (  # noqa: E402
-    CHROME, DESKTOP, PHONE, TABLET, _EXPECTED, _THEME_JS,
+    DESKTOP, PHONE, TABLET, _EXPECTED, _THEME_JS, launch_chromium,
 )
 
 BASE = "http://localhost:8501"
@@ -55,11 +55,11 @@ def run():
     with sync_playwright() as p:
         for engine in ("chromium", "firefox", "webkit"):
             try:
-                # Chromium: drive the installed Chrome, as visual_check.py does,
-                # so no bundled-browser download is required for Blink either.
-                if engine == "chromium" and os.path.exists(CHROME):
-                    browser = p.chromium.launch(executable_path=CHROME,
-                                                headless=True)
+                # Chromium: drive an installed Chrome when there is one, as
+                # visual_check.py does, so no bundled-browser download is
+                # required for Blink either.
+                if engine == "chromium":
+                    browser, which = launch_chromium(p)
                 else:
                     browser = getattr(p, engine).launch(headless=True)
             except Exception as exc:                        # noqa: BLE001

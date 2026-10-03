@@ -1,0 +1,18 @@
+# Development and CI-only tooling.
+#
+# Deliberately separate from requirements.txt: someone who only wants to run
+# FrameWork should not be made to download Playwright and its browser binaries.
+# CI installs this file; contributors who want to run the browser checks
+# locally install it too:
+#
+#     pip install -r requirements.txt -r requirements-dev.txt
+#     playwright install chromium
+
+# Lint. CI's lint step installs this directly as well.
+ruff>=0.6
+
+# Browser regression checks: visual_check.py, cross_browser.py, page_sweep.py.
+# The browser binaries are a separate download:
+#   playwright install chromium          # what CI needs
+#   playwright install chromium firefox webkit   # full cross_browser.py run
+playwright>=1.44

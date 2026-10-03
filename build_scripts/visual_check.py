@@ -18,6 +18,35 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SHOTS = ROOT / "build_scripts" / "_shots"
 CHROME = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
 
+
+def launch_chromium(p, headless=True):
+    """Start Chromium, preferring an already-installed Chrome.
+
+    Resolution order, so the same scripts run on a developer Windows machine
+    and on Linux CI without edits:
+
+      1. $FRAMEWORK_BROWSER - explicit browser executable (absolute path).
+      2. A Chrome at the usual Windows location.
+      3. `channel="chrome"` - Playwright's installed-Chrome channel, which is
+         what GitHub's ubuntu-latest image provides.
+      4. Playwright's bundled Chromium (`playwright install chromium`).
+
+    Returns (browser, description_of_what_was_launched).
+    """
+    import os
+
+    override = os.environ.get("FRAMEWORK_BROWSER")
+    if override:
+        return p.chromium.launch(executable_path=override, headless=headless), override
+
+    if os.path.exists(CHROME):
+        return p.chromium.launch(executable_path=CHROME, headless=headless), CHROME
+
+    try:
+        return p.chromium.launch(channel="chrome", headless=headless), "chrome (installed channel)"
+    except Exception:
+        return p.chromium.launch(headless=headless), "chromium (playwright bundled)"
+
 DESKTOP = {"width": 1440, "height": 1000}
 TABLET = {"width": 900, "height": 1100}
 PHONE = {"width": 390, "height": 900}
@@ -156,7 +185,8 @@ def run(url):
     rows, failures, errors = [], [], []
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(executable_path=CHROME, headless=True)
+        browser, which = launch_chromium(p)
+        log(rows, f"browser: {which}")
         page = browser.new_page(viewport=DESKTOP)
         page.on("pageerror", lambda e: errors.append(str(e)))
 
