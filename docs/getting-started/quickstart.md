@@ -33,7 +33,7 @@ Your browser opens automatically at `http://localhost:8501`.
 
 ## 4. Explore
 
-- **📚 Encyclopedia** — Browse all 118 protocols with full technical profiles
+- **📚 Encyclopedia** — Browse all 140 protocols with full technical profiles
 - **🕰️ Timeline** — Interactive history from 1937 (PCM) to 2022 (Matter)
 - **🗺️ Mind Map** — NetworkX-powered protocol relationship graphs
 - **⚖️ Compare** — Side-by-side protocol comparison with log-scale speed chart

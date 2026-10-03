@@ -41,7 +41,7 @@ FrameWork turns that fragmented landscape into a single, structured academy: a s
 | | |
 |---|---|
 | **Protocols** | 140, across 13 categories |
-| **Modules** | 10 (encyclopedia, timeline, mind map, compare, quiz, puzzles, science lab, geography, profile, info) |
+| **Modules** | 12 (encyclopedia, compare, selector, glossary, timeline, mind map, geography, quiz, puzzles, science lab, settings, info) |
 | **Runtime** | Python 3.10+ · Streamlit |
 | **Data** | One JSON database, regenerated from `build_data.py` |
 | **Persistence** | Atomic local JSON — corruption-safe, no server |
@@ -145,33 +145,43 @@ FrameWork/
 ├── data/
 │   ├── protocols.json            # The master protocol database (140 entries)
 │   └── user_state.json           # Local progress (XP, badges) — auto-created, gitignored
-├── pages/                        # Streamlit multipage modules
-│   ├── 1_📚_Encyclopedia.py
-│   ├── 2_🕰️_Timeline_History.py
-│   ├── 3_🗺️_Mindmap.py
-│   ├── 4_⚖️_Compare.py
-│   ├── 5_🧠_Quiz_Assessment.py
-│   ├── 6_🎮_Puzzles_Games.py
-│   ├── 7_🔬_Science_Math_Lab.py
-│   ├── 8_🌍_Geography_Origins.py
-│   ├── 9_⚙️_Settings_Profile.py
-│   └── 10_ℹ️_Info.py
-├── utils/
-│   ├── branding.py               # ⭐ Name, version, build number, links, credits
-│   ├── data_loader.py            # Cached JSON loading, search, category helpers
-│   ├── diagrams.py               # Frame / topology / pinout / chart generators
-│   ├── mindmap.py                # NetworkX mind-map builders
-│   ├── quiz_engine.py            # Procedural quiz & puzzle generation
-│   ├── science.py                # Verified engineering calculators
-│   └── state.py                  # XP / badges / progress persistence (atomic writes)
-├── build_scripts/
-│   ├── desktop_launcher.py       # Frozen-app entry point (starts server + opens browser)
-│   ├── stamp_build.py            # Writes the commit stamp for packaged builds
-│   ├── build_exe.bat             # Windows .exe build
-│   ├── build_exe.sh              # macOS / Linux binary build
-│   ├── check_data.py             # Referential integrity, uniqueness, schema checks
-│   ├── check_logic.py            # Unit tests: CRC vectors, formulas, boundary guards
-│   └── sync_mobile.py            # Keeps the Kivy mobile copy in sync
+│   pages/                        # Streamlit multipage modules (12)
+│   ├── 1_📚_Encyclopedia.py          # Protocol reference: profiles, wiring, electricals, diagrams
+│   ├── 2_⚖️_Compare.py              # Side-by-side comparison + log-scale speed chart
+│   ├── 3_🧭_Selector.py              # Weighted selector + 'why this protocol' explainer
+│   ├── 4_📖_Glossary.py              # Term definitions
+│   ├── 5_🕰️_Timeline_History.py     # Plotly timeline 1937-2022
+│   ├── 6_🗺️_Mindmap.py              # NetworkX category/relationship maps
+│   ├── 7_🌍_Geography_Origins.py     # Who invented what, where
+│   ├── 8_🧠_Quiz_Assessment.py       # Procedural MCQs, XP, badges
+│   ├── 9_🎮_Puzzles_Games.py         # Frame reorder, speed match, guess-the-protocol
+│   ├── 10_🔬_Science_Math_Lab.py     # 28 verified calculators
+│   ├── 11_⚙️_Settings_Profile.py    # Profile, XP, badges, theme, reset
+│   └── 12_ℹ️_Info.py                # About, deployment, links, licence
+│   ├── utils/                        # Shared helpers
+│   │   ├── branding.py         # Name, version, build number, links, credits, UI chrome
+│   │   ├── theme.py            # Design tokens (DARK / LIGHT) - mirrored in .streamlit/config.toml
+│   │   ├── data_loader.py      # Cached JSON loading, search, category helpers
+│   │   ├── diagrams.py         # Frame / topology / pinout / chart generators
+│   │   ├── mindmap.py          # NetworkX mind-map builders
+│   │   ├── science.py          # Verified engineering calculators
+│   │   ├── signal_engine.py    # Line codings, waveforms, message decoding
+│   │   ├── quiz_engine.py      # Procedural quiz & puzzle generation
+│   │   ├── state.py            # XP / badges / progress persistence (atomic writes)
+│   │   └── ui_state.py         # Deep links (?p=<id>), remembered context, ranked search
+│   ├── build_scripts/                # Verification, packaging, sync
+│   │   ├── check_data.py       # Referential integrity + JSON-Schema gate
+│   │   ├── check_logic.py      # Unit tests: CRC vectors, formulas, boundary guards (19 groups)
+│   │   ├── smoke_pages.py      # Import every page
+│   │   ├── visual_check.py     # Chrome: rendered theme + responsive layout (Playwright)
+│   │   ├── cross_browser.py    # Theme + responsive across Chromium / Firefox / WebKit
+│   │   ├── page_sweep.py       # Every page x every UI state: clipped-text + overflow check
+│   │   ├── sync_mobile.py      # Keeps the Kivy mobile copy in sync
+│   │   ├── desktop_launcher.py # Frozen-app entry point (starts server + opens browser)
+│   │   ├── stamp_build.py      # Writes the commit stamp for packaged builds
+│   │   ├── build_exe.bat       # Windows .exe build
+│   │   └── build_exe.sh        # macOS / Linux binary build
+│   └── specs/                        # Engineering specs applied at build time
 ├── kivy_mobile/                  # Cross-platform mobile companion (→ Android .apk)
 ├── .github/workflows/ci.yml      # CI: reproducibility, integrity, tests, lint
 ├── pyproject.toml                # Packaging metadata (version + deps single-sourced)

@@ -18,7 +18,7 @@ Legend: *effort* is rough (S ≈ half a day, M ≈ 1-2 days, L ≈ a week).
 | Interface silicon references | 19 protocols |
 | Waveform renderers | 9 builders, 64 protocols mapped |
 | Verified calculators | 28 in `utils/science.py` |
-| Automated checks | `check_data.py`, `check_logic.py` (11 groups), `ruff` |
+| Automated checks | `check_data.py`, `check_logic.py` (19 groups), `ruff`, plus Playwright browser checks (`visual_check.py`, `cross_browser.py`, `page_sweep.py`) |
 
 ---
 
@@ -46,7 +46,7 @@ nRF52840, SX1262), and Audio (PCM1794, ES8388).
 The new `frame_overhead()` already computes per-protocol efficiency. Surface it
 as a sortable table and bar chart on the Compare page so users can see "CAN is
 efficient at 8 bytes, terrible at 1 byte".
-*Effort:* S · *Where:* `pages/4_⚖️_Compare.py`.
+*Effort:* S · *Where:* `pages/2_⚖️_Compare.py`.
 
 ### 4. Bring-up checklist generator
 Turn each protocol's `design_notes` + `technical` into a per-protocol bring-up
@@ -85,7 +85,7 @@ MQTT, TLS 1.3 handshake, I²C, SPI, HTTP/2 headers.
 ## P3 — Larger builds
 
 ### 9. Glossary ↔ protocol cross-linking
-`utils/glossary.py` and `pages/12_📖_Glossary.py` exist; make every term link to
+`utils/glossary.py` and `pages/4_📖_Glossary.py` exist; make every term link to
 the protocols that use it, and vice versa.
 *Effort:* M.
 

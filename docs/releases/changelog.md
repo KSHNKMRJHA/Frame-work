@@ -26,12 +26,50 @@ Versioning: [Semantic Versioning](https://semver.org/)
 - Contributing guide and development docs
 - Pre-commit hooks (Ruff, merge conflict, secrets)
 - JSON Schema validation for protocols.json
+- **Vectorform design system**: design tokens (`utils/theme.py`), ranked sidebar
+  search, "continue where you left off" resume card, deep links (`?p=<id>`),
+  protocol summary cards, conductor cards, voltage bars, PNG export, and an
+  onboarding walkthrough
+- **Browser verification tooling** (`build_scripts/`): `visual_check.py`
+  (rendered theme + responsive in Chrome), `cross_browser.py`
+  (Chromium/Firefox/WebKit), `page_sweep.py` (every page × every UI state,
+  clipped-text and overflow checks), `smoke_pages.py`
 
 ### Changed
 - Documentation restructured into docs/
+- **Navigation reordered** into a learning-oriented sequence: Encyclopedia,
+  Compare, Selector, Glossary, History, Mind Map, Geography, Quiz, Puzzles,
+  Science Lab, Settings, Info. `pages/` filenames renumbered accordingly, so
+  routes change (e.g. Compare is now `/Compare`, not `/Timeline`).
+- **Global theming moved from injected CSS to native Streamlit theming.** The
+  palette is now defined in `.streamlit/config.toml` (`[theme]`) and applied
+  through Streamlit's own machinery; `utils/theme.py` mirrors those tokens and
+  the browser tests assert the rendered colours match it exactly.
+- **Light and dark themes** both supported. Streamlit follows the operating
+  system preference; the Settings page can override it by writing the native
+  `base` key (a restart is required).
+- **Responsive layout** corrected. Metric grids on Encyclopedia and Science Lab
+  were 4-up inside a narrow pane, which clipped values at tablet width
+  (`-3.55%` rendered as `-3.…`); they are now 2-up. Long free-text fields
+  (Topology, OSI layer, Standard) print as wrapping text because `st.metric`
+  clips with an ellipsis.
+- `frame_overhead()` surfaced across the protocol set.
+
+### Removed
+- The legacy global CSS/JS injection layer (`branding.inject_css()`,
+  `component_css()`, `theme.tokens_css()`). Streamlit 1.64's DOMPurify strips
+  both `<style>` and `<script>` on every `st.markdown`/`st.html` route, so it
+  never reached the browser; it was dead weight replaced by native theming plus
+  component-local inline styles.
 
 ### Fixed
-- N/A
+- Badge documentation corrected: the previous API reference listed seven badges
+  and a `check_badges(state, protocols)` signature that do not exist. Badges are
+  defined by `BADGE_RULES` in `utils/state.py` and awarded by the one-argument
+  `state.check_badges(state)`.
+- Responsive clipping of metric values and of long protocol names in buttons.
+- A verification script that logged a failing result without asserting on it,
+  and a truncation detector that silently skipped every metric value.
 
 ---
 

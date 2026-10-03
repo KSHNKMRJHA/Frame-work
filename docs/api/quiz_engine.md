@@ -195,32 +195,22 @@ def xp_to_level(xp: int) -> int:
 
 ---
 
-### `check_badges(state, protocols)`
+### Badge awarding
+
+Badge rules live in [`utils/state.py`](../api/state.md#badge-definitions) as
+`BADGE_RULES`, not in this module. They are evaluated by
+`state.check_badges(state)`, which takes **only** the state dict and returns the
+state (not a list of badge IDs):
 
 ```python
-def check_badges(state: dict, protocols: list[dict]) -> list[str]:
-    """Check and award new badges based on progress.
-    
-    Badges:
-    - "First Steps" — First quiz completed
-    - "Explorer" — Viewed 10 protocols
-    - "Scholar" — Viewed 50 protocols
-    - "Master" — Viewed all 118 protocols
-    - "Quiz Master" — 100 quiz questions correct
-    - "Puzzle Solver" — 20 puzzles solved
-    - "Category Master" — All protocols in a category viewed
-    - "Speed Demon" — Perfect speed matching puzzle
-    - "Frame Architect" — Perfect frame reorder puzzle
-    - "Detective" — Solved 10 guess-the-protocol puzzles
-    
-    Args:
-        state: User state dict from load_state().
-        protocols: Full protocol list.
-        
-    Returns:
-        List of newly awarded badge IDs.
-    """
+from utils import state
+
+state.check_badges(user_state)   # appends to user_state["badges"]
 ```
+
+The quiz engine's job is to advance `quizzes_taken`, `best_score_pct` and
+`protocols_viewed` in the state; whether that earns a badge is decided by the
+rules in `state.py`.
 
 ---
 

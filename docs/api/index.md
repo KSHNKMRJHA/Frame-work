@@ -23,9 +23,9 @@ Auto-generated API documentation for FrameWork modules.
 ```python
 from utils.data_loader import load_protocols, search_protocols, get_categories
 
-protocols = load_protocols()                    # List[dict] — all 118 protocols
+protocols = load_protocols()                    # List[dict] — all 140 protocols
 results = search_protocols(protocols, "CAN")    # Filter by name/keyword/inventor/year
-categories = get_categories(protocols)          # List[str] — 12 categories
+categories = get_categories(protocols)          # List[str] — 13 categories
 protocol = get_by_id(protocols, "can")          # Single protocol by ID
 ```
 

@@ -152,20 +152,24 @@ state_utils.save_state(us)
 
 ## Badge Definitions
 
-| Badge ID | Name | Condition |
-|----------|------|-----------|
-| `first_steps` | First Steps | First quiz completed |
-| `explorer` | Explorer | 10 protocols viewed |
-| `scholar` | Scholar | 50 protocols viewed |
-| `master` | Master | All 118 protocols viewed |
-| `quiz_master` | Quiz Master | 100 quiz questions correct |
-| `puzzle_solver` | Puzzle Solver | 20 puzzles solved |
-| `category_master` | Category Master | All protocols in any category viewed |
-| `speed_demon` | Speed Demon | Perfect speed matching puzzle |
-| `frame_architect` | Frame Architect | Perfect frame reorder puzzle |
-| `detective` | Detective | 10 guess-the-protocol solves |
+| Badge | Condition (`BADGE_RULES` in `utils/state.py`) |
+|-------|----------------------------------------------|
+| First Steps | `quizzes_taken >= 1` |
+| Quiz Regular | `quizzes_taken >= 5` |
+| Quiz Master | `quizzes_taken >= 15` |
+| Perfectionist | `best_score_pct >= 100` |
+| Explorer (10 protocols) | `len(protocols_viewed) >= 10` |
+| Explorer (30 protocols) | `len(protocols_viewed) >= 30` |
+| Encyclopedia Master (60+) | `len(protocols_viewed) >= 60` |
 
-Awarded via `quiz_engine.check_badges(state, protocols)`.
+Badge names are stored verbatim in `state["badges"]`, so there is no separate
+badge-ID table. Awarded by `state.check_badges(state)`, which takes only the
+state dict, appends any newly-earned name, and logs the award to history.
+
+> Note: earlier revisions of this page described badges ("Scholar", "Master",
+> "Puzzle Solver", "Category Master", "Speed Demon", "Frame Architect",
+> "Detective") and a two-argument `check_badges(state, protocols)` that do not
+> exist in the implementation. The table above mirrors `BADGE_RULES` exactly.
 
 ---
 

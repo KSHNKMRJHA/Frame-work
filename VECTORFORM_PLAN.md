@@ -457,12 +457,17 @@ Status of every gate in this repo:
 ## Open / Follow-up
 - **`st.navigation` migration (task 1.1) was intentionally skipped** — see
   Phase 1 note above. The sidebar is grouped visually instead.
-- **Streamlit 1.64 strips injected `<style>`/`<script>`.** Globals now come from
+- **Global CSS is unreachable and no longer attempted.** Globals come from
   native `[theme]` keys and components from inline styles, both verified. Still
   NOT reaching the browser, and therefore not claimed: custom focus rings,
   `prefers-reduced-motion`, and the bespoke font stack. These would need inline
   styles per element or a future delivery route.
-- Responsive verified at 390/900/1440px in Chromium only, and now enforced
-  rather than merely logged.
+- **Responsive layout.** At the time this line was first written, responsive
+  behaviour had only been checked in Chromium — hence "Chromium only" above.
+  That was later superseded by the cross-engine run recorded in
+  "Correction: cross-engine verification": Chromium, Firefox and WebKit all
+  pass at 390/900/1440px, and the check is enforced rather than merely logged.
+  The Chromium-only wording is kept as the historical state, not as a claim
+  about current coverage.
 - Light and dark verified in Chromium, Firefox and WebKit. Real mobile
   Safari / Chrome on iOS still untested - not drivable from this environment.
