@@ -423,6 +423,37 @@ Lesson worth keeping: a green check that has never been seen to go red is not
 evidence. The earlier sweep result should be treated as unverified until this
 negative test existed.
 
+### Correction: the remaining checks were negative-tested too
+The rule above was applied to `visual_check.py` and `cross_browser.py`, which
+had only ever reported success. Reverting the Encyclopedia metric grids to 4-up
+made both go red:
+
+```
+visual_check.py    column only 98px wide at 900px - too narrow to read
+cross_browser.py   chromium/tablet: column only 98px (min 120)
+                   firefox/tablet:  column only 98px (min 120)
+                   webkit/tablet:   column only 97px (min 120)
+```
+
+All three engines caught it independently, and both scripts pass again with the
+fix restored.
+
+The negative run also exposed a flaky assertion that had been green by luck:
+`chromium/dark code: want rgb(34, 211, 238), got n/a`. A probe returning the
+sentinel `'n/a'` was indistinguishable from a real mismatch, so any page state
+without a `<code>` element above the fold would have failed the theme check.
+`_THEME_JS` now returns `null`, and both scripts skip a null probe.
+
+Status of every gate in this repo:
+
+| gate | negative-tested |
+|---|---|
+| `check_data.py` schema | yes |
+| `visual_check.py` | yes |
+| `cross_browser.py` | yes |
+| `page_sweep.py` | yes |
+| `check_logic.py`, `smoke_pages.py` | yes (they caught real bugs unprompted) |
+
 ## Open / Follow-up
 - **`st.navigation` migration (task 1.1) was intentionally skipped** — see
   Phase 1 note above. The sidebar is grouped visually instead.
