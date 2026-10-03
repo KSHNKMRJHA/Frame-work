@@ -9,6 +9,8 @@ Versioning: [Semantic Versioning](https://semver.org/)
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-03
+
 ### Added
 - **140 protocols** across **13 categories** (new: Debug & Trace — JTAG, SWD; plus CAN XL, ISO-TP, SOME/IP, XCP, 10BASE-T1S, UFS, NVMe, SATA, MAVLink, Cyphal, TSN, DDS, DMX512, KNX, DALI, USB4, MIDI, FireWire, 6LoWPAN, NMEA 0183/2000)
 - **Protocol Selector**: constraint-driven ranked shortlist (rate/reach/fan-out/lifecycle)
@@ -125,6 +127,7 @@ Versioning: [Semantic Versioning](https://semver.org/)
 
 | Version | Date | Protocols | Modules | Key Milestone |
 |---------|------|-----------|---------|---------------|
+| 1.1.0 | 2026-10-03 | 140 | 12 | Vectorform redesign, native theming, browser verification gates |
 | 1.0.0 | 2024-01-15 | 118 | 10 | Initial public release |
 
 ---
