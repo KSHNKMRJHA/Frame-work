@@ -233,11 +233,35 @@ class BrowseScreen(Screen):
     def show_detail(self, proto):
         content = BoxLayout(orientation="vertical", padding=dp(16), spacing=dp(8))
         scroll = ScrollView()
+        technical = proto.get("technical", {})
+        technical_text = ""
+        if technical:
+            technical_text = (
+                "\n\n[b]Electrical & hardware profile[/b]\n"
+                f"Scope: {technical.get('scope', '-')}\n"
+                f"Signaling: {technical.get('signaling', '-')}\n"
+                f"Logic high / 1: {technical.get('logic_high', '-')}\n"
+                f"Logic low / 0: {technical.get('logic_low', '-')}\n"
+                f"Voltage / reference: {technical.get('voltage_reference', '-')}\n"
+                f"Clocking / timing: {technical.get('clocking', '-')}\n"
+                f"Termination / biasing: {technical.get('termination_and_biasing', '-')}\n"
+                f"Max distance: {technical.get('max_distance', '-')}\n"
+                f"Max nodes: {technical.get('max_nodes', '-')}\n"
+                f"Duplex: {technical.get('duplex_mode', '-')}\n"
+                f"Addressing: {technical.get('addressing', '-')}\n"
+                f"Error detection: {technical.get('error_detection', '-')}\n"
+                f"Line encoding: {technical.get('line_encoding', '-')}\n"
+                f"Power: {technical.get('power_profile', '-')}\n"
+                f"EMC / isolation: {technical.get('emc_isolation', '-')}\n"
+                "Notes: " + " ".join(technical.get("design_notes", []))
+            )
         lbl = Label(
             text=(
                 f"[b]{proto['name']}[/b]\n\nCategory: {proto['category']}\nYear: {proto['year']}\n"
                 f"Inventor: {proto['inventor']}\n\n{proto['description']}\n\n"
-                f"How it works: {proto.get('how_it_works', '')}\n\nSpeed: {proto.get('speed', '-')}"
+                f"How it works: {proto.get('how_it_works', '')}\n\n"
+                f"Speed: {proto.get('speed', '-')}"
+                f"{technical_text}"
             ),
             markup=True,
             size_hint_y=None,

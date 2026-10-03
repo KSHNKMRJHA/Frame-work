@@ -49,13 +49,17 @@ high-speed FPGA links, sensor-specific buses, security protocols, and aerospace/
 
 It combines:
 - A **searchable encyclopedia** with auto-generated frame, topology, and pinout diagrams
+- A **protocol selector** that ranks all protocols against your rate/reach/fan-out constraints
+- A **glossary** of 60+ terms, code examples and troubleshooting per flagship protocol
 - An **interactive history timeline** (1937 PCM → 2022 Matter)
 - A **mind map** of how every protocol category and protocol relates to the others
 - A **comparison tool** for head-to-head protocol trade-off analysis
 - A **procedurally-generated quiz engine** (never runs out of new question combinations)
 - **Puzzle games**: speed matching, frame-field reordering, and "guess the protocol"
-- A **Science & Math Lab** with real, verified engineering calculators (UART timing,
-  Shannon/Nyquist capacity, CRC-16/32, frequency↔wavelength, CAN bit timing)
+- A **Science & Math Lab** with 13 real, verified engineering calculators (UART/SPI
+  timing & efficiency, Shannon/Nyquist capacity, CRC-16/32, frequency↔wavelength,
+  CAN bit timing & bus load, I²C pull-ups, RS-485 biasing & stubs, Ethernet efficiency,
+  RF link budget, logic noise margin)
 - A **geography module** mapping protocols to their countries/organizations of origin
 - A **profile system** with XP, levels, badges, and persistent local progress tracking
         """

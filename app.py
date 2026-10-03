@@ -13,6 +13,7 @@ import streamlit as st
 from utils.data_loader import load_protocols, get_categories
 from utils import state as state_utils
 from utils import branding
+from utils import ui_state
 from utils.branding import APP_ICON, APP_NAME, APP_TAGLINE
 from utils.diagrams import category_bar_chart
 
@@ -24,9 +25,13 @@ st.set_page_config(
 )
 
 branding.sidebar_identity()
+branding.maybe_onboard()
 
 protocols = load_protocols()
 categories = get_categories(protocols)
+
+# Quick search needs the data, so it is rendered after the load.
+ui_state.global_search(protocols)
 
 if "user_state" not in st.session_state:
     st.session_state.user_state = state_utils.load_state()
@@ -103,58 +108,95 @@ st.divider()
 # --------------------------------------------------------- NAV CARDS -------
 st.subheader("🧭 Explore the Academy")
 
+# Ordered to match the sidebar: reference first, then history/context, then
+# practice, then meta. Keep this list in sync with the pages/ filename prefixes.
 cards = [
     (
         "📚 Encyclopedia",
-        "Browse, search & filter all protocols with full technical profiles — history, diagrams, pinouts, use-cases, limitations, examples.",
+        "Browse, search & filter all protocols with full technical profiles — electrical levels, clocking, diagrams, pinouts, use-cases, limitations, and examples.",
         "pages/1_📚_Encyclopedia.py",
+    ),
+    (
+        "⚖️ Compare",
+        "Put 2-4 protocols side-by-side: speed, pins, wiring, voltages, use-cases and more.",
+        "pages/2_⚖️_Compare.py",
+    ),
+    (
+        "🧭 Selector",
+        "Answer 4 questions (environment, rate, reach, node count) and get a ranked shortlist with the standard document for each match.",
+        "pages/3_🧭_Selector.py",
+    ),
+    (
+        "📖 Glossary",
+        "Every term in one place — arbitration, bit stuffing, duplex, PLCA, QoS and 60+ more, each with the protocols where it matters.",
+        "pages/4_📖_Glossary.py",
     ),
     (
         "🕰️ History & Timeline",
         "Travel through the decades — who invented what, where, and why, on an interactive timeline.",
-        "pages/2_🕰️_Timeline_History.py",
-    ),
-    ("🗺️ Mind Map", "Visualize how every protocol category and protocol relates to each other.", "pages/3_🗺️_Mindmap.py"),
-    ("⚖️ Compare", "Put 2-4 protocols side-by-side: speed, pins, topology, use-cases and more.", "pages/4_⚖️_Compare.py"),
-    (
-        "🧠 Quiz & Assessment",
-        "Auto-generated MCQs across every protocol, filterable by category & difficulty, with XP & badges.",
-        "pages/5_🧠_Quiz_Assessment.py",
+        "pages/5_🕰️_Timeline_History.py",
     ),
     (
-        "🎮 Puzzles & Games",
-        "Frame-field reordering, protocol-speed matching, and 'guess the protocol' challenges.",
-        "pages/6_🎮_Puzzles_Games.py",
-    ),
-    (
-        "🔬 Science & Math Lab",
-        "Interactive calculators: baud rate & bit-timing, Nyquist/Shannon capacity, CRC, frequency↔wavelength.",
-        "pages/7_🔬_Science_Math_Lab.py",
+        "🗺️ Mind Map",
+        "Visualize how every protocol category and protocol relates to each other.",
+        "pages/6_🗺️_Mindmap.py",
     ),
     (
         "🌍 Geography & Origins",
         "See which countries and organizations invented the protocols that run the modern world.",
-        "pages/8_🌍_Geography_Origins.py",
+        "pages/7_🌍_Geography_Origins.py",
+    ),
+    (
+        "🧠 Quiz & Assessment",
+        "Auto-generated MCQs across every protocol, filterable by category & difficulty, with XP & badges.",
+        "pages/8_🧠_Quiz_Assessment.py",
+    ),
+    (
+        "🎮 Puzzles & Games",
+        "Frame-field reordering, protocol-speed matching, and 'guess the protocol' challenges.",
+        "pages/9_🎮_Puzzles_Games.py",
+    ),
+    (
+        "🔬 Science & Math Lab",
+        "Interactive calculators: baud rate & bit-timing, Nyquist/Shannon capacity, CRC, frequency↔wavelength, CAN, I²C, RS-485, Ethernet, RF link budget, noise margin.",
+        "pages/10_🔬_Science_Math_Lab.py",
     ),
     (
         "⚙️ Settings & Profile",
         "Your profile, XP, badges, theme accent, and progress reset.",
-        "pages/9_⚙️_Settings_Profile.py",
+        "pages/11_⚙️_Settings_Profile.py",
     ),
     (
         "ℹ️ Info",
         "About, deployment (local / desktop / web), links, audience guide, credits & license.",
-        "pages/10_ℹ️_Info.py",
+        "pages/12_ℹ️_Info.py",
     ),
 ]
 
-cols = st.columns(2)
+cols = st.columns(1)
 for i, (title, desc, path) in enumerate(cards):
-    with cols[i % 2]:
+    with cols[0]:
         with st.container(border=True):
             st.markdown(f"### {title}")
             st.write(desc)
             st.page_link(path, label=f"Open {title.split(' ', 1)[1]}", icon="➡️")
+
+st.divider()
+
+# ------------------------------------------------- CONTINUE WHERE YOU LEFT OFF
+resume_id = ui_state.last_protocol()
+if resume_id:
+    resume = next((p for p in protocols if p["id"] == resume_id), None)
+    if resume:
+        with st.container(border=True):
+            rc = st.columns([4, 1])
+            with rc[0]:
+                st.markdown("**↩️ Continue where you left off**")
+                st.caption(f"{resume['name']} · {resume['category']} · "
+                           f"{resume.get('topology', '—')}")
+            with rc[1]:
+                st.page_link(f"pages/1_📚_Encyclopedia.py?p={resume_id}",
+                             label="Resume", icon="➡️")
 
 st.divider()
 

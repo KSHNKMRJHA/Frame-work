@@ -1,0 +1,51 @@
+# Pre-commit configuration for FrameWork
+# Install: pip install pre-commit && pre-commit install
+
+repos:
+  # Ruff: formatting + linting (replaces black, isort, flake8, pyupgrade)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.0
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+        name: Ruff (lint + fix)
+      - id: ruff-format
+        name: Ruff (format)
+
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-merge-conflict
+      - id: debug-logger
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+
+  # JSON Schema validation for protocols.json
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.28.0
+    hooks:
+      - id: check-jsonschema
+        files: 'data/protocols\.json$'
+        args: ['--schemafile', 'docs/protocol-database/schema.json']
+
+  # Prevent secrets in commits
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: 'data/protocols\.json$'
+
+  # Validate Python syntax (redundant with ruff but fast)
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-ast
+        files: '\.py$'
+        name: Python syntax check

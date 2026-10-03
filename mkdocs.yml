@@ -1,0 +1,149 @@
+# MkDocs configuration for FrameWork documentation
+# Install: pip install -e .[docs]
+# Serve: mkdocs serve
+# Build: mkdocs build
+
+site_name: FrameWork
+site_description: Offline-first interactive academy covering 140 embedded communication protocols
+site_author: Kishan J.
+site_url: https://frame-work.streamlit.app/
+repo_url: https://github.com/KSHNKMRJHA/Frame-work
+repo_name: KSHNKMRJHA/Frame-work
+edit_uri: edit/main/docs/
+copyright: Copyright &copy; 2024 Kishan J. — MIT License
+
+theme:
+  name: material
+  language: en
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+    code: "SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", monospace
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: true
+            show_root_toc_entry: false
+            show_category_heading: true
+            members_order: source
+            filters: ["!^_"]
+            docstring_style: google
+            merge_init_into_class: true
+  - literate-nav:
+      nav_file: SUMMARY.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - admonition
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Quick Start: getting-started/quickstart.md
+      - Installation: getting-started/installation.md
+      - Running Locally: getting-started/local.md
+      - Desktop Build: getting-started/desktop.md
+      - Web Deployment: getting-started/web.md
+      - Mobile (Android): getting-started/mobile.md
+  - Architecture:
+      - Overview: architecture/overview.md
+      - Data Model: architecture/data-model.md
+      - Module Design: architecture/modules.md
+      - ADRs:
+          - Index: architecture/adrs/index.md
+          - Offline-First: architecture/adrs/0001-offline-first.md
+          - Single Source of Truth: architecture/adrs/0002-single-source-data.md
+          - Streamlit Framework: architecture/adrs/0003-streamlit-framework.md
+          - Generated Diagrams: architecture/adrs/0004-generated-diagrams.md
+          - Procedural Quiz Engine: architecture/adrs/0005-procedural-quiz.md
+          - Verified Calculators: architecture/adrs/0006-verified-calculators.md
+          - Three Deployment Forms: architecture/adrs/0007-three-deployment-forms.md
+          - Atomic Persistence: architecture/adrs/0008-atomic-persistence.md
+          - Mobile Companion: architecture/adrs/0009-mobile-companion.md
+          - Git Commit Build Number: architecture/adrs/0010-versioning-build-stamp.md
+  - API Reference:
+      - Overview: api/index.md
+      - Data Loader: api/data_loader.md
+      - Diagrams: api/diagrams.md
+      - Mind Map: api/mindmap.md
+      - Quiz Engine: api/quiz_engine.md
+      - Science: api/science.md
+      - State: api/state.md
+      - Branding: api/branding.md
+  - Protocol Database:
+      - Overview: protocol-database/index.md
+      - Schema: protocol-database/schema.md
+      - Adding Protocols: protocol-database/adding-protocols.md
+      - Validation: protocol-database/validation.md
+  - Development:
+      - Contributing: development/contributing.md
+      - Code Style: development/code-style.md
+      - Testing: development/testing.md
+      - CI/CD: development/ci-cd.md
+      - Pre-commit: development/pre-commit.md
+  - Releases:
+      - Versioning: releases/versioning.md
+      - Build Process: releases/build-process.md
+      - Changelog: releases/changelog.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/KSHNKMRJHA/Frame-work
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/kshnkmrjha/
+  generator: false
+  alternate:
+    - name: Live App
+      link: https://frame-work.streamlit.app/
+      type: text/html
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/extra.js

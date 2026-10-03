@@ -1,5 +1,26 @@
 # Core web/desktop app (Streamlit edition)
-streamlit>=1.38
+#
+# Floor is 1.55, not an arbitrary choice. The Vectorform redesign depends on
+# Streamlit features that arrived well after 1.38:
+#
+#   1.40.0  st.pills, st.segmented_control            (Encyclopedia, Settings)
+#   1.47.0  theme.linkUnderline,
+#            theme.dataframeHeaderBackgroundColor       (.streamlit/config.toml)
+#   1.48.0  width= on button / link_button /
+#            form_submit_button
+#   1.49.0  width= on pyplot / image / dataframe,
+#            st.dialog(width=)
+#   1.51.0  [theme.sidebar] and [theme.light] sections,
+#            st.plotly_chart(width=)
+#   1.55.0  theme.metricValueFontWeight               (.streamlit/config.toml)
+#
+# `build_scripts/check_streamlit_floor.py` verifies this at runtime: it checks
+# that the installed Streamlit satisfies the bound and that every theme key in
+# config.toml is a key that Streamlit actually recognises (unknown keys are
+# ignored silently, which would produce a quietly wrong-looking app).
+# Verified on 1.64.0.
+streamlit>=1.55
+tomli>=2.0; python_version < "3.11"   # tomllib is stdlib only from 3.11
 matplotlib>=3.8
 networkx>=3.2
 plotly>=5.22

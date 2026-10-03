@@ -4,7 +4,7 @@
 
 **Every embedded communication protocol an engineer will meet — in one offline, interactive academy.**
 
-118 protocols · 12 categories · 10 learning modules · zero setup
+140 protocols · 13 categories · 12 learning modules · zero setup
 
 [![CI](https://github.com/KSHNKMRJHA/Frame-work/actions/workflows/ci.yml/badge.svg)](https://github.com/KSHNKMRJHA/Frame-work/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/KSHNKMRJHA/Frame-work/releases)
@@ -40,8 +40,8 @@ FrameWork turns that fragmented landscape into a single, structured academy: a s
 
 | | |
 |---|---|
-| **Protocols** | 118, across 12 categories |
-| **Modules** | 10 (encyclopedia, timeline, mind map, compare, quiz, puzzles, science lab, geography, profile, info) |
+| **Protocols** | 140, across 13 categories |
+| **Modules** | 12 (encyclopedia, compare, selector, glossary, timeline, mind map, geography, quiz, puzzles, science lab, settings, info) |
 | **Runtime** | Python 3.10+ · Streamlit |
 | **Data** | One JSON database, regenerated from `build_data.py` |
 | **Persistence** | Atomic local JSON — corruption-safe, no server |
@@ -53,7 +53,7 @@ FrameWork turns that fragmented landscape into a single, structured academy: a s
 ## Feature tour
 
 ### 📚 Encyclopedia
-The core reference. Search by name, keyword, inventor, or year; filter by category and difficulty; then open a full profile with overview, how-it-works, origin story, typical speed, pins, real-world example, use cases, advantages, limitations, and related protocols — plus three generated diagrams (frame, topology, pinout).
+The core reference. Search by name, keyword, inventor, or year; filter by category and difficulty; then open a full profile with overview, how-it-works, origin story, typical speed, pins, real-world example, use cases, advantages, limitations, and related protocols — plus a normalized electrical/hardware profile covering signaling, logic high/low, voltage reference, clocking, termination/biasing, and implementation notes, and three generated diagrams (frame, topology, pinout).
 
 ### 🕰️ Timeline & History
 An interactive Plotly timeline from **1937 (PCM)** to **2022 (Matter)**, a decade-by-decade narrative, and the milestones worth knowing.
@@ -88,22 +88,23 @@ What the project is, the three ways to run it, canonical links, audience guidanc
 
 ## Protocol coverage
 
-**118 protocols across 12 categories:**
+**140 protocols across 13 categories:**
 
 | Category | Count | Examples |
 |---|---:|---|
-| Industrial | 18 | Modbus (RTU/TCP), PROFIBUS, PROFINET, EtherCAT, EtherNet/IP, DeviceNet, CANopen, HART, OPC UA, BACnet |
+| Industrial | 23 | Modbus (RTU/TCP), PROFIBUS, PROFINET, EtherCAT, TSN, DDS, DMX512, KNX, DALI, OPC UA, BACnet |
+| Automotive | 18 | CAN, CAN FD, CAN XL, LIN, FlexRay, 10BASE-T1S, SOME/IP, XCP, ISO-TP, UDS, J1939, OBD-II |
 | Networking | 17 | Ethernet, TCP, UDP, IP, ARP, DHCP, DNS, ICMP, HTTP/HTTPS, MQTT, CoAP, WebSocket |
-| On-Board | 15 | UART, RS-232, RS-485, SPI, QSPI, I²C, I3C, 1-Wire, Microwire, SMBus, PMBus, SDIO, eMMC |
-| Automotive | 13 | CAN, CAN FD, LIN, FlexRay, MOST, Automotive Ethernet, SENT, PSI5, UDS, J1939, OBD-II |
-| Wireless | 11 | Bluetooth Classic, BLE, Wi-Fi, Zigbee, Thread, Matter, Z-Wave, NFC, RFID, UWB, ANT+ |
-| Audio/Video | 9 | I²S, TDM, PCM, S/PDIF, HDMI, MIPI DSI, MIPI CSI, DisplayPort, LVDS |
+| On-Board | 16 | UART, RS-232, RS-485, SPI, QSPI, I²C, I3C, 1-Wire, UFS, SDIO, eMMC |
+| Wireless | 12 | Bluetooth Classic, BLE, Wi-Fi, Zigbee, Thread, Matter, 6LoWPAN, Z-Wave, NFC, UWB |
+| Audio/Video | 11 | I²S, HDMI, MIDI, FireWire, MIPI DSI, MIPI CSI, DisplayPort, LVDS |
+| High-Speed/FPGA | 10 | PCIe, NVMe, SATA, RapidIO, Aurora, JESD204B/C, SERDES, SGMII, RGMII |
+| USB | 9 | USB 1.1, USB 2.0, USB 3.x, USB4, USB-C/PD, USB CDC, HID, MSC, DFU |
 | Cellular | 8 | GSM/GPRS/EDGE, LTE/4G, LTE-M, NB-IoT, 5G, LoRa, LoRaWAN, Sigfox |
-| USB | 8 | USB 1.1, USB 2.0, USB 3.x, USB-C/PD, USB CDC, HID, MSC, DFU |
-| High-Speed/FPGA | 8 | PCIe, RapidIO, Aurora, JESD204B/C, SERDES, SGMII, RGMII, XAUI |
+| Aerospace | 6 | ARINC 429, ARINC 664 (AFDX), MIL-STD-1553, SpaceWire, MAVLink, Cyphal |
 | Security | 5 | TLS, DTLS, IPSec, WPA2/WPA3, MACsec |
-| Aerospace | 4 | ARINC 429, ARINC 664 (AFDX), MIL-STD-1553, SpaceWire |
-| Sensor-Specific | 2 | IO-Link, DSI3 |
+| Sensor-Specific | 3 | IO-Link, DSI3, NMEA 0183/2000 |
+| Debug & Trace | 2 | JTAG (IEEE 1149.1), SWD |
 
 ---
 
@@ -140,36 +141,47 @@ packages in `requirements.txt` — no database, API keys, or network access.
 FrameWork/
 ├── app.py                        # Home / landing page (entry point)
 ├── build_data.py                 # Single source of truth → regenerates data/protocols.json
+├── technical_profiles.py         # Normalized electrical/hardware details for all records
 ├── data/
-│   ├── protocols.json            # The master protocol database (118 entries)
+│   ├── protocols.json            # The master protocol database (140 entries)
 │   └── user_state.json           # Local progress (XP, badges) — auto-created, gitignored
-├── pages/                        # Streamlit multipage modules
-│   ├── 1_📚_Encyclopedia.py
-│   ├── 2_🕰️_Timeline_History.py
-│   ├── 3_🗺️_Mindmap.py
-│   ├── 4_⚖️_Compare.py
-│   ├── 5_🧠_Quiz_Assessment.py
-│   ├── 6_🎮_Puzzles_Games.py
-│   ├── 7_🔬_Science_Math_Lab.py
-│   ├── 8_🌍_Geography_Origins.py
-│   ├── 9_⚙️_Settings_Profile.py
-│   └── 10_ℹ️_Info.py
-├── utils/
-│   ├── branding.py               # ⭐ Name, version, build number, links, credits
-│   ├── data_loader.py            # Cached JSON loading, search, category helpers
-│   ├── diagrams.py               # Frame / topology / pinout / chart generators
-│   ├── mindmap.py                # NetworkX mind-map builders
-│   ├── quiz_engine.py            # Procedural quiz & puzzle generation
-│   ├── science.py                # Verified engineering calculators
-│   └── state.py                  # XP / badges / progress persistence (atomic writes)
-├── build_scripts/
-│   ├── desktop_launcher.py       # Frozen-app entry point (starts server + opens browser)
-│   ├── stamp_build.py            # Writes the commit stamp for packaged builds
-│   ├── build_exe.bat             # Windows .exe build
-│   ├── build_exe.sh              # macOS / Linux binary build
-│   ├── check_data.py             # Referential integrity, uniqueness, schema checks
-│   ├── check_logic.py            # Unit tests: CRC vectors, formulas, boundary guards
-│   └── sync_mobile.py            # Keeps the Kivy mobile copy in sync
+│   pages/                        # Streamlit multipage modules (12)
+│   ├── 1_📚_Encyclopedia.py          # Protocol reference: profiles, wiring, electricals, diagrams
+│   ├── 2_⚖️_Compare.py              # Side-by-side comparison + log-scale speed chart
+│   ├── 3_🧭_Selector.py              # Weighted selector + 'why this protocol' explainer
+│   ├── 4_📖_Glossary.py              # Term definitions
+│   ├── 5_🕰️_Timeline_History.py     # Plotly timeline 1937-2022
+│   ├── 6_🗺️_Mindmap.py              # NetworkX category/relationship maps
+│   ├── 7_🌍_Geography_Origins.py     # Who invented what, where
+│   ├── 8_🧠_Quiz_Assessment.py       # Procedural MCQs, XP, badges
+│   ├── 9_🎮_Puzzles_Games.py         # Frame reorder, speed match, guess-the-protocol
+│   ├── 10_🔬_Science_Math_Lab.py     # 28 verified calculators
+│   ├── 11_⚙️_Settings_Profile.py    # Profile, XP, badges, theme, reset
+│   └── 12_ℹ️_Info.py                # About, deployment, links, licence
+│   ├── utils/                        # Shared helpers
+│   │   ├── branding.py         # Name, version, build number, links, credits, UI chrome
+│   │   ├── theme.py            # Design tokens (DARK / LIGHT) - mirrored in .streamlit/config.toml
+│   │   ├── data_loader.py      # Cached JSON loading, search, category helpers
+│   │   ├── diagrams.py         # Frame / topology / pinout / chart generators
+│   │   ├── mindmap.py          # NetworkX mind-map builders
+│   │   ├── science.py          # Verified engineering calculators
+│   │   ├── signal_engine.py    # Line codings, waveforms, message decoding
+│   │   ├── quiz_engine.py      # Procedural quiz & puzzle generation
+│   │   ├── state.py            # XP / badges / progress persistence (atomic writes)
+│   │   └── ui_state.py         # Deep links (?p=<id>), remembered context, ranked search
+│   ├── build_scripts/                # Verification, packaging, sync
+│   │   ├── check_data.py       # Referential integrity + JSON-Schema gate
+│   │   ├── check_logic.py      # Unit tests: CRC vectors, formulas, boundary guards (19 groups)
+│   │   ├── smoke_pages.py      # Import every page
+│   │   ├── visual_check.py     # Chrome: rendered theme + responsive layout (Playwright)
+│   │   ├── cross_browser.py    # Theme + responsive across Chromium / Firefox / WebKit
+│   │   ├── page_sweep.py       # Every page x every UI state: clipped-text + overflow check
+│   │   ├── sync_mobile.py      # Keeps the Kivy mobile copy in sync
+│   │   ├── desktop_launcher.py # Frozen-app entry point (starts server + opens browser)
+│   │   ├── stamp_build.py      # Writes the commit stamp for packaged builds
+│   │   ├── build_exe.bat       # Windows .exe build
+│   │   └── build_exe.sh        # macOS / Linux binary build
+│   └── specs/                        # Engineering specs applied at build time
 ├── kivy_mobile/                  # Cross-platform mobile companion (→ Android .apk)
 ├── .github/workflows/ci.yml      # CI: reproducibility, integrity, tests, lint
 ├── pyproject.toml                # Packaging metadata (version + deps single-sourced)

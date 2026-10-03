@@ -60,3 +60,79 @@ jobs:
         run: |
           pip install ruff
           ruff check --output-format=github app.py build_data.py utils/ pages/ build_scripts/ kivy_mobile/
+
+      - name: Streamlit compatibility floor
+        run: python build_scripts/check_streamlit_floor.py
+
+  # Browser regression gate. Unit tests cannot see a palette that failed to
+  # apply, a clipped metric value, or a route that overflows horizontally -
+  # all of which have been real regressions in this project. Chromium only:
+  # GitHub's ubuntu image ships Chrome, so no ~500 MB Firefox/WebKit download
+  # is needed here. Run build_scripts/cross_browser.py locally for all three
+  # engines.
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Install the Chromium browser binary
+        run: playwright install --with-deps chromium
+
+      - name: Import every page
+        run: python build_scripts/smoke_pages.py
+
+      - name: Start the app
+        run: |
+          nohup python -m streamlit run app.py \
+            --server.headless=true --server.port=8501 \
+            --browser.gatherUsageStats=false > /tmp/streamlit.log 2>&1 &
+          echo $! > /tmp/streamlit.pid
+
+      - name: Wait for the health endpoint
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:8501/_stcore/health > /dev/null; then
+              echo "Streamlit is up after ${i}s"; exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::Streamlit did not become healthy in 60s"
+          tail -n 60 /tmp/streamlit.log
+          exit 1
+
+      - name: Visual check — rendered theme and responsive layout
+        run: python build_scripts/visual_check.py
+
+      - name: Page sweep — clipped text and horizontal overflow
+        run: python build_scripts/page_sweep.py 900
+
+      - name: Page sweep — phone width
+        run: python build_scripts/page_sweep.py 390
+
+      # Always keep the screenshots: they are the fastest way to see what a
+      # failure actually looked like.
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-shots
+          path: build_scripts/_shots/
+          if-no-files-found: warn
+
+      - name: Upload Streamlit log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: streamlit-log
+          path: /tmp/streamlit.log
+          if-no-files-found: warn

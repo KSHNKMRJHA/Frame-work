@@ -36,17 +36,62 @@ with tab1:
 
     st.markdown("#### 🏅 Badges")
     if us["badges"]:
-        bcols = st.columns(4)
+        # Size the row to the badge count. A fixed st.columns(4) left three
+        # empty quarters whenever fewer than four badges were earned, and at
+        # tablet widths that squeezed the used column to ~98px.
+        ncols = min(4, len(us["badges"]))
+        bcols = st.columns(ncols)
         for i, b in enumerate(us["badges"]):
-            with bcols[i % 4]:
+            with bcols[i % ncols]:
                 st.markdown(f"🏅 **{b}**")
     else:
         st.info("No badges yet — take a quiz or explore the encyclopedia to start earning them!")
 
 with tab2:
     st.subheader("Appearance")
-    st.write("The app theme is controlled by `.streamlit/config.toml`. Choose your preferred accent color to update it (restart the app for the new theme to fully apply).")
-    color = st.color_picker("Accent color", value=us.get("accent_color", "#2563eb"))
+    st.markdown('<div class="fw-fieldlabel">Theme</div>', unsafe_allow_html=True)
+    st.caption(
+        "Streamlit already follows your operating system's light/dark setting, "
+        "and both palettes are fully defined in `.streamlit/config.toml`. "
+        "Set a preference below only to override the OS."
+    )
+    # Stored state keeps the lowercase value; the control shows a label.
+    labels = {"follow": "Follow OS", "dark": "Dark", "light": "Light"}
+    mode = st.segmented_control(
+        "Theme", ["Follow OS", "Dark", "Light"],
+        default=labels.get(us.get("theme", "follow"), "Follow OS"),
+        key="fw_theme_mode", label_visibility="collapsed",
+    )
+    wanted = {"Follow OS": "follow", "Dark": "dark", "Light": "light"}.get(mode)
+    if mode and wanted != us.get("theme", "follow"):
+        us["theme"] = wanted
+        state_utils.save_state(us)
+        # Streamlit reads config.toml at startup, so overriding the OS needs a
+        # restart; "follow" is restored by simply removing the base key.
+        try:
+            with open(".streamlit/config.toml", "r") as f:
+                content = f.read()
+            import re
+            if wanted == "follow":
+                content = re.sub(r'^base = ".*"\n', "", content, flags=re.M)
+            else:
+                if re.search(r'^base = ".*"$', content, flags=re.M):
+                    content = re.sub(r'^base = ".*"$', f'base = "{wanted}"',
+                                      content, flags=re.M)
+                else:
+                    content = content.replace("[theme]\n", f'[theme]\nbase = "{wanted}"\n', 1)
+            with open(".streamlit/config.toml", "w") as f:
+                f.write(content)
+            st.success(f"Theme set to **{wanted}**. Restart the app "
+                       "(`streamlit run app.py`) for it to take effect.")
+        except OSError:
+            st.warning("Could not write config.toml here; the preference was "
+                       "still saved.")
+
+    st.divider()
+    st.markdown('<div class="fw-fieldlabel">Accent color</div>', unsafe_allow_html=True)
+    color = st.color_picker("Accent color", value=us.get("accent_color", "#3b82f6"),
+                            label_visibility="collapsed")
     if color != us.get("accent_color"):
         us["accent_color"] = color
         state_utils.save_state(us)
@@ -57,7 +102,8 @@ with tab2:
             content = re.sub(r'primaryColor = ".*"', f'primaryColor = "{color}"', content)
             with open(".streamlit/config.toml", "w") as f:
                 f.write(content)
-            st.success(f"Accent color updated to {color}. Restart the app (`streamlit run app.py`) to see the full theme change.")
+            st.success(f"Accent color updated to {color}. Restart the app "
+                       "(`streamlit run app.py`) to see the full theme change.")
         except OSError:
             st.warning("Could not write to config.toml in this environment, but your preference was saved.")
 
