@@ -117,7 +117,7 @@ APP_NAME = "FrameWork"
 APP_ICON = "🛰️"
 APP_TAGLINE = "The interactive academy for every communication protocol an embedded engineer will meet in a career."
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 BUILD_CHANNEL = os.environ.get("FRAMEWORK_BUILD_CHANNEL", "stable")
 # Explicit stamp > live git working tree > packaging-time stamp > nothing.
 BUILD_COMMIT = os.environ.get("FRAMEWORK_BUILD_COMMIT", "").strip() or _detect_git_commit() or _stamped_commit()

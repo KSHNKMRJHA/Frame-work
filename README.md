@@ -7,7 +7,7 @@
 140 protocols · 13 categories · 12 learning modules · zero setup
 
 [![CI](https://github.com/KSHNKMRJHA/Frame-work/actions/workflows/ci.yml/badge.svg)](https://github.com/KSHNKMRJHA/Frame-work/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/KSHNKMRJHA/Frame-work/releases)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue)](https://github.com/KSHNKMRJHA/Frame-work/releases)
 [![Last commit](https://img.shields.io/github/last-commit/KSHNKMRJHA/Frame-work)](https://github.com/KSHNKMRJHA/Frame-work/commits/main)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-blue)
