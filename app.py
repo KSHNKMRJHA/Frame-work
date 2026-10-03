@@ -24,11 +24,6 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# The home page configures Streamlit directly (it needs initial_sidebar_state),
-# so it must apply the Vectorform stylesheet itself - otherwise the landing page
-# is the one screen in the app with no theme at all.
-branding.inject_css(force_theme=st.session_state.get("user_state", {}).get("theme"))
-
 branding.sidebar_identity()
 branding.maybe_onboard()
 

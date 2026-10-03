@@ -13,9 +13,18 @@ Three rules give the interface its "instrument" character:
    voltages are data, not prose, so they get a monospace face.
 3. **Three weights only** (400/600/700). A fourth weight reads as noise.
 
-`--fw-*` custom properties are emitted into the page once by
-`branding.inject_css()`; every later phase styles against these names rather
-than hardcoding hex values, so a theme change stays a one-file edit.
+**These dictionaries are the design token source of truth.** They are mirrored by
+the `[theme]` block in `.streamlit/config.toml`, which is what Streamlit actually
+renders from - that file and these dicts must be changed together.
+`build_scripts/visual_check.py` and `cross_browser.py` assert the rendered
+colours match these values exactly, so the two cannot silently drift.
+
+The module deliberately emits **no CSS**. An earlier version shipped
+`tokens_css()` to inject a global stylesheet, but Streamlit 1.64's DOMPurify
+strips both `<style>` and `<script>` on every `st.markdown`/`st.html` route, so
+that stylesheet never reached the browser (verified: zero injected nodes, zero
+custom properties). Do not reintroduce it - use native `[theme]` keys or
+component-local inline styles instead.
 """
 
 # --------------------------------------------------------------- palettes ---
@@ -65,70 +74,3 @@ MONO_STACK = (
 )
 
 
-def _vars(palette, prefix="fw"):
-    return "\n".join(f"  --{prefix}-{name.replace('_', '-')}: {value};"
-                     for name, value in palette.items())
-
-
-def tokens_css():
-    """Both palettes as CSS custom properties.
-
-    Streamlit exposes the active theme on the <body> element, so light mode is
-    selected by matching its background rather than by a class we would have to
-    inject onto every widget.
-    """
-    return f""":root {{
-{_vars(DARK)}
-  --fw-font: {FONT_STACK};
-  --fw-mono: {MONO_STACK};
-  --fw-radius: 10px;
-  --fw-radius-sm: 6px;
-  --fw-gap: 0.75rem;
-  --fw-measure: 78ch;
-}}
-
-/* Streamlit sets this attribute/background per theme; match on it. */
-[data-testid="stAppViewContainer"] > .main,
-.stApp {{
-  font-family: var(--fw-font);
-}}
-
-html body,
-body {{
-  background-color: var(--fw-bg);
-  color: var(--fw-text);
-}}
-
-/* Light theme: Streamlit gives the page a near-white background. */
-body:has([data-testid="stAppViewContainer"] .stApp:not([data-testid="stAppViewContainer"])),
-.stApp[data-theme="light"] {{
-  --fw-bg: {LIGHT['bg']};
-  --fw-surface: {LIGHT['surface']};
-  --fw-border: {LIGHT['border']};
-  --fw-text: {LIGHT['text']};
-  --fw-text-muted: {LIGHT['text_muted']};
-  --fw-accent: {LIGHT['accent']};
-  --fw-signal: {LIGHT['signal']};
-}}
-
-@media (prefers-color-scheme: light) {{
-  [data-testid="stAppViewContainer"] {{
-    --fw-bg: {LIGHT['bg']};
-    --fw-surface: {LIGHT['surface']};
-    --fw-border: {LIGHT['border']};
-    --fw-text: {LIGHT['text']};
-    --fw-text-muted: {LIGHT['text_muted']};
-    --fw-accent: {LIGHT['accent']};
-    --fw-signal: {LIGHT['signal']};
-  }}
-}}"""
-
-
-def current_palette(prefers_light=False):
-    """Token dict for one theme, so non-CSS surfaces can match it."""
-    return LIGHT if prefers_light else DARK
-
-
-def hex_of(name, prefers_light=False):
-    """Look up a token by name; used to colour matplotlib/Plotly output."""
-    return current_palette(prefers_light)[name]
