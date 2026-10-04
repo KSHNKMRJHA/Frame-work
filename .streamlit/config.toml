@@ -8,18 +8,18 @@
 # utils/theme.py, which mirrors the palettes below.
 #
 # Token source of truth: utils/theme.py (DARK / LIGHT dicts).
+#
+# Both palettes are defined natively, under [theme.light] and [theme.dark], and
+# `base` is deliberately NOT set. Pinning `base` overrides the user's choice in
+# Streamlit's own Settings > Theme menu, which is where Light / Dark / Use
+# system setting actually live. Keys that are identical in both palettes stay in
+# the shared [theme] section.
 
+# --------------------------------------------------------------- shared ----
 [theme]
-base = "dark"
 primaryColor = "#3b82f6"
-backgroundColor = "#0b1220"
-secondaryBackgroundColor = "#141c2e"
-textColor = "#e2e8f0"
-borderColor = "#243044"
 linkColor = "#3b82f6"
 linkUnderline = true
-codeBackgroundColor = "#1e293b"
-codeTextColor = "#22d3ee"
 showWidgetBorder = true
 showSidebarBorder = true
 baseRadius = "0.5rem"
@@ -30,7 +30,16 @@ headingFont = "sans serif"
 codeFont = "monospace"
 metricValueFontWeight = 600
 
-# Semantic widget colours
+# ------------------------------------------------------------------ dark ----
+[theme.dark]
+backgroundColor = "#0b1220"
+secondaryBackgroundColor = "#141c2e"
+textColor = "#e2e8f0"
+borderColor = "#243044"
+primaryColor = "#3b82f6"
+linkColor = "#3b82f6"
+codeBackgroundColor = "#1e293b"
+codeTextColor = "#22d3ee"
 grayBackgroundColor = "#1e293b"
 grayColor = "#334155"
 greenColor = "#22c55e"
@@ -52,11 +61,10 @@ yellowTextColor = "#fcd34d"
 blueTextColor = "#93c5fd"
 orangeTextColor = "#fdba74"
 violetTextColor = "#c4b5fd"
-
 dataframeBorderColor = "#243044"
 dataframeHeaderBackgroundColor = "#1e293b"
 
-[theme.sidebar]
+[theme.dark.sidebar]
 backgroundColor = "#0f172a"
 secondaryBackgroundColor = "#141c2e"
 borderColor = "#243044"
@@ -67,8 +75,7 @@ codeBackgroundColor = "#1e293b"
 codeTextColor = "#22d3ee"
 showWidgetBorder = true
 
-# ------------------------------------------------------------- light mode --
-# Selected by the Settings toggle, which rewrites base + this block.
+# ----------------------------------------------------------------- light ----
 [theme.light]
 backgroundColor = "#f8fafc"
 secondaryBackgroundColor = "#ffffff"
@@ -79,7 +86,28 @@ linkColor = "#1965d8"
 codeBackgroundColor = "#f1f5f9"
 codeTextColor = "#0891b2"
 grayBackgroundColor = "#f1f5f9"
+grayColor = "#cbd5e1"
+greenColor = "#15803d"
+redColor = "#dc2626"
+yellowColor = "#b45309"
+blueColor = "#1965d8"
+orangeColor = "#c2410c"
+violetColor = "#6d28d9"
+greenBackgroundColor = "#dcfce7"
+redBackgroundColor = "#fee2e2"
+yellowBackgroundColor = "#fef3c7"
+blueBackgroundColor = "#dbeafe"
+orangeBackgroundColor = "#ffedd5"
+violetBackgroundColor = "#ede9fe"
 grayTextColor = "#334155"
+greenTextColor = "#166534"
+redTextColor = "#991b1b"
+yellowTextColor = "#92400e"
+blueTextColor = "#1e40af"
+orangeTextColor = "#9a3412"
+violetTextColor = "#5b21b6"
+dataframeBorderColor = "#e2e8f0"
+dataframeHeaderBackgroundColor = "#f1f5f9"
 
 [theme.light.sidebar]
 backgroundColor = "#f1f5f9"

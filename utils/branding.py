@@ -188,7 +188,7 @@ def sidebar_sections():
     """
     import streamlit as st
 
-    pal = theme.DARK
+    pal = theme.current_palette()
     with st.sidebar:
         st.markdown(
             f'<div style="font-size:.70rem;font-weight:700;letter-spacing:.14em;'
@@ -321,7 +321,7 @@ def protocol_summary_card(selected):
     import matplotlib.pyplot as plt
 
     spec = selected.get("electrical") or {}
-    pal = theme.DARK
+    pal = theme.current_palette()
     fig = plt.figure(figsize=(10, 13), facecolor=pal["bg"])
     ax = fig.add_axes([0, 0, 1, 1])
     ax.axis("off")
@@ -421,7 +421,7 @@ def conductor_cards(selected):
     attributes survive reliably. Inline is the only dependable option here.
     """
     spec = selected.get("electrical") or {}
-    pal = theme.DARK
+    pal = theme.current_palette()
     mate, role_of = {}, {}
     for pr in spec.get("pairs") or []:
         mate[pr["a"]] = pr["b"]
@@ -509,13 +509,13 @@ def level_bars(spec):
         f'<div style="margin:.4rem 0 .2rem 0;display:grid;gap:.28rem">'
         f'{"".join(bars)}</div>'
         f'<div style="font-size:.75rem;margin-top:.25rem;'
-        f'color:{theme.DARK["text_faint"]};font-variant-numeric:tabular-nums">'
+        f'color:{theme.current_palette()["text_faint"]};font-variant-numeric:tabular-nums">'
         f'{note}</div>', unsafe_allow_html=True)
 
 
 def _bar(label, value, floor, ceiling, kind):
     """One level bar. Inline styles for the same DOMPurify reason as the cards."""
-    pal = theme.DARK
+    pal = theme.current_palette()
     span = (ceiling - floor) or 1.0
     pct = max(0.0, min(100.0, (value - floor) / span * 100.0))
     colour = pal["signal"] if kind == "hi" else pal["accent"]

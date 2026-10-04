@@ -68,6 +68,62 @@ FONT_STACK = (
     "'Inter var', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', "
     "Roboto, 'Helvetica Neue', Arial, sans-serif"
 )
+
+
+# ------------------------------------------------------------- active theme
+# Streamlit 1.64 exposes the browser's resolved theme read-only through
+# st.context.theme; there is no public API to SET it from Python. So this
+# module reports what is active and never tries to change it.
+#
+# This returns plain Python colour tokens. It emits no CSS and no JS: the
+# stylesheet-injection layer was removed in v1.1.0 because Streamlit's DOMPurify
+# strips <style>/<script> on every route, and reintroducing it would be a
+# regression, not a fix.
+def active_theme_type():
+    """"light", "dark", or None when Streamlit has no resolved theme (bare mode)."""
+    try:
+        import streamlit as st
+
+        value = getattr(st.context.theme, "type", None)
+        return str(value).lower() if value else None
+    except Exception:
+        # Bare mode / tests: no browser context to ask.
+        return None
+
+
+def current_palette():
+    """The palette matching the browser's active theme.
+
+    Falls back to DARK when Streamlit cannot tell us (local bare-mode runs and
+    unit tests), which is the app's default appearance.
+    """
+    return LIGHT if active_theme_type() == "light" else DARK
+
+
+def is_dark():
+    return active_theme_type() != "light"
+
+
+def contrast_text(bg_hex):
+    """Pick readable foreground text for a background colour.
+
+    Uses the WCAG relative-luminance formula, so a label drawn on a category
+    colour is never white-on-white or dark-on-dark.
+    """
+    h = str(bg_hex).lstrip("#")
+    if len(h) == 3:
+        h = "".join(c * 2 for c in h)
+    try:
+        r, g, b = (int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    except ValueError:
+        return "#ffffff"
+
+    def lin(c):
+        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+
+    luminance = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+    # Contrast against white vs against near-black; pick the better one.
+    return "#0b1220" if (luminance + 0.05) / 0.05 > 1.05 / (luminance + 0.05) else "#ffffff"
 MONO_STACK = (
     "'JetBrains Mono', 'SF Mono', 'Cascadia Code', Consolas, "
     "'Liberation Mono', Menlo, monospace"
