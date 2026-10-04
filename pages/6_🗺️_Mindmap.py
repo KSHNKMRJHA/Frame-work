@@ -2,6 +2,7 @@
 import streamlit as st
 from utils.data_loader import load_protocols, get_categories
 from utils.mindmap import full_mindmap, category_mindmap
+from utils import theme as theme_mod
 
 from utils import branding
 
@@ -16,16 +17,25 @@ st.caption("A visual map of how every protocol connects — from the root concep
 
 tab1, tab2 = st.tabs(["🌐 Full Universe Map", "🔬 Zoom Into a Category"])
 
+# Diagrams are drawn with Matplotlib, which knows nothing about the browser's
+# theme, so the active palette is detected here and passed in. This returns
+# Python colour tokens only - no CSS, no JS.
+pal = theme_mod.current_palette()
+
 with tab1:
-    st.info("This map shows **all 116 protocols** grouped by category, radiating from the central concept. Larger nodes = categories; small nodes = individual protocols.")
+    st.info(
+        f"This map shows **all {len(protocols)} protocols** grouped by category, "
+        "radiating from the central concept. Larger nodes = categories; "
+        "small nodes = individual protocols, each labelled with its full name."
+    )
     with st.spinner("Rendering mind map..."):
-        fig = full_mindmap(protocols)
+        fig = full_mindmap(protocols, palette=pal)
     st.pyplot(fig, width='stretch')
 
 with tab2:
     cat = st.selectbox("Choose a category to explore its internal relationships:", categories)
-    st.caption("Edges here also show cross-links between related protocols within the category (e.g., CAN ↔ CAN FD ↔ CANopen).")
-    fig2 = category_mindmap(protocols, cat)
+    st.caption("Each protocol in this category is shown with its full name.")
+    fig2 = category_mindmap(protocols, cat, palette=pal)
     st.pyplot(fig2, width='stretch')
 
     with st.expander("📋 List view of this category"):

@@ -111,7 +111,8 @@ st.caption(
 # ------------------------------------------------------------- FILTERS -----
 # Search gets the first row; category pills need the FULL width because there
 # are 14 of them and they were being clipped inside a quarter-width column.
-query = st.text_input("Search", placeholder="Search by name, keyword, inventor...")
+query = st.text_input("Search", placeholder="Search by name, keyword, inventor...",
+                      key="fw_encyclopedia_query")
 
 st.markdown('<div class="fw-fieldlabel">Category</div>', unsafe_allow_html=True)
 # `categories` already begins with "All"; do not prepend it again.
@@ -138,22 +139,66 @@ if query:
 
 st.caption(f"Showing **{len(filtered)}** of {len(protocols)} protocols.")
 
-names = [f"{p['name']}  ·  {p['category']} ({p['year']})" for p in filtered]
-if not names:
+by_id = {p["id"]: p for p in protocols}
+
+# An explicitly requested protocol must stay visible even when the active
+# filters exclude it. Showing a different protocol than the one the user asked
+# for is worse than showing it with a note, so the deep-linked target wins and
+# the filters are relaxed just enough to include it.
+requested = ui_state.requested_protocol_id()
+hinted = requested or st.session_state.get("_fw_protocol_handoff")
+if hinted and hinted in by_id and hinted not in {p["id"] for p in filtered}:
+    target = by_id[hinted]
+    st.info(
+        f"**{target['name']}** was opened directly, so the active filters were "
+        "cleared to show it."
+    )
+    st.session_state["fw_cat"] = "All"
+    st.session_state["fw_diff"] = "All"
+    if query:
+        st.session_state["fw_encyclopedia_query"] = ""
+    cat = "All"
+    diff = "All"
+    query = ""
+    filtered = protocols
+
+if not filtered:
     st.warning("No protocols match your filters. Try clearing search or category.")
     st.stop()
 
-# A ?p=<id> deep link wins over the dropdown, so a shared URL opens the right
-# protocol. An unknown id falls through to the normal dropdown rather than error.
-deep = ui_state.protocol_from_url(filtered)
-selected = deep if deep else filtered[names.index(st.selectbox(
-    "Select a protocol to open its full profile:", names, key="fw_proto_pick"))]
+# The widget is ALWAYS rendered, including on a deep-linked visit. It used to be
+# built inside the fallback branch of a conditional expression, so a deep link
+# meant the dropdown was never created at all - and since the page then wrote
+# ?p=<id> on every rerun, the user could never leave that protocol.
+option_ids = [p["id"] for p in filtered]
+labels = {p["id"]: f"{p['name']}  ·  {p['category']} ({p['year']})" for p in filtered}
 
-# Keep the URL and the app memory in step with what is being read.
-ui_state.set_protocol_url(selected["id"])
-ui_state.remember_protocol(selected["id"])
-if selected["id"] not in names[0][:6] or query:
-    st.caption(f"🔗 Sharing this page: `?p={selected['id']}`")
+# Phase 1: decide which protocol this visit is about, before the widget exists.
+seeded_id = ui_state.ensure_active_protocol(protocols)
+start = option_ids.index(seeded_id) if seeded_id in option_ids else 0
+
+picked = st.selectbox(
+    "Select a protocol to open its full profile:",
+    option_ids,
+    index=start,
+    format_func=lambda pid: labels.get(pid, pid),
+    key="fw_proto_pick",
+)
+
+# Phase 2: the widget is now authoritative. Because it was built with `index`
+# pointing at the seeded protocol, its value only differs when the user actually
+# changed it - so a difference is a real user action, never a stale URL.
+active_id = ui_state.active_protocol_id(protocols, widget_value=picked)
+
+# If the stored protocol is filtered out of the current view, fall back to the
+# dropdown rather than silently rendering some unrelated protocol.
+selected = by_id.get(active_id) if active_id in {p["id"] for p in filtered} else None
+if selected is None:
+    selected = by_id[picked]
+
+# The selection now flows one way: widget -> state -> URL + memory.
+ui_state.sync_active_protocol(selected["id"])
+st.caption(f"🔗 Sharing this page: `?p={selected['id']}`")
 
 state_utils.mark_protocol_viewed(us, selected["id"])
 state_utils.save_state(us)

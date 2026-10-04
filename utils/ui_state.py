@@ -20,6 +20,9 @@ NAV_SECTIONS = [
 ]
 
 _MEM = "_fw_memory"
+# A cross-page "open this protocol" request. Lives outside _mem because it is a
+# one-shot instruction to the next page, not a remembered preference.
+_MEM_HANDOFF = "_fw_protocol_handoff"
 
 
 def _mem():
@@ -69,9 +72,98 @@ def set_protocol_url(protocol_id):
         st.query_params["p"] = protocol_id
 
 
-def clear_protocol_url():
-    if "p" in st.query_params:
-        del st.query_params["p"]
+# --------------------------------------------------------- active protocol
+# One clear owner for "which protocol am I reading". The rules, in order:
+#
+#   1. An explicit ?p=<id> (deep link, bookmark, or a cross-page handoff) seeds
+#      the selection ONCE. It is not consulted again on later reruns, otherwise
+#      the URL would permanently outrank the dropdown: the page writes ?p=<id>
+#      itself, so on the next rerun protocol_from_url() would keep returning the
+#      previous protocol and the user could never change it.
+#   2. After that, the selectbox is the source of truth.
+#   3. The URL and the remembered context follow the selection.
+#
+# The active value is a protocol ID, never a rendered "name · category (year)"
+# string: those labels are not unique, get reformatted, and made identity
+# depend on parsing.
+_ACTIVE = "_fw_active_protocol_id"
+_SEEDED = "_fw_protocol_seeded"
+
+
+def requested_protocol_id():
+    """The id explicitly asked for by the URL/handoff, or None."""
+    pid = st.query_params.get("p")
+    return pid or None
+
+
+def open_protocol(protocol_id):
+    """Intentional cross-page handoff: remember the target for the next page.
+
+    Used by buttons whose entire meaning is "open this protocol". The Encyclopedia
+    consumes it once during initialization, so it seeds the selection rather than
+    fighting the user on every rerun.
+    """
+    if protocol_id:
+        st.session_state[_MEM_HANDOFF] = protocol_id
+
+
+def _mem_handoff_take():
+    """Read and clear the pending handoff, if any."""
+    return st.session_state.pop(_MEM_HANDOFF, None)
+
+
+def ensure_active_protocol(protocols):
+    """Seed the active protocol ONCE for this page visit. Returns the current id.
+
+    Called before the dropdown is built so the widget can render with the right
+    current value. After seeding, the stored id is authoritative.
+    """
+    ids = {p["id"] for p in protocols}
+
+    if not st.session_state.get(_SEEDED):
+        # Precedence: explicit ?p=<id> > cross-page handoff > last read.
+        seed = requested_protocol_id() or _mem_handoff_take() or last_protocol()
+        st.session_state[_ACTIVE] = seed if seed in ids else None
+        st.session_state[_SEEDED] = True
+    elif _MEM_HANDOFF in st.session_state:
+        # A handoff that lands after initialization (Selector -> Encyclopedia)
+        # replaces the selection exactly once.
+        handoff = _mem_handoff_take()
+        if handoff in ids:
+            st.session_state[_ACTIVE] = handoff
+
+    active = st.session_state.get(_ACTIVE)
+    return active if active in ids else None
+
+
+def active_protocol_id(protocols, widget_value=None):
+    """Reconcile the widget with the stored selection and return the active id.
+
+    Called AFTER the dropdown renders. Because the widget is built with
+    ``index`` pointing at the current active protocol, its value matches the
+    stored id unless the user moved it - so a difference means a real user
+    action, and the user wins from then on.
+    """
+    ids = {p["id"] for p in protocols}
+    if widget_value in ids and widget_value != st.session_state.get(_ACTIVE):
+        st.session_state[_ACTIVE] = widget_value
+
+    active = st.session_state.get(_ACTIVE)
+    return active if active in ids else None
+
+
+def sync_active_protocol(protocol_id):
+    """Push the selection out to the URL and the app memory."""
+    if not protocol_id:
+        return
+    set_protocol_url(protocol_id)
+    remember_protocol(protocol_id)
+
+
+def reset_active_protocol():
+    """Forget the seeded state so the next visit re-seeds (fresh navigation)."""
+    st.session_state.pop(_ACTIVE, None)
+    st.session_state.pop(_SEEDED, None)
 
 
 # ------------------------------------------------------------- global search

@@ -15,6 +15,7 @@ from parametric import format_bps, format_m
 from utils.data_loader import load_protocols, get_categories
 
 from utils import branding
+from utils import ui_state
 
 branding.page_config("Selector", "🧭")
 branding.sidebar_identity()
@@ -166,13 +167,26 @@ st.dataframe(
 
 st.divider()
 st.subheader("📖 Read the winner's full profile")
-names = [r["Protocol"] for r in ranked]
-pick = st.selectbox("Open in the Encyclopedia:", names)
+# Identity, not the display name: two protocols can share a label, and the
+# Encyclopedia needs the stable id to open the right profile. The name is only
+# ever shown to the user.
+ids = [r["_id"] for r in ranked]
+row_label = {r["_id"]: r["Protocol"] for r in ranked}
+pick_id = st.selectbox(
+    "Open in the Encyclopedia:",
+    ids,
+    format_func=lambda pid: row_label.get(pid, pid),
+    key="fw_selector_pick",
+)
 # No "Open" prefix and no arrow: the selectbox label above already says it, and
 # protocol names are long enough that the extras overflowed the button at tablet
 # width ("Aurora (Xilinx/AMD Protocol)" needs 190px in a 187px button).
-if st.button(pick, width="stretch"):
-    st.switch_page("pages/1_📚_Encyclopedia.py")
+if st.button(row_label.get(pick_id, pick_id), width="stretch"):
+    # Carry the protocol id across the page switch. `open_protocol` is the
+    # session-state handoff and query_params makes the destination shareable -
+    # either alone would work, both together survive a hard reload.
+    ui_state.open_protocol(pick_id)
+    st.switch_page("pages/1_📚_Encyclopedia.py", query_params={"p": pick_id})
 st.caption(
     "Reminder: maxima are never simultaneous (RS-485 does 10 Mbps XOR 1200 m). "
     "Confirm the rate×distance corner you need in the standard and the transceiver datasheet."

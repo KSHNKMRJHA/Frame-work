@@ -5,6 +5,7 @@ from utils import state as state_utils
 from utils.data_loader import load_protocols
 
 from utils import branding
+from utils import theme as theme_mod
 
 branding.page_config("Settings", "⚙️")
 branding.sidebar_identity()
@@ -49,63 +50,51 @@ with tab1:
 
 with tab2:
     st.subheader("Appearance")
-    st.markdown('<div class="fw-fieldlabel">Theme</div>', unsafe_allow_html=True)
+
+    # Streamlit 1.64 exposes the browser's resolved theme READ-ONLY through
+    # st.context.theme. There is no public Python API to set it per session, so
+    # the honest thing is to report the active theme and point at the control
+    # Streamlit actually ships - rather than offering a toggle that cannot work.
+    active = theme_mod.active_theme_type()
+    shown = {"light": "Light", "dark": "Dark"}.get(active, "System / default")
+
+    st.markdown(f"**Current active theme:** {shown}")
+
+    with st.container(border=True):
+        st.markdown("**Change the theme**")
+        st.markdown(
+            "Use Streamlit's own menu:\n\n"
+            "**⋮ → Settings → Theme**, then choose:\n\n"
+            "- **Light**\n"
+            "- **Dark**\n"
+            "- **Use system setting** — follows your OS\n\n"
+            "This is applied by Streamlit itself and remembered by your browser, "
+            "per user and per device."
+        )
+
     st.caption(
-        "Streamlit already follows your operating system's light/dark setting, "
-        "and both palettes are fully defined in `.streamlit/config.toml`. "
-        "Set a preference below only to override the OS."
+        "FrameWork defines both palettes under native `[theme.light]` and "
+        "`[theme.dark]` keys, so both are fully styled. There is deliberately no "
+        "in-app theme switcher: writing `.streamlit/config.toml` from a visitor's "
+        "session would change the app for everyone, which is why that approach "
+        "was removed."
     )
-    # Stored state keeps the lowercase value; the control shows a label.
-    labels = {"follow": "Follow OS", "dark": "Dark", "light": "Light"}
-    mode = st.segmented_control(
-        "Theme", ["Follow OS", "Dark", "Light"],
-        default=labels.get(us.get("theme", "follow"), "Follow OS"),
-        key="fw_theme_mode", label_visibility="collapsed",
-    )
-    wanted = {"Follow OS": "follow", "Dark": "dark", "Light": "light"}.get(mode)
-    if mode and wanted != us.get("theme", "follow"):
-        us["theme"] = wanted
-        state_utils.save_state(us)
-        # Streamlit reads config.toml at startup, so overriding the OS needs a
-        # restart; "follow" is restored by simply removing the base key.
-        try:
-            with open(".streamlit/config.toml", "r") as f:
-                content = f.read()
-            import re
-            if wanted == "follow":
-                content = re.sub(r'^base = ".*"\n', "", content, flags=re.M)
-            else:
-                if re.search(r'^base = ".*"$', content, flags=re.M):
-                    content = re.sub(r'^base = ".*"$', f'base = "{wanted}"',
-                                      content, flags=re.M)
-                else:
-                    content = content.replace("[theme]\n", f'[theme]\nbase = "{wanted}"\n', 1)
-            with open(".streamlit/config.toml", "w") as f:
-                f.write(content)
-            st.success(f"Theme set to **{wanted}**. Restart the app "
-                       "(`streamlit run app.py`) for it to take effect.")
-        except OSError:
-            st.warning("Could not write config.toml here; the preference was "
-                       "still saved.")
 
     st.divider()
     st.markdown('<div class="fw-fieldlabel">Accent color</div>', unsafe_allow_html=True)
-    color = st.color_picker("Accent color", value=us.get("accent_color", "#3b82f6"),
-                            label_visibility="collapsed")
+    color = st.color_picker(
+        "Accent color", value=us.get("accent_color", "#3b82f6"), label_visibility="collapsed"
+    )
     if color != us.get("accent_color"):
+        # Saved for the learner's own profile. It cannot restyle the running app
+        # for everyone, so it is stored rather than pushed into project config.
         us["accent_color"] = color
         state_utils.save_state(us)
-        try:
-            with open(".streamlit/config.toml", "r") as f:
-                content = f.read()
-            import re
-            content = re.sub(r'primaryColor = ".*"', f'primaryColor = "{color}"', content)
-            with open(".streamlit/config.toml", "w") as f:
-                f.write(content)
-            st.success(f"Accent color updated to {color}. Restart the app "
-                       "(`streamlit run app.py`) to see the full theme change.")
-        except OSError:
-            st.warning("Could not write to config.toml in this environment, but your preference was saved.")
+        st.info(
+            f"Saved {color} to your profile. Streamlit's accent colour is fixed "
+            "for all users by `.streamlit/config.toml`; this preference is kept "
+            "with your progress."
+        )
 
 with tab3:
     st.subheader("Learning Progress")

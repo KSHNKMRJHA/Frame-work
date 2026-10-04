@@ -18,58 +18,248 @@ import numpy as np
 PALETTE = ["#2563eb", "#7c3aed", "#059669", "#dc2626", "#d97706", "#0891b2", "#db2777", "#65a30d", "#4f46e5", "#0d9488"]
 
 
-def frame_diagram(fields, title="Frame / Packet Structure"):
-    """Draw a horizontal stacked-segment diagram for a protocol's frame_fields.
-    fields: list of {"name": str, "bits": int|str}
-    """
-    if not fields:
-        return None
-    # Assign proportional widths; textual bit counts (e.g. "0-64") get a default weight
-    widths = []
-    for f in fields:
-        b = f.get("bits", 8)
-        if isinstance(b, (int, float)):
-            widths.append(max(float(b), 4))
-        else:
-            widths.append(24.0)
-    total = sum(widths)
-    widths = [w / total for w in widths]
+# Visual geometry constants.
+#
+# This diagram is explanatory, not an oscilloscope time scale. A literal
+# proportional layout is actively harmful: DMX512 has a 4096-bit slot field, so
+# a proportional bar leaves "Break" and "Start Code" about 1% of the width each
+# and their labels collide. The bit counts are still printed exactly, so the
+# engineering data is never lost - only the geometry is bounded.
+FIG_WIDTH = 12.0
+# Room for a single legend digit inside a box (about 0.14 inch of canvas).
+MIN_BOX_FRAC = 0.012
+# No single field may take more than this share of a row.
+MAX_BOX_FRAC = 0.55
+# Width per character used to decide whether a full name fits in a box.
+CHAR_INCH = 0.085
 
-    fig, ax = plt.subplots(figsize=(12, 2.6))
+
+def _bit_weight(bits):
+    """Visual weight for a field.
+
+    sqrt() compresses the dynamic range: 1 : 8 : 4096 would be 1% : 0.2% :
+    98.6% proportionally, but 1 : 2.8 : 64 here - the big field still dominates
+    (as it should) while its neighbours stay legible. Textual widths like
+    "0-1500" describe a variable-length payload, which is given a typical
+    64-bit weight; the exact text is preserved in the legend.
+    """
+    import math
+
+    if isinstance(bits, (int, float)):
+        return math.sqrt(max(float(bits), 1.0))
+    return math.sqrt(64.0)
+
+
+def _balanced_fracs(weights, min_frac=MIN_BOX_FRAC, max_frac=MAX_BOX_FRAC):
+    """Normalise weights into fractions that respect a readable width band.
+
+    Water-filling: values below the floor are raised to it and values above the
+    cap are lowered to it, and the difference is redistributed across the
+    fields that still have headroom. The result always sums to 1, so a row can
+    never overflow the axes - the failure mode of a naive max(width, minimum).
+    """
+    n = len(weights)
+    if n == 0:
+        return []
+    if n == 1:
+        return [1.0]
+
+    total = sum(weights) or 1.0
+    fr = [w / total for w in weights]
+
+    for _ in range(64):
+        low = [i for i in range(n) if fr[i] < min_frac - 1e-12]
+        high = [i for i in range(n) if fr[i] > max_frac + 1e-12]
+        if not low and not high:
+            break
+        moved = False
+        if low:
+            deficit = sum(min_frac - fr[i] for i in low)
+            donors = [i for i in range(n) if fr[i] > min_frac]
+            pool = sum(fr[i] - min_frac for i in donors)
+            if pool > 1e-12:
+                for i in low:
+                    fr[i] = min_frac
+                for i in donors:
+                    fr[i] -= deficit * ((fr[i] - min_frac) / pool)
+                moved = True
+        if high:
+            excess = sum(fr[i] - max_frac for i in high)
+            takers = [i for i in range(n) if fr[i] < max_frac]
+            pool = sum(max_frac - fr[i] for i in takers)
+            if pool > 1e-12:
+                for i in high:
+                    fr[i] = max_frac
+                for i in takers:
+                    fr[i] += excess * ((max_frac - fr[i]) / pool)
+                moved = True
+        if not moved:
+            break
+
+    s = sum(fr) or 1.0
+    return [f / s for f in fr]
+
+
+def _fmt_bits(bits):
+    if bits in ("", None):
+        return ""
+    return f"{bits} bit" if isinstance(bits, (int, float)) else f"{bits} bit"
+
+
+def _wrap_name(text, width):
+    """Wrap a field name to the characters that actually fit inside its box."""
+    import textwrap
+
+    return "\n".join(textwrap.wrap(text, width)) or text
+
+
+def _layout_rows(fields, wrap_over=6):
+    """Split fields into balanced rows so a complex frame is not one thin strip.
+
+    Long frames (CAN XL, USB, Ethernet) previously squeezed every field into a
+    single 12-inch strip, which is what made labels collide. Frames with more
+    than ``wrap_over`` fields are split into two balanced rows, keeping each box
+    wide enough for a readable label. Fewer fields stay on one row, where a
+    narrow box simply falls back to a legend index - splitting those would add
+    visual noise for nothing. Field order is never changed.
+    """
+    import math
+
+    n = len(fields)
+    if n <= wrap_over:
+        return [list(range(n))]
+    per_row = math.ceil(n / 2)
+    return [list(range(i, min(i + per_row, n))) for i in range(0, n, per_row)]
+
+
+def _draw_row(ax, indices, fields, row_total, y, legend_ids):
+    """Draw one horizontal strip of fields. Returns the text artists created.
+
+    Geometry comes from ``_balanced_fracs`` rather than raw bit counts, so a
+    4096-bit payload cannot crush its neighbours into unreadable slivers.
+    """
+    weights = [_bit_weight(fields[i].get("bits", 8)) for i in indices]
+    fracs = _balanced_fracs(weights)
+
+    artists = []
     x = 0.0
-    for i, (f, w) in enumerate(zip(fields, widths)):
-        color = PALETTE[i % len(PALETTE)]
+    for pos, idx in enumerate(indices):
+        f = fields[idx]
+        w = fracs[pos]
+        color = PALETTE[idx % len(PALETTE)]
         rect = FancyBboxPatch(
-            (x, 0.15),
+            (x, y),
             w,
-            0.7,
-            boxstyle="round,pad=0.004,rounding_size=0.01",
-            linewidth=1.4,
+            0.62,
+            boxstyle="round,pad=0.003,rounding_size=0.008",
+            linewidth=1.2,
             edgecolor="white",
             facecolor=color,
         )
         ax.add_patch(rect)
-        label = f["name"]
-        bits = f.get("bits", "")
-        txt = f"{label}\n({bits} bit)" if bits != "" else label
-        fontsize = 10 if w > 0.08 else 8
-        ax.text(
-            x + w / 2,
-            0.5,
-            txt,
-            ha="center",
-            va="center",
-            fontsize=fontsize,
-            color="white",
-            fontweight="bold",
-            wrap=True,
+
+        name = f["name"]
+        # Characters that genuinely fit inside this box.
+        fits = int((w * (FIG_WIDTH - 0.6)) / CHAR_INCH)
+        numbered = fits < 9
+
+        if numbered:
+            label = str(legend_ids[idx])
+            fontsize = 8.5
+        else:
+            label = _wrap_name(name, max(9, min(fits, 22)))
+            fontsize = 9.5 if w > 0.12 else 8.5
+
+        artists.append(
+            ax.text(
+                x + w / 2,
+                y + 0.31,
+                label,
+                ha="center",
+                va="center",
+                fontsize=fontsize,
+                color="white",
+                fontweight="bold",
+            )
         )
         x += w
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
+    return artists
+
+
+def frame_diagram(fields, title="Frame / Packet Structure", return_meta=False):
+    """Draw an adaptive stacked-segment diagram for a protocol's frame_fields.
+
+    fields: list of {"name": str, "bits": int|str}
+
+    The old version put every field on one 12x2.6 inch strip. Frames with many
+    fields, very narrow fields (1-bit SOF/ACK), or long names overlapped badly.
+    This scales the canvas and the number of rows to the frame:
+
+      * few wide fields      -> one row, names inside, as before
+      * many fields          -> wrapped across rows, order preserved
+      * fields too narrow    -> numbered inside, full text in a legend below
+
+    ``return_meta`` additionally returns {"rows": n, "legend": [...]} for tests.
+    """
+    if not fields:
+        return None
+
+    weights = [_bit_weight(f.get("bits", 8)) for f in fields]
+    rows = _layout_rows(fields)
+
+    # Number shown inside a box when the name does not fit; the legend below
+    # carries the full text and the exact bit count either way.
+    legend_ids = {i: i + 1 for i in range(len(fields))}
+
+    legend = [
+        (i, f["name"], _fmt_bits(f.get("bits", "")))
+        for i, f in enumerate(fields, start=1)
+    ]
+
+    height = 1.35 * len(rows) + 0.75
+    fig, ax = plt.subplots(figsize=(FIG_WIDTH, height))
+
+    artists = []
+    for r, indices in enumerate(rows):
+        y = 0.5 + 0.95 * (len(rows) - 1 - r)
+        row_total = sum(weights[i] for i in indices) or 1.0
+        artists.extend(_draw_row(ax, indices, fields, row_total, y, legend_ids))
+        if r < len(rows) - 1:
+            ax.annotate(
+                "",
+                xy=(1.0, y - 0.16),
+                xytext=(0.93, y - 0.16),
+                arrowprops={"arrowstyle": "->", "color": "#94a3b8", "lw": 1.2},
+            )
+
+    # A field whose name did not fit inside its box is listed here in full, so
+    # no information is lost by showing a number in the diagram.
+    legend_lines = [
+        f"{n} — {name} — {bits}" if bits else f"{n} — {name}"
+        for n, name, bits in legend
+    ]
+    if len(legend_lines) > 8:
+        col = (len(legend_lines) + 1) // 2
+        left = legend_lines[:col]
+        right = legend_lines[col:]
+        left_txt = "\n".join(left)
+        right_txt = "\n".join(right)
+        ax.text(0.0, -0.30, left_txt, ha="left", va="top", fontsize=7.5, color="#334155",
+                transform=ax.transAxes)
+        ax.text(0.5, -0.30, right_txt, ha="left", va="top", fontsize=7.5, color="#334155",
+                transform=ax.transAxes)
+    else:
+        ax.text(0.0, -0.30, "\n".join(legend_lines), ha="left", va="top", fontsize=8,
+                color="#334155", transform=ax.transAxes)
+
+    ax.set_xlim(-0.005, 1.005)
+    ax.set_ylim(0, 0.5 + 0.95 * len(rows) + 0.08)
     ax.axis("off")
-    ax.set_title(title, fontsize=13, fontweight="bold", pad=14)
+    ax.set_title(title, fontsize=13, fontweight="bold", pad=12)
     fig.tight_layout()
+
+    if return_meta:
+        return fig, {"rows": len(rows), "legend": legend, "artists": artists}
     return fig
 
 

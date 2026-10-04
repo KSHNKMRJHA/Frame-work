@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from collections import Counter
+
+from utils import origins
 from utils.data_loader import load_protocols
 
 from utils import branding
@@ -17,72 +18,70 @@ st.caption(
     "Where in the world did each protocol come from? A geographic tour of the organizations and countries that built the connected world."
 )
 
+# One normalisation source for the map, the counts and the explorer below. The
+# old page parsed `place` twice with two different, naive splitters, which is how
+# "Cambridge, Massachusetts, USA" turned into a country called "Cambridge" that
+# has no map polygon - and that protocol simply disappeared from the map.
+summary = origins.summarize(protocols)
 
-def primary_country(place):
-    if not place:
-        return "Unknown"
-    # Take the first country-like token before a slash or comma
-    p = place.split("/")[0].split(",")[0].strip()
-    # Normalize a few common variants
-    mapping = {
-        "USA": "United States",
-        "US": "United States",
-        "International": "International",
-        "Europe": "Europe (multi-country)",
-    }
-    return mapping.get(p, p)
+# Two rows of two. A single row of four left each metric ~98px wide at 900px,
+# and st.metric clips its label with an ellipsis rather than wrapping it.
+m1, m2 = st.columns(2)
+m1.metric("Protocols", summary["total"])
+m2.metric("Single-country origins", summary["mapped_count"])
+m3, m4 = st.columns(2)
+m3.metric("International / multi-country", summary["international_count"])
+m4.metric("Unresolved", summary["unknown_count"])
 
+st.caption(
+    f"Coverage: **{summary['mapped_count'] + len({c for info in summary['international'] for c in info['countries']})}**"
+    f" of {summary['total']} protocols resolve to at least one concrete country. "
+    "Counts always add up to the total - unresolved origins are reported, never dropped."
+)
 
-countries = [primary_country(p.get("place", "")) for p in protocols]
-counter = Counter(countries)
-df = pd.DataFrame(sorted(counter.items(), key=lambda x: -x[1]), columns=["Country/Region", "Protocol Count"])
-
-c1, c2 = st.columns([1.4, 1])
-with c1:
-    st.subheader("📊 Protocols Invented by Country/Region")
-    st.dataframe(df, width="stretch", hide_index=True)
-with c2:
-    fig = px.pie(
-        df.head(10), names="Country/Region", values="Protocol Count", title="Top 10 Contributing Countries/Regions"
-    )
-    st.plotly_chart(fig, width="stretch")
-
-st.divider()
-
-# Attempt a choropleth using ISO country name matching (best-effort)
-COUNTRY_ALIASES = {
-    "United States": "United States",
-    "Germany": "Germany",
-    "Netherlands": "Netherlands",
-    "Japan": "Japan",
-    "Sweden": "Sweden",
-    "Finland": "Finland",
-    "Denmark": "Denmark",
-    "France": "France",
-    "Canada": "Canada",
-    "Austria": "Austria",
-    "Switzerland": "Switzerland",
-    "United Kingdom": "United Kingdom",
-    "UK": "United Kingdom",
-    "Belgium": "Belgium",
-}
+# Countries that have a polygon we can actually shade.
 map_rows = []
-for country, count in counter.items():
-    iso_name = COUNTRY_ALIASES.get(country)
-    if iso_name:
-        map_rows.append({"country": iso_name, "count": count})
+for country, plist in summary["per_country"].items():
+    iso = origins.iso_name(country)
+    if not iso:
+        continue
+    names = sorted(p["name"] for p in plist)
+    shown = ", ".join(names[:6]) + (f" +{len(names) - 6} more" if len(names) > 6 else "")
+    map_rows.append({
+        "country": iso,
+        "count": len(plist),
+        "protocols": shown,
+        "hover": f"<b>{country}</b><br>{len(plist)} protocol(s)<br>{shown}",
+    })
+
 if map_rows:
-    map_df = pd.DataFrame(map_rows).groupby("country", as_index=False).sum()
+    map_df = pd.DataFrame(map_rows).sort_values("count", ascending=False)
     fig2 = px.choropleth(
         map_df,
         locations="country",
         locationmode="country names",
         color="count",
+        hover_name="country",
+        hover_data={"protocols": False, "count": True, "hover": True},
         color_continuous_scale="Blues",
-        title="World Map: Protocol Origins",
+        title="World Map: Protocol Origins (hover a country for its protocols)",
     )
-    fig2.update_layout(height=500)
+    fig2.update_layout(height=520)
     st.plotly_chart(fig2, width="stretch")
+
+st.dataframe(
+    pd.DataFrame([
+        {
+            "Country": c,
+            "Protocols": len(plist),
+            "Names": ", ".join(sorted(p["name"] for p in plist)[:8])
+            + (f" +{len(plist) - 8} more" if len(plist) > 8 else ""),
+        }
+        for c, plist in sorted(summary["per_country"].items(), key=lambda kv: -len(kv[1]))
+    ]),
+    width="stretch",
+    hide_index=True,
+)
 
 st.divider()
 st.subheader("🏢 Standards Organizations You Should Know")
@@ -101,10 +100,32 @@ for i, (org, plist) in enumerate(sorted(orgs.items(), key=lambda x: -len(x[1]))[
 
 st.divider()
 st.subheader("🔍 Explore by Country")
-selected_country = st.selectbox("Pick a country/region:", sorted(counter.keys()))
-matches = [p for p in protocols if primary_country(p.get("place", "")) == selected_country]
-for p in matches:
+# Same normalisation source as the map above - one parser, one answer.
+selected_country = st.selectbox(
+    "Pick a country:", sorted(summary["per_country"].keys(), key=lambda c: (-len(summary["per_country"][c]), c))
+)
+for p in summary["per_country"][selected_country]:
     st.markdown(f"**{p['name']}** ({p['year']}) — {p.get('inventor', '')}")
     st.caption(p["description"])
+
+if summary["international_count"] or summary["unknown_count"]:
+    with st.expander(
+        f"🌍 International / multi-country and unresolved origins "
+        f"({summary['international_count']} + {summary['unknown_count']})"
+    ):
+        st.caption(
+            "These are deliberately not forced onto a single country. The map shades "
+            "every concrete country they name; the remaining entries have no single "
+            "origin to shade."
+        )
+        for info in summary["international"]:
+            p = info["protocol"]
+            note = f" — {info['note']}" if info["note"] else ""
+            st.markdown(f"**{p['name']}** — {info['label']}{note}")
+            st.caption(f"Source string: `{p.get('place', '')}`")
+        for info in summary["unknown"]:
+            p = info["protocol"]
+            st.markdown(f"**{p['name']}** — unresolved")
+            st.caption(f"Source string: `{p.get('place', '')}`")
 
 branding.page_footer()
