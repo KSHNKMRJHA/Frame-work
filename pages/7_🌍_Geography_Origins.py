@@ -24,9 +24,12 @@ st.caption(
 # has no map polygon - and that protocol simply disappeared from the map.
 summary = origins.summarize(protocols)
 
-m1, m2, m3, m4 = st.columns(4)
+# Two rows of two. A single row of four left each metric ~98px wide at 900px,
+# and st.metric clips its label with an ellipsis rather than wrapping it.
+m1, m2 = st.columns(2)
 m1.metric("Protocols", summary["total"])
 m2.metric("Single-country origins", summary["mapped_count"])
+m3, m4 = st.columns(2)
 m3.metric("International / multi-country", summary["international_count"])
 m4.metric("Unresolved", summary["unknown_count"])
 
