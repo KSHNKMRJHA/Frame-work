@@ -252,5 +252,3 @@ def summarize(protocols):
         "international_count": len(international),
         "unknown_count": len(unknown),
     }
-
-
