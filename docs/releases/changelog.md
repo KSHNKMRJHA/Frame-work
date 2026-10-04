@@ -9,6 +9,48 @@ Versioning: [Semantic Versioning](https://semver.org/)
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-10-04
+
+### Fixed
+- Encyclopedia protocol switching: the dropdown was built inside the false branch
+  of a conditional, so once `?p=<id>` was present the widget was never rendered
+  and the page's own URL update permanently outranked it. Selection is now
+  seeded once and owned by the widget, keyed on protocol **ID**.
+- Protocol Selector now opens the exact chosen Encyclopedia entry, passing the
+  protocol ID rather than the display name.
+- Frame / Packet Structure diagrams for very large and narrow fields, including
+  DMX512-style extreme ratios. Field widths are bounded rather than strictly
+  proportional, so one huge payload can no longer render its neighbours
+  unreadable. Exact bit counts are unchanged and still shown.
+- Full Universe Map now represents all 140 protocol identities. It previously
+  labelled only every third node with a three-letter abbreviation.
+- Mind Map readability and contrast in both light and dark themes; labels no
+  longer render white on a light figure.
+- Geography/origin normalisation and map presentation. "City, State, Country"
+  strings previously resolved to the city and silently vanished from the map.
+- Appearance behaviour: the theme control no longer rewrites tracked
+  `.streamlit/config.toml` from a visitor's session, which changed the app for
+  every user and could not work. It now reports the active theme and points at
+  Streamlit's native Light / Dark / Use system setting control.
+
+### Verification
+- Added 43 dedicated regression checks across navigation, diagrams, mind maps,
+  geography and theming.
+- Tested all 116 real frame definitions for label collision.
+- Verified 140/140 protocol identity coverage on the Universe Map.
+- Verified origin accounting across all 140 protocols.
+- Responsive browser sweeps at 900px and 390px, plus Chromium, Firefox and
+  WebKit coverage.
+- Python 3.10 and 3.11 CI.
+
+### Known limitations
+- A browser Back/Forward that changes only the `?p=` query string does not
+  re-seed Streamlit's session state until a reload. Current selection is not
+  corrupted, and deep links resolve correctly on load and refresh.
+- The Full Universe Map remains visually dense on very small screens.
+
+---
+
 ## [1.1.0] - 2026-10-03
 
 ### Added
@@ -127,6 +169,7 @@ Versioning: [Semantic Versioning](https://semver.org/)
 
 | Version | Date | Protocols | Modules | Key Milestone |
 |---------|------|-----------|---------|---------------|
+| 1.1.1 | 2026-10-04 | 140 | 12 | Navigation, diagram, map, geography and theme fixes |
 | 1.1.0 | 2026-10-03 | 140 | 12 | Vectorform redesign, native theming, browser verification gates |
 | 1.0.0 | 2024-01-15 | 118 | 10 | Initial public release |
 

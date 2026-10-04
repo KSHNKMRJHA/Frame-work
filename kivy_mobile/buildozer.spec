@@ -4,7 +4,7 @@ package.name = framework
 package.domain = org.framework
 source.dir = .
 source.include_exts = py,json,png,jpg,kv,atlas
-version = 1.1.0
+version = 1.1.1
 
 # Kivy is the only real dependency; quiz_logic.py has no external deps beyond
 # the Python standard library (random, json).

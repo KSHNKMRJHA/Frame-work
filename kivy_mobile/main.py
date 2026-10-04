@@ -281,7 +281,7 @@ class AboutScreen(Screen):
         root = BoxLayout(orientation="vertical", padding=dp(24), spacing=dp(14))
         root.add_widget(
             Label(
-                text="[b]FrameWork[/b] v1.1.0\nMobile Companion\n\n"
+                text="[b]FrameWork[/b] v1.1.1\nMobile Companion\n\n"
                 "Built with Kivy — runs on Windows, macOS, Linux, and Android.\n\n"
                 "Full desktop/web edition (Streamlit) includes diagrams, mind maps,\n"
                 "timelines, and the Science & Math Lab.\n\n"
