@@ -15,6 +15,7 @@ Run with:  streamlit run app.py
 
 
 import datetime
+from html import escape
 
 
 
@@ -118,11 +119,11 @@ _home_pal = theme.current_palette()
 
 _version_chip = (
 
-    f"<span style='display:inline-block; font-family:{theme.MONO_STACK}; "
+    f"<span style='display:inline-block; font-family:{escape(theme.MONO_STACK)}; "
 
     f"font-size:0.75rem; font-weight:700; color:{theme.contrast_text(_home_pal['accent'])}; "
 
-    f"background:{_home_pal['accent']}; border-radius:999px; "
+    f"background:{_home_pal['accent']}; border:1px solid {_home_pal['accent']}; border-radius:999px; "
 
     f"padding:0.12rem 0.7rem; margin-left:0.4rem; white-space:nowrap;'>"
 
@@ -133,10 +134,12 @@ _version_chip = (
 st.markdown(
     f"""
 <div style="padding:0.2rem 0 0.8rem 0; border-bottom:1px solid {_home_pal['border']};">
-  <div style="display:flex; align-items:center; gap:0.9rem; align-items:baseline;">
+  <div style="display:flex; align-items:baseline; flex-wrap:wrap; gap:0.6rem 0.9rem;">
     <div style="font-size:2.6rem;">{APP_ICON}</div>
     <div style="font-size:2.3rem; font-weight:700; color:{_home_pal['text']}; line-height:1.05;">
-      {APP_NAME} {_version_chip}
+      {escape(APP_NAME)}
+    </div>
+    <div style="display:flex; align-items:center;">{_version_chip}
     </div>
   </div>
   <div style="font-size:0.8rem; letter-spacing:0.18em; text-transform:uppercase; color:{_home_pal['accent']}; font-weight:600; margin-top:0.4rem;">
@@ -271,27 +274,30 @@ NAV_GROUPS = [
 _pal = theme.current_palette()
 
 for group_title, paths in NAV_GROUPS:
-    items = [(_nav_title(p), _NAV_DESCRIPTIONS.get(_nav_title(p), ""), p) for p in paths]
+    items = [(_nav_title(p), next((desc for key, desc in _NAV_DESCRIPTIONS.items()
+                                  if key in _nav_title(p)), ""), p) for p in paths]
     st.markdown(
         f"<div style='font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; "
         f"font-weight:700; color:{_pal['accent']}; margin:0.15rem 0 0.3rem 0;'>{group_title}</div>",
         unsafe_allow_html=True,
     )
-    cols = st.columns(min(len(items), 2))
-    for col, (card_title, card_desc, page_file) in zip(cols, items):
-        with col:
-            with st.container(border=True):
-                st.markdown(
-                    f"<div style='font-weight:700; font-size:1.02rem; color:{_pal['text']};'>"
-                    f"{card_title}</div>",
-                    unsafe_allow_html=True,
-                )
-                st.markdown(
-                    f"<div style='font-size:0.78rem; color:{_pal['text_muted']}; margin-top:0.2rem;'>"
-                    f"{card_desc}</div>",
-                    unsafe_allow_html=True,
-                )
-                st.page_link(page_file, label="Open")
+    for row_start in range(0, len(items), 2):
+        row = items[row_start:row_start + 2]
+        cols = st.columns(2)
+        for col, (card_title, card_desc, page_file) in zip(cols, row):
+            with col:
+                with st.container(border=True):
+                    st.markdown(
+                        f"<div style='font-weight:700; font-size:1.02rem; color:{_pal['text']};'>"
+                        f"{escape(card_title)}</div>",
+                        unsafe_allow_html=True,
+                    )
+                    st.markdown(
+                        f"<div style='font-size:0.9rem; line-height:1.5; color:{_pal['text_muted']}; "
+                        f"margin:0.35rem 0 0.5rem;'>{escape(card_desc)}</div>",
+                        unsafe_allow_html=True,
+                    )
+                    st.page_link(page_file, label="Open", icon="➡️")
 
 
 st.divider()
