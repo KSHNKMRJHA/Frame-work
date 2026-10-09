@@ -56,6 +56,9 @@ jobs:
       - name: Unit tests — CRC vectors, formulas, boundary guards, generators
         run: python build_scripts/check_logic.py
 
+      - name: CAN electrical and logical-state consistency
+        run: python build_scripts/check_can_consistency.py
+
       - name: Lint
         run: |
           pip install ruff
