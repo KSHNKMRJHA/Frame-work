@@ -312,6 +312,14 @@ DEEP_SPECS = {
                 "Notes": "Both near common mode",
             },
             {
+                "Parameter": "Differential voltage (dominant / recessive)",
+                "Min": "—",
+                "Typ": "+2.0 / 0.0",
+                "Max": "—",
+                "Unit": "V",
+                "Notes": "VDiff = CAN_H − CAN_L; nominal classic CAN",
+            },
+            {
                 "Parameter": "Sample point",
                 "Min": "75",
                 "Typ": "80",

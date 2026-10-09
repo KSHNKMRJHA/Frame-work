@@ -22,7 +22,8 @@ which is why a 200 mV USB differential rides on a 3.0 V common mode.
 
 def _spec(signaling, coding, pairs=(), vcm=None, vdiff_high=None, vdiff_low=None,
           voh=None, vol=None, impedance=None, rise_ns=None, bit_ns=None,
-          prop_ns_per_m=None, termination="", jitter_ps=None, notes=""):
+          prop_ns_per_m=None, termination="", jitter_ps=None, notes="",
+          logic_1_is_vdiff_high=True):
     """Build one electrical spec record.
 
     signaling: "differential" | "single_ended" | "open_drain" | "bipolar" |
@@ -31,7 +32,7 @@ def _spec(signaling, coding, pairs=(), vcm=None, vdiff_high=None, vdiff_low=None
     pairs:     (positive, negative, role) triples; role is "transmit",
                "receive" or "bidirectional"
     """
-    return {
+    spec = {
         "signaling": signaling,
         "coding": coding,
         "pairs": [{"a": a, "b": b, "role": role} for a, b, role in pairs],
@@ -48,6 +49,9 @@ def _spec(signaling, coding, pairs=(), vcm=None, vdiff_high=None, vdiff_low=None
         "jitter_ps": jitter_ps,
         "notes": notes,
     }
+    if not logic_1_is_vdiff_high:
+        spec["logic_1_is_vdiff_high"] = False
+    return spec
 
 
 ELECTRICAL = {
@@ -93,12 +97,17 @@ ELECTRICAL = {
     # ------------------------------------------------------- Automotive -----
     "can": _spec(
         "differential", "nrz", pairs=[("CAN_H", "CAN_L", "bidirectional")],
-        vcm=2.5, vdiff_high=1.0, vdiff_low=-1.0, impedance=120, rise_ns=60.0,
+        vcm=2.5, vdiff_high=2.0, vdiff_low=0.0, impedance=120, rise_ns=60.0,
         bit_ns=2000.0, prop_ns_per_m=5.0, jitter_ps=250,
+        logic_1_is_vdiff_high=False,
         termination="120 Ohm at both ends (two 60 Ohm); split termination for stubs",
         notes="Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); "
               "dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V "
-              "(VDiff about 2 V). 1 Mbit/s gives a 1 us bit; 500 kbit/s gives 2 us.",
+              "(VDiff about +2 V). Dominant is logical 0; recessive is logical 1. "
+              "The configured 2 us bit period is a 500 kbit/s example; 1 Mbit/s "
+              "uses a 1 us bit. These are nominal classic-CAN levels, not guaranteed "
+              "limits; use the transceiver specifications. Typical high-speed "
+              "termination is 120 Ohm at each physical end.",
     ),
     "lin": _spec(
         "single_ended", "nrz", vcm=0.0, voh=12.0, vol=0.0, impedance=1000,
@@ -421,6 +430,7 @@ ELECTRICAL = {
     "isotp": _spec(
         "passive", "nrz", vcm=2.5, voh=3.5, vol=1.5, impedance=120, rise_ns=60.0,
         bit_ns=2000.0, prop_ns_per_m=5.0, jitter_ps=250,
+        logic_1_is_vdiff_high=False,
         termination="120 Ohm at both ends of the underlying CAN bus",
         notes="ISO-TP defines no conductors of its own: multi-frame payloads are "
               "carried inside CAN frames using SF/FF/FC/BS flow control.",
