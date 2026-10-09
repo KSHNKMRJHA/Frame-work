@@ -403,7 +403,10 @@ if technical:
                 rows.append({"Parameter": "Rise time (10–90 %)",
                              "Value": f"{spec['rise_time_ns']:g} ns"})
             if spec.get("bit_period_ns"):
-                rows.append({"Parameter": "Bit period",
+                is_can_carrier = (selected.get("id") in ("can", "isotp") or
+                                  spec.get("inherited_from") in ("can", "isotp") or
+                                  spec.get("logic_1_is_vdiff_high") is False)
+                rows.append({"Parameter": "Representative bit period (example)" if is_can_carrier else "Bit period",
                              "Value": f"{spec['bit_period_ns']:g} ns "
                                       f"({1000.0 / spec['bit_period_ns']:,.1f} Mbit/s)"})
             if spec.get("prop_delay_ns_per_m"):
@@ -427,6 +430,10 @@ if technical:
                 st.dataframe(rows, width="stretch", hide_index=True)
             if spec.get("notes"):
                 st.caption(spec["notes"])
+            if spec.get("bit_period_ns") and (selected.get("id") in ("can", "isotp") or
+                                               spec.get("inherited_from") in ("can", "isotp") or
+                                               spec.get("logic_1_is_vdiff_high") is False):
+                st.caption("CAN timing depends on the configured bus rate; this inherited 2 µs value is a 500 kbit/s example (1 Mbit/s is 1 µs/bit).")
         st.divider()
         st.markdown("### 🚌 Bus & protocol parameters")
         st.caption(

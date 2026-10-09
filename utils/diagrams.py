@@ -732,7 +732,7 @@ def spi_waveform(mosi_byte=0x5A, miso_byte=0xA5, cpol=0, cpha=0):
 def can_waveform(frame_id=0x123, data_byte=0x42, extended=False):
     """CAN 2.0 base/extended data frame on the differential pair.
 
-    CAN_H/CAN_L show recessive (both ~2.5 V) vs dominant (3.5 V / 1.5 V);
+    CAN_H/CAN_L levels are derived from the electrical source of truth;
     the CRC sequence is drawn as a representative bit pattern.
     """
     id_bits = 29 if extended else 11
@@ -745,11 +745,20 @@ def can_waveform(frame_id=0x123, data_byte=0x42, extended=False):
     bits += [1, 0, 1]  # CRC delim, ACK slot, ACK delim
     bits += [1] * 7  # EOF
 
+    from electrical_specs import ELECTRICAL
+
+    can_spec = ELECTRICAL["can"]
+    vcm = can_spec["vcm_volts"]
+    dominant_vdiff = can_spec["vdiff_high_volts"]
+    recessive_vdiff = can_spec["vdiff_low_volts"]
+    dominant_h, dominant_l = vcm + dominant_vdiff / 2.0, vcm - dominant_vdiff / 2.0
+    recessive_h, recessive_l = vcm + recessive_vdiff / 2.0, vcm - recessive_vdiff / 2.0
     segs_h, segs_l = [], []
     for b in bits:
         dominant = b == 0
-        segs_h.append((3.5 if dominant else 2.5, 1.0))
-        segs_l.append((1.5 if dominant else 2.5, 1.0))
+        vdiff = dominant_vdiff if dominant else recessive_vdiff
+        segs_h.append((vcm + vdiff / 2.0, 1.0))
+        segs_l.append((vcm - vdiff / 2.0, 1.0))
 
     x = 0.0
     fields = [(0.0, 1.0, "SOF")]
@@ -772,7 +781,8 @@ def can_waveform(frame_id=0x123, data_byte=0x42, extended=False):
             {"name": "CAN_L", "segments": segs_l},
         ],
         "fields": fields,
-        "time_label": "bit periods (dominant: H≈3.5 V / L≈1.5 V; recessive: both ≈2.5 V)",
+        "time_label": (f"bit periods (dominant: H≈{dominant_h:g} V / L≈{dominant_l:g} V; "
+                       f"recessive: H≈{recessive_h:g} V / L≈{recessive_l:g} V)"),
         "stats": {"id": value, "extended": extended, "data": data_byte},
     }
 

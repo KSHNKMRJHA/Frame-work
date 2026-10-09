@@ -413,8 +413,8 @@ _OVERRIDES = {
     ),
     "can": (
         "Differential dominant/recessive CAN bus on CAN_H/CAN_L.",
-        "Dominant: CAN_H higher than CAN_L, typically about 3.5 V vs 1.5 V.",
-        "Recessive: both lines near common mode, typically about 2.5 V each.",
+        "Recessive (logical 1): CAN_H and CAN_L are both near 2.5 V nominally.",
+        "Dominant (logical 0): CAN_H is about 3.5 V and CAN_L about 1.5 V nominally.",
         "Cable levels are transceiver-defined; MCU CAN pins are separate logic signals.",
         "Synchronous bit timing with sample point and arbitration.",
         "120 Ω at both ends is typical; use twisted pair, biasing/fail-safe behavior, and ESD protection.",

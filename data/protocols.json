@@ -3138,8 +3138,8 @@
         }
       ],
       "vcm_volts": 2.5,
-      "vdiff_high_volts": 1.0,
-      "vdiff_low_volts": -1.0,
+      "vdiff_high_volts": 2.0,
+      "vdiff_low_volts": 0.0,
       "voh_volts": null,
       "vol_volts": null,
       "impedance_ohm": 120,
@@ -3148,7 +3148,8 @@
       "prop_delay_ns_per_m": 5.0,
       "termination": "120 Ohm at both ends (two 60 Ohm); split termination for stubs",
       "jitter_ps": 250,
-      "notes": "Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V (VDiff about 2 V). 1 Mbit/s gives a 1 us bit; 500 kbit/s gives 2 us.",
+      "notes": "Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V (VDiff about +2 V). Dominant is logical 0; recessive is logical 1. The configured 2 us bit period is a 500 kbit/s example; 1 Mbit/s uses a 1 us bit. These are nominal classic-CAN levels, not guaranteed limits; use the transceiver specifications. Typical high-speed termination is 120 Ohm at each physical end.",
+      "logic_1_is_vdiff_high": false,
       "inherited_from": "can"
     },
     "data_rate_min_bps": null,
@@ -3312,8 +3313,8 @@
         }
       ],
       "vcm_volts": 2.5,
-      "vdiff_high_volts": 1.0,
-      "vdiff_low_volts": -1.0,
+      "vdiff_high_volts": 2.0,
+      "vdiff_low_volts": 0.0,
       "voh_volts": null,
       "vol_volts": null,
       "impedance_ohm": 120,
@@ -3322,7 +3323,8 @@
       "prop_delay_ns_per_m": 5.0,
       "termination": "120 Ohm at both ends (two 60 Ohm); split termination for stubs",
       "jitter_ps": 250,
-      "notes": "Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V (VDiff about 2 V). 1 Mbit/s gives a 1 us bit; 500 kbit/s gives 2 us.",
+      "notes": "Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V (VDiff about +2 V). Dominant is logical 0; recessive is logical 1. The configured 2 us bit period is a 500 kbit/s example; 1 Mbit/s uses a 1 us bit. These are nominal classic-CAN levels, not guaranteed limits; use the transceiver specifications. Typical high-speed termination is 120 Ohm at each physical end.",
+      "logic_1_is_vdiff_high": false,
       "inherited_from": "can"
     },
     "data_rate_min_bps": null,
@@ -4860,8 +4862,8 @@
     "technical": {
       "scope": "Vehicle network/link layer",
       "signaling": "Differential dominant/recessive CAN bus on CAN_H/CAN_L.",
-      "logic_high": "Dominant: CAN_H higher than CAN_L, typically about 3.5 V vs 1.5 V.",
-      "logic_low": "Recessive: both lines near common mode, typically about 2.5 V each.",
+      "logic_high": "Recessive (logical 1): CAN_H and CAN_L are both near 2.5 V nominally.",
+      "logic_low": "Dominant (logical 0): CAN_H is about 3.5 V and CAN_L about 1.5 V nominally.",
       "voltage_reference": "Cable levels are transceiver-defined; MCU CAN pins are separate logic signals.",
       "clocking": "Synchronous bit timing with sample point and arbitration.",
       "termination_and_biasing": "120 Ω at both ends is typical; use twisted pair, biasing/fail-safe behavior, and ESD protection.",
@@ -4913,8 +4915,8 @@
         }
       ],
       "vcm_volts": 2.5,
-      "vdiff_high_volts": 1.0,
-      "vdiff_low_volts": -1.0,
+      "vdiff_high_volts": 2.0,
+      "vdiff_low_volts": 0.0,
       "voh_volts": null,
       "vol_volts": null,
       "impedance_ohm": 120,
@@ -4923,7 +4925,8 @@
       "prop_delay_ns_per_m": 5.0,
       "termination": "120 Ohm at both ends (two 60 Ohm); split termination for stubs",
       "jitter_ps": 250,
-      "notes": "Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V (VDiff about 2 V). 1 Mbit/s gives a 1 us bit; 500 kbit/s gives 2 us."
+      "notes": "Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V (VDiff about +2 V). Dominant is logical 0; recessive is logical 1. The configured 2 us bit period is a 500 kbit/s example; 1 Mbit/s uses a 1 us bit. These are nominal classic-CAN levels, not guaranteed limits; use the transceiver specifications. Typical high-speed termination is 120 Ohm at each physical end.",
+      "logic_1_is_vdiff_high": false
     },
     "data_rate_min_bps": null,
     "data_rate_max_bps": 1000000,
@@ -5084,8 +5087,8 @@
         }
       ],
       "vcm_volts": 2.5,
-      "vdiff_high_volts": 1.0,
-      "vdiff_low_volts": -1.0,
+      "vdiff_high_volts": 2.0,
+      "vdiff_low_volts": 0.0,
       "voh_volts": null,
       "vol_volts": null,
       "impedance_ohm": 120,
@@ -5094,7 +5097,8 @@
       "prop_delay_ns_per_m": 5.0,
       "termination": "120 Ohm at both ends (two 60 Ohm); split termination for stubs",
       "jitter_ps": 250,
-      "notes": "Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V (VDiff about 2 V). 1 Mbit/s gives a 1 us bit; 500 kbit/s gives 2 us.",
+      "notes": "Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V (VDiff about +2 V). Dominant is logical 0; recessive is logical 1. The configured 2 us bit period is a 500 kbit/s example; 1 Mbit/s uses a 1 us bit. These are nominal classic-CAN levels, not guaranteed limits; use the transceiver specifications. Typical high-speed termination is 120 Ohm at each physical end.",
+      "logic_1_is_vdiff_high": false,
       "inherited_from": "can"
     },
     "data_rate_min_bps": null,
@@ -6123,6 +6127,7 @@
       "termination": "120 Ohm at both ends of the underlying CAN bus",
       "jitter_ps": 250,
       "notes": "ISO-TP defines no conductors of its own: multi-frame payloads are carried inside CAN frames using SF/FF/FC/BS flow control.",
+      "logic_1_is_vdiff_high": false,
       "inherited_from": "isotp"
     },
     "data_rate_min_bps": null,
@@ -6368,8 +6373,8 @@
         }
       ],
       "vcm_volts": 2.5,
-      "vdiff_high_volts": 1.0,
-      "vdiff_low_volts": -1.0,
+      "vdiff_high_volts": 2.0,
+      "vdiff_low_volts": 0.0,
       "voh_volts": null,
       "vol_volts": null,
       "impedance_ohm": 120,
@@ -6378,7 +6383,8 @@
       "prop_delay_ns_per_m": 5.0,
       "termination": "120 Ohm at both ends (two 60 Ohm); split termination for stubs",
       "jitter_ps": 250,
-      "notes": "Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V (VDiff about 2 V). 1 Mbit/s gives a 1 us bit; 500 kbit/s gives 2 us.",
+      "notes": "Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V (VDiff about +2 V). Dominant is logical 0; recessive is logical 1. The configured 2 us bit period is a 500 kbit/s example; 1 Mbit/s uses a 1 us bit. These are nominal classic-CAN levels, not guaranteed limits; use the transceiver specifications. Typical high-speed termination is 120 Ohm at each physical end.",
+      "logic_1_is_vdiff_high": false,
       "inherited_from": "can"
     },
     "data_rate_min_bps": null,
@@ -6492,8 +6498,8 @@
         }
       ],
       "vcm_volts": 2.5,
-      "vdiff_high_volts": 1.0,
-      "vdiff_low_volts": -1.0,
+      "vdiff_high_volts": 2.0,
+      "vdiff_low_volts": 0.0,
       "voh_volts": null,
       "vol_volts": null,
       "impedance_ohm": 120,
@@ -6502,7 +6508,8 @@
       "prop_delay_ns_per_m": 5.0,
       "termination": "120 Ohm at both ends (two 60 Ohm); split termination for stubs",
       "jitter_ps": 250,
-      "notes": "Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V (VDiff about 2 V). 1 Mbit/s gives a 1 us bit; 500 kbit/s gives 2 us.",
+      "notes": "Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V (VDiff about +2 V). Dominant is logical 0; recessive is logical 1. The configured 2 us bit period is a 500 kbit/s example; 1 Mbit/s uses a 1 us bit. These are nominal classic-CAN levels, not guaranteed limits; use the transceiver specifications. Typical high-speed termination is 120 Ohm at each physical end.",
+      "logic_1_is_vdiff_high": false,
       "inherited_from": "can"
     },
     "data_rate_min_bps": null,
@@ -16301,8 +16308,8 @@
         }
       ],
       "vcm_volts": 2.5,
-      "vdiff_high_volts": 1.0,
-      "vdiff_low_volts": -1.0,
+      "vdiff_high_volts": 2.0,
+      "vdiff_low_volts": 0.0,
       "voh_volts": null,
       "vol_volts": null,
       "impedance_ohm": 120,
@@ -16311,7 +16318,8 @@
       "prop_delay_ns_per_m": 5.0,
       "termination": "120 Ohm at both ends (two 60 Ohm); split termination for stubs",
       "jitter_ps": 250,
-      "notes": "Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V (VDiff about 2 V). 1 Mbit/s gives a 1 us bit; 500 kbit/s gives 2 us.",
+      "notes": "Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V (VDiff about +2 V). Dominant is logical 0; recessive is logical 1. The configured 2 us bit period is a 500 kbit/s example; 1 Mbit/s uses a 1 us bit. These are nominal classic-CAN levels, not guaranteed limits; use the transceiver specifications. Typical high-speed termination is 120 Ohm at each physical end.",
+      "logic_1_is_vdiff_high": false,
       "inherited_from": "can"
     },
     "data_rate_min_bps": null,
@@ -16423,7 +16431,8 @@
       "prop_delay_ns_per_m": 5.0,
       "termination": "120 Ohm at both ends of the underlying CAN bus",
       "jitter_ps": 250,
-      "notes": "ISO-TP defines no conductors of its own: multi-frame payloads are carried inside CAN frames using SF/FF/FC/BS flow control."
+      "notes": "ISO-TP defines no conductors of its own: multi-frame payloads are carried inside CAN frames using SF/FF/FC/BS flow control.",
+      "logic_1_is_vdiff_high": false
     },
     "data_rate_min_bps": null,
     "data_rate_max_bps": null,
@@ -16692,8 +16701,8 @@
         }
       ],
       "vcm_volts": 2.5,
-      "vdiff_high_volts": 1.0,
-      "vdiff_low_volts": -1.0,
+      "vdiff_high_volts": 2.0,
+      "vdiff_low_volts": 0.0,
       "voh_volts": null,
       "vol_volts": null,
       "impedance_ohm": 120,
@@ -16702,7 +16711,8 @@
       "prop_delay_ns_per_m": 5.0,
       "termination": "120 Ohm at both ends (two 60 Ohm); split termination for stubs",
       "jitter_ps": 250,
-      "notes": "Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V (VDiff about 2 V). 1 Mbit/s gives a 1 us bit; 500 kbit/s gives 2 us.",
+      "notes": "Classic CAN recessive = both lines near 2.5 V (VDiff about 0 V); dominant pulls CAN_H to about 3.5 V and CAN_L to about 1.5 V (VDiff about +2 V). Dominant is logical 0; recessive is logical 1. The configured 2 us bit period is a 500 kbit/s example; 1 Mbit/s uses a 1 us bit. These are nominal classic-CAN levels, not guaranteed limits; use the transceiver specifications. Typical high-speed termination is 120 Ohm at each physical end.",
+      "logic_1_is_vdiff_high": false,
       "inherited_from": "can"
     },
     "data_rate_min_bps": null,
