@@ -358,4 +358,3 @@ def status_led(text, tone="ok", dot="●"):
         f"{_esc(text)}</span>",
         unsafe_allow_html=True,
     )
-

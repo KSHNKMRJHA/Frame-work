@@ -1,0 +1,1543 @@
+{
+  "browser": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "captures": [
+    {
+      "file": "signalbench-revision-dark-1440-home.png",
+      "theme": "dark",
+      "width": 1440,
+      "section": "home",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": [
+        {
+          "text": "\ud83d\udcda Encyclopedia\nBrowse, search and filter every protocol with full technical profiles.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2696\ufe0f Compare\nPut protocols side-by-side: speed, pins, wiring, voltages and more.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udded Selector\nAnswer 4 questions and get a ranked shortlist with standard documents.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udcd6 Glossary\nEvery term in one place, each with the protocols where it matters.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd70\ufe0f Timeline History\nTravel the decades: who invented what, where, and why.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\uddfa\ufe0f Mindmap\nSee how every category and protocol relates.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udf0d Geography Origins\nWhich countries and organizations invented the protocols.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udde0 Quiz Assessment\nAuto-generated MCQs across every protocol, with XP and badges.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udfae Puzzles Games\nFrame-field reordering, speed matching, guess-the-protocol.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd2c Science Math Lab\nBaud rate, Nyquist/Shannon, CRC, CAN, I2C, RS-485, RF link budget.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2699\ufe0f Settings Profile\nProfile, XP, badges, theme accent, progress reset.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2139\ufe0f Info\nAbout, deployment, links, audience guide, credits and license.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ],
+      "versionChip": {
+        "background": "rgb(59, 130, 246)",
+        "border": "1px",
+        "radius": "999px",
+        "size": "12px",
+        "text": "v1.1.1"
+      }
+    },
+    {
+      "file": "signalbench-revision-dark-1440-home-nav.png",
+      "theme": "dark",
+      "width": 1440,
+      "section": "home-nav",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": [
+        {
+          "text": "\ud83d\udcda Encyclopedia\nBrowse, search and filter every protocol with full technical profiles.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2696\ufe0f Compare\nPut protocols side-by-side: speed, pins, wiring, voltages and more.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udded Selector\nAnswer 4 questions and get a ranked shortlist with standard documents.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udcd6 Glossary\nEvery term in one place, each with the protocols where it matters.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd70\ufe0f Timeline History\nTravel the decades: who invented what, where, and why.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\uddfa\ufe0f Mindmap\nSee how every category and protocol relates.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udf0d Geography Origins\nWhich countries and organizations invented the protocols.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udde0 Quiz Assessment\nAuto-generated MCQs across every protocol, with XP and badges.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udfae Puzzles Games\nFrame-field reordering, speed matching, guess-the-protocol.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd2c Science Math Lab\nBaud rate, Nyquist/Shannon, CRC, CAN, I2C, RS-485, RF link budget.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2699\ufe0f Settings Profile\nProfile, XP, badges, theme accent, progress reset.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2139\ufe0f Info\nAbout, deployment, links, audience guide, credits and license.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ]
+    },
+    {
+      "file": "signalbench-revision-dark-1440-encyclopedia-top.png",
+      "theme": "dark",
+      "width": 1440,
+      "section": "encyclopedia-top",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-1440-identity-spec.png",
+      "theme": "dark",
+      "width": 1440,
+      "section": "identity-spec",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-1440-electrical.png",
+      "theme": "dark",
+      "width": 1440,
+      "section": "electrical",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-1440-conductors.png",
+      "theme": "dark",
+      "width": 1440,
+      "section": "conductors",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-1440-levels.png",
+      "theme": "dark",
+      "width": 1440,
+      "section": "levels",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-1440-frame.png",
+      "theme": "dark",
+      "width": 1440,
+      "section": "frame",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-1440-topology.png",
+      "theme": "dark",
+      "width": 1440,
+      "section": "topology",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-1440-waveform.png",
+      "theme": "dark",
+      "width": 1440,
+      "section": "waveform",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-900-home.png",
+      "theme": "dark",
+      "width": 900,
+      "section": "home",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": [
+        {
+          "text": "\ud83d\udcda Encyclopedia\nBrowse, search and filter every protocol with full technical profiles.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2696\ufe0f Compare\nPut protocols side-by-side: speed, pins, wiring, voltages and more.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udded Selector\nAnswer 4 questions and get a ranked shortlist with standard documents.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udcd6 Glossary\nEvery term in one place, each with the protocols where it matters.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd70\ufe0f Timeline History\nTravel the decades: who invented what, where, and why.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\uddfa\ufe0f Mindmap\nSee how every category and protocol relates.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udf0d Geography Origins\nWhich countries and organizations invented the protocols.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udde0 Quiz Assessment\nAuto-generated MCQs across every protocol, with XP and badges.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udfae Puzzles Games\nFrame-field reordering, speed matching, guess-the-protocol.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd2c Science Math Lab\nBaud rate, Nyquist/Shannon, CRC, CAN, I2C, RS-485, RF link budget.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2699\ufe0f Settings Profile\nProfile, XP, badges, theme accent, progress reset.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2139\ufe0f Info\nAbout, deployment, links, audience guide, credits and license.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ],
+      "versionChip": {
+        "background": "rgb(59, 130, 246)",
+        "border": "1px",
+        "radius": "999px",
+        "size": "12px",
+        "text": "v1.1.1"
+      }
+    },
+    {
+      "file": "signalbench-revision-dark-900-home-nav.png",
+      "theme": "dark",
+      "width": 900,
+      "section": "home-nav",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": [
+        {
+          "text": "\ud83d\udcda Encyclopedia\nBrowse, search and filter every protocol with full technical profiles.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2696\ufe0f Compare\nPut protocols side-by-side: speed, pins, wiring, voltages and more.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udded Selector\nAnswer 4 questions and get a ranked shortlist with standard documents.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udcd6 Glossary\nEvery term in one place, each with the protocols where it matters.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd70\ufe0f Timeline History\nTravel the decades: who invented what, where, and why.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\uddfa\ufe0f Mindmap\nSee how every category and protocol relates.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udf0d Geography Origins\nWhich countries and organizations invented the protocols.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udde0 Quiz Assessment\nAuto-generated MCQs across every protocol, with XP and badges.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udfae Puzzles Games\nFrame-field reordering, speed matching, guess-the-protocol.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd2c Science Math Lab\nBaud rate, Nyquist/Shannon, CRC, CAN, I2C, RS-485, RF link budget.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2699\ufe0f Settings Profile\nProfile, XP, badges, theme accent, progress reset.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2139\ufe0f Info\nAbout, deployment, links, audience guide, credits and license.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ]
+    },
+    {
+      "file": "signalbench-revision-dark-900-encyclopedia-top.png",
+      "theme": "dark",
+      "width": 900,
+      "section": "encyclopedia-top",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-900-identity-spec.png",
+      "theme": "dark",
+      "width": 900,
+      "section": "identity-spec",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-900-electrical.png",
+      "theme": "dark",
+      "width": 900,
+      "section": "electrical",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-900-conductors.png",
+      "theme": "dark",
+      "width": 900,
+      "section": "conductors",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-900-levels.png",
+      "theme": "dark",
+      "width": 900,
+      "section": "levels",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-900-frame.png",
+      "theme": "dark",
+      "width": 900,
+      "section": "frame",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-900-topology.png",
+      "theme": "dark",
+      "width": 900,
+      "section": "topology",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-900-waveform.png",
+      "theme": "dark",
+      "width": 900,
+      "section": "waveform",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-390-home.png",
+      "theme": "dark",
+      "width": 390,
+      "section": "home",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": [
+        {
+          "text": "\ud83d\udcda Encyclopedia\nBrowse, search and filter every protocol with full technical profiles.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2696\ufe0f Compare\nPut protocols side-by-side: speed, pins, wiring, voltages and more.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udded Selector\nAnswer 4 questions and get a ranked shortlist with standard documents.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udcd6 Glossary\nEvery term in one place, each with the protocols where it matters.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd70\ufe0f Timeline History\nTravel the decades: who invented what, where, and why.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\uddfa\ufe0f Mindmap\nSee how every category and protocol relates.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udf0d Geography Origins\nWhich countries and organizations invented the protocols.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udde0 Quiz Assessment\nAuto-generated MCQs across every protocol, with XP and badges.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udfae Puzzles Games\nFrame-field reordering, speed matching, guess-the-protocol.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd2c Science Math Lab\nBaud rate, Nyquist/Shannon, CRC, CAN, I2C, RS-485, RF link budget.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2699\ufe0f Settings Profile\nProfile, XP, badges, theme accent, progress reset.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2139\ufe0f Info\nAbout, deployment, links, audience guide, credits and license.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ],
+      "versionChip": {
+        "background": "rgb(59, 130, 246)",
+        "border": "1px",
+        "radius": "999px",
+        "size": "12px",
+        "text": "v1.1.1"
+      }
+    },
+    {
+      "file": "signalbench-revision-dark-390-home-nav.png",
+      "theme": "dark",
+      "width": 390,
+      "section": "home-nav",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": [
+        {
+          "text": "\ud83d\udcda Encyclopedia\nBrowse, search and filter every protocol with full technical profiles.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2696\ufe0f Compare\nPut protocols side-by-side: speed, pins, wiring, voltages and more.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udded Selector\nAnswer 4 questions and get a ranked shortlist with standard documents.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udcd6 Glossary\nEvery term in one place, each with the protocols where it matters.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd70\ufe0f Timeline History\nTravel the decades: who invented what, where, and why.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\uddfa\ufe0f Mindmap\nSee how every category and protocol relates.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udf0d Geography Origins\nWhich countries and organizations invented the protocols.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udde0 Quiz Assessment\nAuto-generated MCQs across every protocol, with XP and badges.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udfae Puzzles Games\nFrame-field reordering, speed matching, guess-the-protocol.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd2c Science Math Lab\nBaud rate, Nyquist/Shannon, CRC, CAN, I2C, RS-485, RF link budget.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2699\ufe0f Settings Profile\nProfile, XP, badges, theme accent, progress reset.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2139\ufe0f Info\nAbout, deployment, links, audience guide, credits and license.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ]
+    },
+    {
+      "file": "signalbench-revision-dark-390-encyclopedia-top.png",
+      "theme": "dark",
+      "width": 390,
+      "section": "encyclopedia-top",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-390-identity-spec.png",
+      "theme": "dark",
+      "width": 390,
+      "section": "identity-spec",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-390-electrical.png",
+      "theme": "dark",
+      "width": 390,
+      "section": "electrical",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-390-conductors.png",
+      "theme": "dark",
+      "width": 390,
+      "section": "conductors",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-390-levels.png",
+      "theme": "dark",
+      "width": 390,
+      "section": "levels",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-390-frame.png",
+      "theme": "dark",
+      "width": 390,
+      "section": "frame",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-390-topology.png",
+      "theme": "dark",
+      "width": 390,
+      "section": "topology",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-390-waveform.png",
+      "theme": "dark",
+      "width": 390,
+      "section": "waveform",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-dark-390-profile-full.png",
+      "theme": "dark",
+      "width": 390,
+      "section": "profile-full",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-1440-home.png",
+      "theme": "light",
+      "width": 1440,
+      "section": "home",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": [
+        {
+          "text": "\ud83d\udcda Encyclopedia\nBrowse, search and filter every protocol with full technical profiles.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2696\ufe0f Compare\nPut protocols side-by-side: speed, pins, wiring, voltages and more.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udded Selector\nAnswer 4 questions and get a ranked shortlist with standard documents.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udcd6 Glossary\nEvery term in one place, each with the protocols where it matters.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd70\ufe0f Timeline History\nTravel the decades: who invented what, where, and why.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\uddfa\ufe0f Mindmap\nSee how every category and protocol relates.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udf0d Geography Origins\nWhich countries and organizations invented the protocols.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udde0 Quiz Assessment\nAuto-generated MCQs across every protocol, with XP and badges.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udfae Puzzles Games\nFrame-field reordering, speed matching, guess-the-protocol.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd2c Science Math Lab\nBaud rate, Nyquist/Shannon, CRC, CAN, I2C, RS-485, RF link budget.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2699\ufe0f Settings Profile\nProfile, XP, badges, theme accent, progress reset.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2139\ufe0f Info\nAbout, deployment, links, audience guide, credits and license.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ],
+      "versionChip": {
+        "background": "rgb(25, 101, 216)",
+        "border": "1px",
+        "radius": "999px",
+        "size": "12px",
+        "text": "v1.1.1"
+      }
+    },
+    {
+      "file": "signalbench-revision-light-1440-home-nav.png",
+      "theme": "light",
+      "width": 1440,
+      "section": "home-nav",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": [
+        {
+          "text": "\ud83d\udcda Encyclopedia\nBrowse, search and filter every protocol with full technical profiles.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2696\ufe0f Compare\nPut protocols side-by-side: speed, pins, wiring, voltages and more.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udded Selector\nAnswer 4 questions and get a ranked shortlist with standard documents.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udcd6 Glossary\nEvery term in one place, each with the protocols where it matters.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd70\ufe0f Timeline History\nTravel the decades: who invented what, where, and why.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\uddfa\ufe0f Mindmap\nSee how every category and protocol relates.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udf0d Geography Origins\nWhich countries and organizations invented the protocols.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udde0 Quiz Assessment\nAuto-generated MCQs across every protocol, with XP and badges.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udfae Puzzles Games\nFrame-field reordering, speed matching, guess-the-protocol.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd2c Science Math Lab\nBaud rate, Nyquist/Shannon, CRC, CAN, I2C, RS-485, RF link budget.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2699\ufe0f Settings Profile\nProfile, XP, badges, theme accent, progress reset.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2139\ufe0f Info\nAbout, deployment, links, audience guide, credits and license.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ]
+    },
+    {
+      "file": "signalbench-revision-light-1440-encyclopedia-top.png",
+      "theme": "light",
+      "width": 1440,
+      "section": "encyclopedia-top",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-1440-identity-spec.png",
+      "theme": "light",
+      "width": 1440,
+      "section": "identity-spec",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-1440-electrical.png",
+      "theme": "light",
+      "width": 1440,
+      "section": "electrical",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-1440-conductors.png",
+      "theme": "light",
+      "width": 1440,
+      "section": "conductors",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-1440-levels.png",
+      "theme": "light",
+      "width": 1440,
+      "section": "levels",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-1440-frame.png",
+      "theme": "light",
+      "width": 1440,
+      "section": "frame",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-1440-topology.png",
+      "theme": "light",
+      "width": 1440,
+      "section": "topology",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-1440-waveform.png",
+      "theme": "light",
+      "width": 1440,
+      "section": "waveform",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-900-home.png",
+      "theme": "light",
+      "width": 900,
+      "section": "home",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": [
+        {
+          "text": "\ud83d\udcda Encyclopedia\nBrowse, search and filter every protocol with full technical profiles.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2696\ufe0f Compare\nPut protocols side-by-side: speed, pins, wiring, voltages and more.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udded Selector\nAnswer 4 questions and get a ranked shortlist with standard documents.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udcd6 Glossary\nEvery term in one place, each with the protocols where it matters.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd70\ufe0f Timeline History\nTravel the decades: who invented what, where, and why.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\uddfa\ufe0f Mindmap\nSee how every category and protocol relates.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udf0d Geography Origins\nWhich countries and organizations invented the protocols.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udde0 Quiz Assessment\nAuto-generated MCQs across every protocol, with XP and badges.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udfae Puzzles Games\nFrame-field reordering, speed matching, guess-the-protocol.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd2c Science Math Lab\nBaud rate, Nyquist/Shannon, CRC, CAN, I2C, RS-485, RF link budget.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2699\ufe0f Settings Profile\nProfile, XP, badges, theme accent, progress reset.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2139\ufe0f Info\nAbout, deployment, links, audience guide, credits and license.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ],
+      "versionChip": {
+        "background": "rgb(25, 101, 216)",
+        "border": "1px",
+        "radius": "999px",
+        "size": "12px",
+        "text": "v1.1.1"
+      }
+    },
+    {
+      "file": "signalbench-revision-light-900-home-nav.png",
+      "theme": "light",
+      "width": 900,
+      "section": "home-nav",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": [
+        {
+          "text": "\ud83d\udcda Encyclopedia\nBrowse, search and filter every protocol with full technical profiles.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2696\ufe0f Compare\nPut protocols side-by-side: speed, pins, wiring, voltages and more.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udded Selector\nAnswer 4 questions and get a ranked shortlist with standard documents.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udcd6 Glossary\nEvery term in one place, each with the protocols where it matters.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd70\ufe0f Timeline History\nTravel the decades: who invented what, where, and why.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\uddfa\ufe0f Mindmap\nSee how every category and protocol relates.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udf0d Geography Origins\nWhich countries and organizations invented the protocols.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udde0 Quiz Assessment\nAuto-generated MCQs across every protocol, with XP and badges.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udfae Puzzles Games\nFrame-field reordering, speed matching, guess-the-protocol.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd2c Science Math Lab\nBaud rate, Nyquist/Shannon, CRC, CAN, I2C, RS-485, RF link budget.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2699\ufe0f Settings Profile\nProfile, XP, badges, theme accent, progress reset.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2139\ufe0f Info\nAbout, deployment, links, audience guide, credits and license.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ]
+    },
+    {
+      "file": "signalbench-revision-light-900-encyclopedia-top.png",
+      "theme": "light",
+      "width": 900,
+      "section": "encyclopedia-top",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-900-identity-spec.png",
+      "theme": "light",
+      "width": 900,
+      "section": "identity-spec",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-900-electrical.png",
+      "theme": "light",
+      "width": 900,
+      "section": "electrical",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-900-conductors.png",
+      "theme": "light",
+      "width": 900,
+      "section": "conductors",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-900-levels.png",
+      "theme": "light",
+      "width": 900,
+      "section": "levels",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-900-frame.png",
+      "theme": "light",
+      "width": 900,
+      "section": "frame",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-900-topology.png",
+      "theme": "light",
+      "width": 900,
+      "section": "topology",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-900-waveform.png",
+      "theme": "light",
+      "width": 900,
+      "section": "waveform",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-390-home.png",
+      "theme": "light",
+      "width": 390,
+      "section": "home",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": [
+        {
+          "text": "\ud83d\udcda Encyclopedia\nBrowse, search and filter every protocol with full technical profiles.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2696\ufe0f Compare\nPut protocols side-by-side: speed, pins, wiring, voltages and more.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udded Selector\nAnswer 4 questions and get a ranked shortlist with standard documents.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udcd6 Glossary\nEvery term in one place, each with the protocols where it matters.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd70\ufe0f Timeline History\nTravel the decades: who invented what, where, and why.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\uddfa\ufe0f Mindmap\nSee how every category and protocol relates.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udf0d Geography Origins\nWhich countries and organizations invented the protocols.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udde0 Quiz Assessment\nAuto-generated MCQs across every protocol, with XP and badges.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udfae Puzzles Games\nFrame-field reordering, speed matching, guess-the-protocol.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd2c Science Math Lab\nBaud rate, Nyquist/Shannon, CRC, CAN, I2C, RS-485, RF link budget.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2699\ufe0f Settings Profile\nProfile, XP, badges, theme accent, progress reset.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2139\ufe0f Info\nAbout, deployment, links, audience guide, credits and license.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ],
+      "versionChip": {
+        "background": "rgb(25, 101, 216)",
+        "border": "1px",
+        "radius": "999px",
+        "size": "12px",
+        "text": "v1.1.1"
+      }
+    },
+    {
+      "file": "signalbench-revision-light-390-home-nav.png",
+      "theme": "light",
+      "width": 390,
+      "section": "home-nav",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": [
+        {
+          "text": "\ud83d\udcda Encyclopedia\nBrowse, search and filter every protocol with full technical profiles.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2696\ufe0f Compare\nPut protocols side-by-side: speed, pins, wiring, voltages and more.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udded Selector\nAnswer 4 questions and get a ranked shortlist with standard documents.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udcd6 Glossary\nEvery term in one place, each with the protocols where it matters.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd70\ufe0f Timeline History\nTravel the decades: who invented what, where, and why.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\uddfa\ufe0f Mindmap\nSee how every category and protocol relates.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udf0d Geography Origins\nWhich countries and organizations invented the protocols.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83e\udde0 Quiz Assessment\nAuto-generated MCQs across every protocol, with XP and badges.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83c\udfae Puzzles Games\nFrame-field reordering, speed matching, guess-the-protocol.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\ud83d\udd2c Science Math Lab\nBaud rate, Nyquist/Shannon, CRC, CAN, I2C, RS-485, RF link budget.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2699\ufe0f Settings Profile\nProfile, XP, badges, theme accent, progress reset.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        },
+        {
+          "text": "\u2139\ufe0f Info\nAbout, deployment, links, audience guide, credits and license.\n\u27a1\ufe0f\n\nOpen",
+          "border": "1px",
+          "radius": "8px",
+          "shadow": "none"
+        }
+      ]
+    },
+    {
+      "file": "signalbench-revision-light-390-encyclopedia-top.png",
+      "theme": "light",
+      "width": 390,
+      "section": "encyclopedia-top",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-390-identity-spec.png",
+      "theme": "light",
+      "width": 390,
+      "section": "identity-spec",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-390-electrical.png",
+      "theme": "light",
+      "width": 390,
+      "section": "electrical",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-390-conductors.png",
+      "theme": "light",
+      "width": 390,
+      "section": "conductors",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-390-levels.png",
+      "theme": "light",
+      "width": 390,
+      "section": "levels",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-390-frame.png",
+      "theme": "light",
+      "width": 390,
+      "section": "frame",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-390-topology.png",
+      "theme": "light",
+      "width": 390,
+      "section": "topology",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-390-waveform.png",
+      "theme": "light",
+      "width": 390,
+      "section": "waveform",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    },
+    {
+      "file": "signalbench-revision-light-390-profile-full.png",
+      "theme": "light",
+      "width": 390,
+      "section": "profile-full",
+      "overflow": 0,
+      "exception": [],
+      "canvasImages": 1,
+      "cards": []
+    }
+  ]
+}
