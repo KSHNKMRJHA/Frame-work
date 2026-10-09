@@ -540,10 +540,17 @@ with d1:
         if selected.get("frame_note"):
             st.caption(f"ℹ️ {selected['frame_note']}")
         st.caption(
-            "Segment widths are proportional to bit count. Fields with a range "
-            "(e.g. `0-64`) are drawn at a fixed nominal width because their real "
-            "size varies per frame."
+            "Segment widths are compressed and bounded for readability; exact bit "
+            "counts are preserved in the legend. Fields with a range (e.g. `0-64`) "
+            "use a fixed nominal width because their real size varies per frame."
         )
+        # The unchanged 12-inch figure scales down on phones. Keep its exact
+        # field identities/counts available as readable, wrapping native text.
+        with st.expander("Frame field values"):
+            components.spec_table([
+                (f"{index} · {field['name']}", f"{field.get('bits', '')} bit")
+                for index, field in enumerate(selected.get("frame_fields", []), start=1)
+            ])
     else:
         st.info(
             "This protocol doesn't define a fixed bit-level frame structure (e.g., it's a networking/application-layer or wireless protocol without a simple fixed frame)."
