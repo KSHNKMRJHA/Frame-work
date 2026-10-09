@@ -44,6 +44,7 @@ DARK = {
     "warn": "#f59e0b",
     "danger": "#ef4444",
     "ok": "#22c55e",
+    "violet": "#a78bfa",
 }
 
 LIGHT = {
@@ -62,6 +63,7 @@ LIGHT = {
     "warn": "#b45309",
     "danger": "#dc2626",
     "ok": "#15803d",
+    "violet": "#6d28d9",
 }
 
 FONT_STACK = (
@@ -102,6 +104,35 @@ def current_palette():
 
 def is_dark():
     return active_theme_type() != "light"
+
+
+def luminance(color):
+    """Relative luminance for an opaque six-digit sRGB colour."""
+    channels = [int(color[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+    linear = [v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4 for v in channels]
+    return sum(v * weight for v, weight in zip(linear, (0.2126, 0.7152, 0.0722)))
+
+
+def contrast_ratio(first, second):
+    high, low = sorted((luminance(first), luminance(second)), reverse=True)
+    return (high + 0.05) / (low + 0.05)
+
+
+def readable_color(color, background, text, tint_alpha=0):
+    """Preserve a semantic hue while meeting 4.5:1 on its rendered background.
+
+    Tinted chips composite the candidate hue over their surface before measuring.
+    """
+    start = [int(color[i:i + 2], 16) for i in (1, 3, 5)]
+    target = [int(text[i:i + 2], 16) for i in (1, 3, 5)]
+    base = [int(background[i:i + 2], 16) for i in (1, 3, 5)]
+    for step in range(21):
+        rgb = [round(a + (b - a) * step / 20) for a, b in zip(start, target)]
+        candidate = "#" + "".join(f"{v:02x}" for v in rgb)
+        rendered = "#" + "".join(f"{round(v * tint_alpha + b * (1 - tint_alpha)):02x}" for v, b in zip(rgb, base))
+        if contrast_ratio(candidate, rendered) >= 4.5:
+            return candidate
+    return text
 
 
 def contrast_text(bg_hex):

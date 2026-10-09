@@ -18,6 +18,7 @@ import inspect
 import os
 import re
 import sys
+from unittest.mock import patch
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
@@ -103,11 +104,75 @@ def test_data_values_are_escaped():
 
 
 def test_contrast_helper_sane_on_frame_palette():
-    from utils.diagrams import FRAME_PALETTE
+    from utils.diagrams import diagram_palette
 
-    for fill in list(FRAME_PALETTE) + ["#ffffff", theme_mod.DARK["bg"]]:
+    fills = [fill for p in (theme_mod.DARK, theme_mod.LIGHT) for fill in diagram_palette(p)["series"]]
+    for fill in fills + ["#ffffff", theme_mod.DARK["bg"]]:
         fg = theme_mod.contrast_text(fill)
         assert fg in ("#ffffff", "#0b1220"), f"{fill} -> {fg}"
+        assert theme_mod.contrast_ratio(fg, fill) >= 4.5, f"low contrast: {fill} -> {fg}"
+
+
+def test_rendered_component_values_are_escaped():
+    """Exercise output, including icon/attribute values, rather than source only."""
+    payload = '<img src=x onerror="alert(1)">\'&'
+    calls = [
+        (comp_mod.protocol_hero, (payload,), {"inventor": payload, "category": payload}),
+        (comp_mod.engineering_metric, (payload, payload), {"unit": payload}),
+        (comp_mod.spec_table, ([(payload, payload)],), {}),
+        (comp_mod.callout, (payload,), {"label": payload, "icon": payload}),
+        (comp_mod.info_badge, (payload,), {"icon": payload}),
+        (comp_mod.status_led, (payload,), {"dot": payload}),
+    ]
+    for palette in (theme_mod.DARK, theme_mod.LIGHT):
+        with patch.object(theme_mod, "current_palette", return_value=palette):
+            for fn, args, kwargs in calls:
+                with patch.object(comp_mod.st, "markdown") as output:
+                    fn(*args, **kwargs)
+                    markup = output.call_args.args[0]
+                    assert payload not in markup, fn.__name__
+                    assert "&lt;img" in markup, fn.__name__
+
+
+def test_tinted_badges_meet_text_contrast():
+    for palette in (theme_mod.DARK, theme_mod.LIGHT):
+        with patch.object(theme_mod, "current_palette", return_value=palette):
+            for tone in ("accent", "signal", "ok", "warn", "danger", "neutral"):
+                color = comp_mod._tone_color(tone)
+                for surface in (palette["bg"], palette["surface"]):
+                    rgb = [int(color[i:i + 2], 16) for i in (1, 3, 5)]
+                    base = [int(surface[i:i + 2], 16) for i in (1, 3, 5)]
+                    rendered = "#" + "".join(f"{round(v * 31 / 255 + b * 224 / 255):02x}" for v, b in zip(rgb, base))
+                    assert theme_mod.contrast_ratio(color, rendered) >= 4.5, (tone, color, surface)
+
+
+def test_every_diagram_canvas_follows_active_theme():
+    import matplotlib.pyplot as plt
+    from matplotlib.colors import to_hex
+    from utils import diagrams as diag
+
+    protocols = [{"name": "CAN", "category": "Automotive", "speed": "1 Mbps", "id": "can"}]
+    renderers = [
+        lambda: diag.frame_diagram([{"name": "Start", "bits": 1}, {"name": "Data", "bits": 64}]),
+        lambda: diag.topology_diagram("Bus", "CAN"),
+        lambda: diag.pinout_diagram(["CAN_H", "CAN_L"], "CAN"),
+        lambda: diag.category_bar_chart(protocols),
+        lambda: diag.speed_comparison_chart(protocols),
+        lambda: diag.waveform_diagram(diag.can_waveform()),
+    ]
+    for palette in (theme_mod.DARK, theme_mod.LIGHT):
+        with patch.object(theme_mod, "current_palette", return_value=palette):
+            for render in renderers:
+                existing = plt.get_fignums()
+                fig = render()
+                assert plt.get_fignums() == existing, "renderer retains pyplot ownership"
+                assert to_hex(fig.get_facecolor()) == palette["bg"]
+                for ax in fig.axes:
+                    assert to_hex(ax.get_facecolor()) == palette["bg"]
+                    assert to_hex(ax.title.get_color()) == palette["text"]
+                    for label in ax.get_xticklabels() + ax.get_yticklabels():
+                        assert to_hex(label.get_color()) == palette["text_muted"]
+                plt.close(fig)
 
 
 if __name__ == "__main__":

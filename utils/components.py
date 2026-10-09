@@ -47,14 +47,20 @@ def _pal():
 
 def _tone_color(tone):
     """Map a semantic tone name (or a raw hex) to a colour string."""
-    if str(tone).startswith("#"):
-        return tone
     p = _pal()
-    return {
+    color = {
         "ok": p["ok"], "warn": p["warn"], "danger": p["danger"],
         "signal": p["signal"], "accent": p["accent"],
         "neutral": p["text_muted"],
     }.get(str(tone).lower(), p["text_muted"])
+    if isinstance(tone, str) and len(tone) == 7 and tone.startswith("#"):
+        try:
+            int(tone[1:], 16)
+            color = tone
+        except ValueError:
+            pass
+    background = min((p["bg"], p["surface"]), key=lambda bg: theme.contrast_ratio(color, bg))
+    return theme.readable_color(color, background, p["text"], tint_alpha=31 / 255)
 
 
 def _tint(color, _p=None):
@@ -82,10 +88,10 @@ def page_hero(eyebrow, title, description="", meta=None, accent=None):
     meta:        optional small right-aligned meta text (e.g. a count)
     """
     p = _pal()
-    accent = accent or p["accent"]
+    accent = _esc(accent or p["accent"])
     meta_html = (
         f"<div style='font-size:0.8rem; color:{p['text_faint']}; "
-        f"font-family:{theme.MONO_STACK}; white-space:nowrap;'>{_esc(meta)}</div>"
+        f"font-family:{_esc(theme.MONO_STACK)}; white-space:nowrap;'>{_esc(meta)}</div>"
         if meta
         else ""
     )
@@ -125,7 +131,7 @@ def protocol_hero(name, category="", year="", inventor="", difficulty="",
     never shows an empty pill.
     """
     p = _pal()
-    accent = accent or p["accent"]
+    accent = _esc(accent or p["accent"])
 
     chips = []
 
@@ -134,10 +140,10 @@ def protocol_hero(name, category="", year="", inventor="", difficulty="",
             return
         color = _tone_color(tone)
         chips.append(
-            f"<span style=\"display:inline-block; font-family:{theme.MONO_STACK}; "
+            f"<span style=\"display:inline-block; font-family:{_esc(theme.MONO_STACK)}; "
             f"font-size:0.74rem; font-weight:600; color:{color}; "
             f"background:{_tint(color)}; border:1px solid {color}; "
-            f"border-radius:999px; padding:0.12rem 0.6rem; white-space:nowrap;\">"
+            f"border-radius:999px; padding:0.12rem 0.6rem; white-space:normal; overflow-wrap:anywhere; max-width:100%;\">"
             f"{_esc(label)}</span>"
         )
 
@@ -179,9 +185,9 @@ def section_header(title, index=None, description="", accent=None):
     description: one line of context under the heading
     """
     p = _pal()
-    accent = accent or p["accent"]
+    accent = _esc(accent or p["accent"])
     idx_html = (
-        f"<span style=\"font-family:{theme.MONO_STACK}; font-size:0.78rem; "
+        f"<span style=\"font-family:{_esc(theme.MONO_STACK)}; font-size:0.78rem; "
         f"color:{accent}; font-weight:700; margin-right:0.55rem;\">{_esc(index)}</span>"
         if index
         else ""
@@ -214,13 +220,13 @@ def info_badge(text, tone="neutral", icon=""):
     Always carries its own text, never colour alone.
     """
     text_html = _esc(text)
-    prefix = f"{icon} " if icon else ""
+    prefix = f"{_esc(icon)} " if icon else ""
     color = _tone_color(tone)
     st.markdown(
-        f"<span style=\"display:inline-block; font-family:{theme.MONO_STACK}; "
+        f"<span style=\"display:inline-block; font-family:{_esc(theme.MONO_STACK)}; "
         f"font-size:0.72rem; font-weight:600; color:{color}; "
         f"background:{_tint(color)}; border:1px solid {color}; "
-        f"border-radius:999px; padding:0.12rem 0.6rem; white-space:nowrap;\">"
+        f"border-radius:999px; padding:0.12rem 0.6rem; white-space:normal; overflow-wrap:anywhere; max-width:100%;\">"
         f"{prefix}{text_html}</span>",
         unsafe_allow_html=True,
     )
@@ -237,7 +243,7 @@ def engineering_metric(label, value, unit="", tone="accent"):
     color = _tone_color(tone)
     unit_html = (
         f"<span style=\"font-size:0.72rem; color:{p['text_muted']}; "
-        f"margin-left:0.2rem; font-family:{theme.MONO_STACK};\">{_esc(unit)}</span>"
+        f"margin-left:0.2rem; font-family:{_esc(theme.MONO_STACK)};\">{_esc(unit)}</span>"
         if unit
         else ""
     )
@@ -245,8 +251,8 @@ def engineering_metric(label, value, unit="", tone="accent"):
         f"""
         <div style="padding:0.35rem 0; min-width:0;">
             <div style="font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase;
-                        color:{p['text_faint']}; font-weight:600;">{_esc(label)}</div>
-            <div style="font-family:{theme.MONO_STACK}; font-variant-numeric:tabular-nums;
+                        color:{p['text_muted']}; font-weight:600;">{_esc(label)}</div>
+            <div style="font-family:{_esc(theme.MONO_STACK)}; font-variant-numeric:tabular-nums;
                         font-size:1.12rem; font-weight:700; color:{color};
                         margin-top:0.1rem; line-height:1.2;">{_esc(value)}{unit_html}</div>
         </div>
@@ -313,20 +319,20 @@ def spec_table(rows, min_width="230px", unit_color=None):
     with hairline separators instead of a detached table chrome.
     """
     p = _pal()
-    unit_color = unit_color or p["text_muted"]
+    unit_color = _esc(unit_color or p["text_muted"])
     items = "".join(
-        f"""<div style="display:flex; justify-content:space-between; gap:0.8rem;
+        f"""<div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:0.3rem 0.8rem;
                         padding:0.32rem 0; border-bottom:1px solid {p['border']};">
                 <span style="color:{unit_color}; font-size:0.88rem;">{_esc(k)}</span>
-                <span style="font-family:{theme.MONO_STACK}; font-variant-numeric:tabular-nums;
+                <span style="font-family:{_esc(theme.MONO_STACK)}; font-variant-numeric:tabular-nums;
                              color:{p['text']}; font-weight:600; font-size:0.88rem;
-                             white-space:nowrap; text-align:right;">{_esc(v)}</span>
+                             min-width:0; overflow-wrap:anywhere; text-align:right;">{_esc(v)}</span>
             </div>"""
         for k, v in rows
     )
     st.markdown(
         f"<div style='display:grid; grid-template-columns:"
-        f"repeat(auto-fit, minmax(min({min_width}, 100%), 1fr)); "
+        f"repeat(auto-fit, minmax(min({_esc(min_width)}, 100%), 1fr)); "
         f"column-gap:1.5rem; margin:0.35rem 0;'>{items}</div>",
         unsafe_allow_html=True,
     )
@@ -347,7 +353,7 @@ def status_led(text, tone="ok", dot="●"):
     color = _tone_color(tone)
     st.markdown(
         f"<span style='display:inline-flex; align-items:center; gap:0.4rem; "
-        f"font-family:{theme.MONO_STACK}; font-size:0.8rem; color:{p['text_muted']};'>"
+        f"font-family:{_esc(theme.MONO_STACK)}; font-size:0.8rem; color:{p['text_muted']};'>"
         f"<span style='color:{color}; font-size:0.7rem; line-height:1;'>{_esc(dot)}</span>"
         f"{_esc(text)}</span>",
         unsafe_allow_html=True,

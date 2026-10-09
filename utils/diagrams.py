@@ -11,22 +11,50 @@ without hand-drawing a picture for each one.
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.patches import FancyBboxPatch, Circle
 import numpy as np
 
 from utils import theme
 
-PALETTE = ["#2563eb", "#7c3aed", "#059669", "#dc2626", "#d97706", "#0891b2", "#db2777", "#65a30d", "#4f46e5", "#0d9488"]
+def diagram_palette(palette=None):
+    """One SignalBench contract for canvases, neutral ink and five series hues.
 
-# Curated frame-field palette (blue/cyan/green/amber/violet) re-used cyclically.
-FRAME_PALETTE = ["#2563eb", "#0891b2", "#059669", "#d97706", "#7c3aed"]
+    Derived from active FrameWork tokens; series also serve as trace/pin labels,
+    so every hue meets ordinary-text contrast against the canvas. Field fills
+    still choose their own foreground via theme.contrast_text().
+    """
+    p = dict(palette if palette is not None else theme.current_palette())
+    p["series"] = tuple(theme.readable_color(p[key], p["bg"], p["text"]) for key in ("accent", "signal", "ok", "warn", "violet"))
+    return p
 
-# Helper: active-theme palette resolved once per call for figure backgrounds,
-# text/label colours and neutral lines. contrast_text() is used for on-field
-# text so labels are never white-on-white.
-def _pal():
-    return theme.current_palette()
+
+def _canvas(figsize):
+    """Create an Agg figure without retaining it in pyplot's global registry."""
+    fig = Figure(figsize=figsize)
+    FigureCanvasAgg(fig)
+    return fig, fig.subplots()
+
+
+def _finish_canvas(fig, ax, palette):
+    """Theme existing artists and complete the unchanged layout."""
+    fig.set_facecolor(palette["bg"])
+    ax.set_facecolor(palette["bg"])
+    for title in (ax.title, ax.xaxis.label, ax.yaxis.label):
+        title.set_color(palette["text"])
+    ax.tick_params(colors=palette["text_muted"])
+    for spine in ax.spines.values():
+        spine.set_edgecolor(palette["text_muted"])
+    for line in ax.get_xgridlines() + ax.get_ygridlines():
+        line.set_color(palette["text_muted"])
+    legend = ax.get_legend()
+    if legend:
+        legend.get_frame().set_facecolor(palette["surface"])
+        legend.get_frame().set_edgecolor(palette["border"])
+        for text in legend.get_texts():
+            text.set_color(palette["text"])
+    fig.tight_layout()
 
 
 # Visual geometry constants.
@@ -143,7 +171,7 @@ def _layout_rows(fields, wrap_over=6):
     return [list(range(i, min(i + per_row, n))) for i in range(0, n, per_row)]
 
 
-def _draw_row(ax, indices, fields, row_total, y, legend_ids):
+def _draw_row(ax, indices, fields, row_total, y, legend_ids, palette):
     """Draw one horizontal strip of fields. Returns the text artists created.
 
     Geometry comes from ``_balanced_fracs`` rather than raw bit counts, so a
@@ -157,14 +185,14 @@ def _draw_row(ax, indices, fields, row_total, y, legend_ids):
     for pos, idx in enumerate(indices):
         f = fields[idx]
         w = fracs[pos]
-        color = PALETTE[idx % len(PALETTE)]
+        color = palette["series"][idx % len(palette["series"])]
         rect = FancyBboxPatch(
             (x, y),
             w,
             0.62,
             boxstyle="round,pad=0.003,rounding_size=0.008",
             linewidth=1.2,
-            edgecolor="white",
+            edgecolor=palette["bg"],
             facecolor=color,
         )
         ax.add_patch(rect)
@@ -228,19 +256,20 @@ def frame_diagram(fields, title="Frame / Packet Structure", return_meta=False):
     ]
 
     height = 1.35 * len(rows) + 0.75
-    fig, ax = plt.subplots(figsize=(FIG_WIDTH, height))
+    pal = diagram_palette()
+    fig, ax = _canvas((FIG_WIDTH, height))
 
     artists = []
     for r, indices in enumerate(rows):
         y = 0.5 + 0.95 * (len(rows) - 1 - r)
         row_total = sum(weights[i] for i in indices) or 1.0
-        artists.extend(_draw_row(ax, indices, fields, row_total, y, legend_ids))
+        artists.extend(_draw_row(ax, indices, fields, row_total, y, legend_ids, pal))
         if r < len(rows) - 1:
             ax.annotate(
                 "",
                 xy=(1.0, y - 0.16),
                 xytext=(0.93, y - 0.16),
-                arrowprops={"arrowstyle": "->", "color": _pal()["border"], "lw": 1.2},
+                arrowprops={"arrowstyle": "->", "color": pal["text_muted"], "lw": 1.2},
             )
 
     # A field whose name did not fit inside its box is listed here in full, so
@@ -255,19 +284,19 @@ def frame_diagram(fields, title="Frame / Packet Structure", return_meta=False):
         right = legend_lines[col:]
         left_txt = "\n".join(left)
         right_txt = "\n".join(right)
-        ax.text(0.0, -0.30, left_txt, ha="left", va="top", fontsize=7.5, color=_pal()["text_muted"],
+        ax.text(0.0, -0.30, left_txt, ha="left", va="top", fontsize=7.5, color=pal["text_muted"],
                 transform=ax.transAxes)
-        ax.text(0.5, -0.30, right_txt, ha="left", va="top", fontsize=7.5, color=_pal()["text_muted"],
+        ax.text(0.5, -0.30, right_txt, ha="left", va="top", fontsize=7.5, color=pal["text_muted"],
                 transform=ax.transAxes)
     else:
         ax.text(0.0, -0.30, "\n".join(legend_lines), ha="left", va="top", fontsize=8,
-                color=_pal()["text_muted"], transform=ax.transAxes)
+                color=pal["text_muted"], transform=ax.transAxes)
 
     ax.set_xlim(-0.005, 1.005)
     ax.set_ylim(0, 0.5 + 0.95 * len(rows) + 0.08)
     ax.axis("off")
     ax.set_title(title, fontsize=13, fontweight="bold", pad=12)
-    fig.tight_layout()
+    _finish_canvas(fig, ax, pal)
 
     if return_meta:
         return fig, {"rows": len(rows), "legend": legend, "artists": artists}
@@ -295,19 +324,21 @@ def topology_diagram(topology, protocol_name="", n_nodes=5):
     or label is clipped at the figure boundary.
     """
     t = (topology or "").lower()
-    fig, ax = plt.subplots(figsize=(7.2, 5.8))
+    pal = diagram_palette()
+    fig, ax = _canvas((7.2, 5.8))
     ax.axis("off")
     ax.set_aspect("equal")
     ax.set_title(_wrap(f"Topology: {topology}"), fontsize=12, fontweight="bold", pad=12)
 
-    def node(pos, label, color="#2563eb", size=0.35):
-        circ = Circle(pos, size, facecolor=color, edgecolor="white", linewidth=2, zorder=3)
+    def node(pos, label, color=None, size=0.35):
+        color = color or pal["series"][0]
+        circ = Circle(pos, size, facecolor=color, edgecolor=pal["bg"], linewidth=2, zorder=3)
         ax.add_patch(circ)
         # Short labels sit inside the marker; anything longer would overflow the
         # circle and collide with its neighbours, so it is laid out underneath.
         if len(str(label)) <= 3:
             ax.text(
-                pos[0], pos[1], label, ha="center", va="center", color="white", fontsize=8, fontweight="bold", zorder=4
+                pos[0], pos[1], label, ha="center", va="center", color=theme.contrast_text(color), fontsize=8, fontweight="bold", zorder=4
             )
         else:
             ax.text(
@@ -328,9 +359,9 @@ def topology_diagram(topology, protocol_name="", n_nodes=5):
         for i in range(n_nodes):
             for j in range(i + 1, n_nodes):
                 if rng.random() < 0.5:
-                    ax.plot([pts[i, 0], pts[j, 0]], [pts[i, 1], pts[j, 1]], color=_pal()["border"], lw=1.2, zorder=1)
+                    ax.plot([pts[i, 0], pts[j, 0]], [pts[i, 1], pts[j, 1]], color=pal["text_muted"], lw=1.2, zorder=1)
         for i, p in enumerate(pts):
-            node(p, f"N{i + 1}", PALETTE[i % len(PALETTE)])
+            node(p, f"N{i + 1}", pal["series"][i % len(pal["series"])])
 
     elif "ring" in t:
         R = 3.5
@@ -340,47 +371,47 @@ def topology_diagram(topology, protocol_name="", n_nodes=5):
         ]
         for i in range(n_nodes):
             j = (i + 1) % n_nodes
-            ax.plot([pts[i][0], pts[j][0]], [pts[i][1], pts[j][1]], color=_pal()["border"], lw=2, zorder=1)
+            ax.plot([pts[i][0], pts[j][0]], [pts[i][1], pts[j][1]], color=pal["text_muted"], lw=2, zorder=1)
         for i, p in enumerate(pts):
-            node(p, f"N{i + 1}", PALETTE[i % len(PALETTE)])
+            node(p, f"N{i + 1}", pal["series"][i % len(pal["series"])])
 
     elif "star" in t or "client-server" in t or "point-to-multipoint" in t:
         cx, cy = 5, 5
-        node((cx, cy), "HUB", FRAME_PALETTE[3], size=0.45)
+        node((cx, cy), "HUB", pal["series"][3], size=0.45)
         R = 3.3
         for i in range(n_nodes):
             ang = 2 * np.pi * i / n_nodes
             p = (cx + R * np.cos(ang), cy + R * np.sin(ang))
-            ax.plot([cx, p[0]], [cy, p[1]], color=_pal()["border"], lw=1.6, zorder=1)
-            node(p, f"N{i + 1}", PALETTE[i % len(PALETTE)])
+            ax.plot([cx, p[0]], [cy, p[1]], color=pal["text_muted"], lw=1.6, zorder=1)
+            node(p, f"N{i + 1}", pal["series"][i % len(pal["series"])])
 
     elif "bus" in t or "multi-drop" in t:
         y = 5
-        ax.plot([1, 9], [y, y], color=_pal()["border"], lw=4, zorder=1)
+        ax.plot([1, 9], [y, y], color=pal["text_muted"], lw=4, zorder=1)
         for i in range(n_nodes):
             x = 1.5 + i * (7.0 / max(n_nodes - 1, 1))
-            ax.plot([x, x], [y, y - 1.4], color=_pal()["border"], lw=1.6, zorder=1)
-            node((x, y - 1.8), f"N{i + 1}", PALETTE[i % len(PALETTE)])
+            ax.plot([x, x], [y, y - 1.4], color=pal["text_muted"], lw=1.6, zorder=1)
+            node((x, y - 1.8), f"N{i + 1}", pal["series"][i % len(pal["series"])])
 
     elif "switch" in t or "fabric" in t:
         cx, cy = 5, 6.5
-        node((cx, cy), "SWITCH", FRAME_PALETTE[4], size=0.5)
+        node((cx, cy), "SWITCH", pal["series"][4], size=0.5)
         R = 3.2
         for i in range(n_nodes):
             ang = np.pi + (np.pi) * i / max(n_nodes - 1, 1)
             p = (cx + R * np.cos(ang), cy - 2.6 + R * 0.5 * np.sin(ang))
-            ax.plot([cx, p[0]], [cy, p[1]], color=_pal()["border"], lw=1.6, zorder=1)
-            node(p, f"D{i + 1}", PALETTE[i % len(PALETTE)])
+            ax.plot([cx, p[0]], [cy, p[1]], color=pal["text_muted"], lw=1.6, zorder=1)
+            node(p, f"D{i + 1}", pal["series"][i % len(pal["series"])])
 
     else:  # point-to-point default
-        node((3, 5), "Device A", FRAME_PALETTE[0], size=0.55)
-        node((7, 5), "Device B", FRAME_PALETTE[2], size=0.55)
-        ax.annotate("", xy=(6.35, 5.15), xytext=(3.65, 5.15), arrowprops=dict(arrowstyle="->", color=_pal()["border"], lw=2))
-        ax.annotate("", xy=(3.65, 4.85), xytext=(6.35, 4.85), arrowprops=dict(arrowstyle="->", color=_pal()["border"], lw=2))
+        node((3, 5), "Device A", pal["series"][0], size=0.55)
+        node((7, 5), "Device B", pal["series"][2], size=0.55)
+        ax.annotate("", xy=(6.35, 5.15), xytext=(3.65, 5.15), arrowprops=dict(arrowstyle="->", color=pal["text_muted"], lw=2))
+        ax.annotate("", xy=(3.65, 4.85), xytext=(6.35, 4.85), arrowprops=dict(arrowstyle="->", color=pal["text_muted"], lw=2))
 
     ax.set_xlim(-1.0, 11.0)
     ax.set_ylim(0.4, 9.6)
-    fig.tight_layout()
+    _finish_canvas(fig, ax, pal)
     return fig
 
 
@@ -388,26 +419,27 @@ def pinout_diagram(pins, protocol_name=""):
     """Draw a simple 2-box wiring diagram (MCU <-> Device) labeling each pin."""
     if not pins:
         return None
-    fig, ax = plt.subplots(figsize=(7, max(2.5, 0.6 * len(pins) + 1)))
+    pal = diagram_palette()
+    fig, ax = _canvas((7, max(2.5, 0.6 * len(pins) + 1)))
     ax.axis("off")
     n = len(pins)
     h = max(2.0, 0.8 * n)
-    box1 = FancyBboxPatch((0.5, 0.5), 2.2, h, boxstyle="round,pad=0.02", facecolor=_pal()["surface_alt"], edgecolor="white")
-    box2 = FancyBboxPatch((7.3, 0.5), 2.2, h, boxstyle="round,pad=0.02", facecolor=_pal()["surface_alt"], edgecolor="white")
+    box1 = FancyBboxPatch((0.5, 0.5), 2.2, h, boxstyle="round,pad=0.02", facecolor=pal["surface_alt"], edgecolor=pal["bg"])
+    box2 = FancyBboxPatch((7.3, 0.5), 2.2, h, boxstyle="round,pad=0.02", facecolor=pal["surface_alt"], edgecolor=pal["bg"])
     ax.add_patch(box1)
     ax.add_patch(box2)
-    ax.text(1.6, h + 0.85, "MCU / Master", ha="center", fontsize=11, fontweight="bold")
-    ax.text(8.4, h + 0.85, f"{protocol_name or 'Peripheral'}", ha="center", fontsize=11, fontweight="bold")
+    ax.text(1.6, h + 0.85, "MCU / Master", ha="center", fontsize=11, fontweight="bold", color=pal["text"])
+    ax.text(8.4, h + 0.85, f"{protocol_name or 'Peripheral'}", ha="center", fontsize=11, fontweight="bold", color=pal["text"])
     for i, pin in enumerate(pins):
         y = 0.5 + h - (i + 0.7) * (h / n)
-        color = PALETTE[i % len(PALETTE)]
+        color = pal["series"][i % len(pal["series"])]
         ax.plot([2.7, 7.3], [y, y], color=color, lw=2.4, zorder=1)
         ax.text(5.0, y + 0.18, pin, ha="center", fontsize=9.5, color=color, fontweight="bold")
         ax.plot(2.7, y, marker="o", color=color, markersize=6, zorder=2)
         ax.plot(7.3, y, marker="o", color=color, markersize=6, zorder=2)
     ax.set_xlim(0, 10)
     ax.set_ylim(0, h + 1.5)
-    fig.tight_layout()
+    _finish_canvas(fig, ax, pal)
     return fig
 
 
@@ -418,14 +450,17 @@ def category_bar_chart(protocols):
     c = Counter(p["category"] for p in protocols)
     cats = sorted(c.keys())
     counts = [c[k] for k in cats]
-    fig, ax = plt.subplots(figsize=(9, 4.5))
-    bars = ax.bar(cats, counts, color=[FRAME_PALETTE[i % len(FRAME_PALETTE)] for i in range(len(cats))])
+    pal = diagram_palette()
+    fig, ax = _canvas((9, 4.5))
+    bars = ax.bar(cats, counts, color=[pal["series"][i % len(pal["series"])] for i in range(len(cats))])
     ax.set_ylabel("Number of Protocols")
-    ax.set_title("Protocols Covered per Category", fontweight="bold", color=_pal()["text"])
-    plt.xticks(rotation=35, ha="right")
+    ax.set_title("Protocols Covered per Category", fontweight="bold", color=pal["text"])
+    for tick in ax.get_xticklabels():
+        tick.set_rotation(35)
+        tick.set_horizontalalignment("right")
     for b, v in zip(bars, counts):
-        ax.text(b.get_x() + b.get_width() / 2, v + 0.1, str(v), ha="center", fontsize=9, fontweight="bold", color=_pal()["text"])
-    fig.tight_layout()
+        ax.text(b.get_x() + b.get_width() / 2, v + 0.1, str(v), ha="center", fontsize=9, fontweight="bold", color=pal["text"])
+    _finish_canvas(fig, ax, pal)
     return fig
 
 
@@ -461,12 +496,13 @@ def speed_comparison_chart(protocols, ids=None):
         return None
     names = [d[0] for d in data]
     vals = [d[1] for d in data]
-    fig, ax = plt.subplots(figsize=(9, max(3, 0.4 * len(names))))
-    ax.barh(names, vals, color=[PALETTE[i % len(PALETTE)] for i in range(len(names))])
+    pal = diagram_palette()
+    fig, ax = _canvas((9, max(3, 0.4 * len(names))))
+    ax.barh(names, vals, color=[pal["series"][i % len(pal["series"])] for i in range(len(names))])
     ax.set_xscale("log")
     ax.set_xlabel("Max Speed (Mbps, log scale)")
     ax.set_title("Speed Comparison", fontweight="bold")
-    fig.tight_layout()
+    _finish_canvas(fig, ax, pal)
     return fig
 
 
@@ -489,7 +525,8 @@ def waveform_diagram(model, figsize=None):
     if not traces:
         return None
     n = len(traces)
-    fig, ax = plt.subplots(figsize=figsize or (12, 1.15 * n + 1.6))
+    pal = diagram_palette()
+    fig, ax = _canvas(figsize or (12, 1.15 * n + 1.6))
 
     total = 0.0
     for i, tr in enumerate(traces):
@@ -509,7 +546,7 @@ def waveform_diagram(model, figsize=None):
         y = [base + 0.18 + 0.72 * (lv - vmin) / span for lv in levels] + [
             base + 0.18 + 0.72 * (levels[-1] - vmin) / span
         ]
-        color = PALETTE[i % len(PALETTE)]
+        color = pal["series"][i % len(pal["series"])]
         ax.step(xs, y, where="post", color=color, linewidth=2.0, zorder=3)
         ax.text(
             -0.01,
@@ -524,19 +561,19 @@ def waveform_diagram(model, figsize=None):
         )
         # Annotate the actual level values at the top/bottom of the band.
         if tr.get("show_levels", True):
-            ax.text(xs[-1] + 0.1, base + 0.9, f"{vmax:g}", ha="left", va="center", fontsize=7.5, color="#64748b")
-            ax.text(xs[-1] + 0.1, base + 0.12, f"{vmin:g}", ha="left", va="center", fontsize=7.5, color="#64748b")
+            ax.text(xs[-1] + 0.1, base + 0.9, f"{vmax:g}", ha="left", va="center", fontsize=7.5, color=pal["text_muted"])
+            ax.text(xs[-1] + 0.1, base + 0.12, f"{vmin:g}", ha="left", va="center", fontsize=7.5, color=pal["text_muted"])
         for m in tr.get("markers", []):
             idx = next((k for k in range(len(xs) - 1) if xs[k] <= m <= xs[k + 1]), 0)
             lv = levels[min(idx, len(levels) - 1)]
             my = base + 0.18 + 0.72 * (lv - vmin) / span
-            ax.plot([m], [my], marker="o", color="#0f172a", markersize=5, zorder=5)
+            ax.plot([m], [my], marker="o", color=pal["text"], markersize=5, zorder=5)
 
     # Shaded field bands (START, ADDR, ACK, ...) labelled above the top trace.
     for x0, x1, label in model.get("fields", []):
-        ax.axvspan(x0, x1, ymin=0.0, ymax=1.0, color="#94a3b8", alpha=0.07, zorder=0)
+        ax.axvspan(x0, x1, ymin=0.0, ymax=1.0, color=pal["text_muted"], alpha=0.07, zorder=0)
         ax.text(
-            (x0 + x1) / 2, n + 0.12, label, ha="center", va="bottom", fontsize=8, color=_pal()["text_muted"], fontweight="bold"
+            (x0 + x1) / 2, n + 0.12, label, ha="center", va="bottom", fontsize=8, color=pal["text_muted"], fontweight="bold"
         )
 
     ticks = model.get("xticks")
@@ -549,7 +586,7 @@ def waveform_diagram(model, figsize=None):
     ax.set_xlabel(model.get("time_label", "time (bit periods)"), fontsize=9)
     ax.set_title(model.get("title", "Signal Waveform"), fontsize=12, fontweight="bold", pad=26)
     ax.grid(axis="x", linestyle=":", alpha=0.35)
-    fig.tight_layout()
+    _finish_canvas(fig, ax, pal)
     return fig
 
 
