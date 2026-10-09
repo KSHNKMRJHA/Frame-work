@@ -66,6 +66,7 @@
           "voh_volts": { "type": ["number", "null"] },
           "vdiff_high_volts": { "type": ["number", "null"] },
           "vdiff_low_volts": { "type": ["number", "null"] },
+          "logic_1_is_vdiff_high": { "type": "boolean" },
           "jitter_ps": { "type": ["integer", "null"] },
           "rise_time_ns": { "type": "number" },
           "prop_delay_ns_per_m": { "type": "number" },

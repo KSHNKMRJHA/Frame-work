@@ -363,11 +363,13 @@ def differential_levels(spec, bits, invert=False):
     # "passive" media (coax, balanced audio) still carry a differential voltage;
     # only RF genuinely has no wire-level level.
     if sig in ("differential", "bipolar", "passive") and vhi is not None and vlo is not None:
-        # A 1 sits at +Vhi across the pair, a 0 at +Vlo. Both conductors are
-        # driven about the common mode, which is why they move in opposition.
+        # By default a 1 sits at +Vhi across the pair. Some buses (CAN) define
+        # dominant logical 0 as the positive differential state.
         pos, neg = [], []
         for i, b in enumerate(bits):
-            d = vhi if _bit_value(b) ^ int(invert) else vlo
+            one = bool(_bit_value(b) ^ int(invert))
+            high = one == bool(spec.get("logic_1_is_vdiff_high", True))
+            d = vhi if high else vlo
             pos.append((i, i + 1.0, vcm + d / 2.0))
             neg.append((i, i + 1.0, vcm - d / 2.0))
         return [("V+", pos), ("V-", neg)]

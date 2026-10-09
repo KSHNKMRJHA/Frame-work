@@ -11,6 +11,7 @@ import electrical_specs
 from parametric import format_bps, format_m
 from utils import ui_state
 from utils import branding
+from utils import components
 
 
 
@@ -114,7 +115,7 @@ st.caption(
 query = st.text_input("Search", placeholder="Search by name, keyword, inventor...",
                       key="fw_encyclopedia_query")
 
-st.markdown('<div class="fw-fieldlabel">Category</div>', unsafe_allow_html=True)
+components.info_badge("Category")
 # `categories` already begins with "All"; do not prepend it again.
 cat = st.pills("Category", categories, default="All",
                selection_mode="single", key="fw_cat", label_visibility="collapsed")
@@ -231,34 +232,32 @@ with st.expander("🖨️ Export this protocol", expanded=False):
 # unavailable there is no viewport hook, so the layout is built for the narrow
 # case instead: full width reads correctly everywhere and costs only vertical
 # space on wide screens.
-st.header(selected["name"])
+components.protocol_hero(
+        selected["name"],
+        category=selected.get("category", ""),
+        year=selected.get("year", ""),
+        inventor=selected.get("inventor", ""),
+        difficulty=selected.get("difficulty", ""),
+        lifecycle=selected.get("lifecycle") or "",
+    )
 # Two columns per row: readable at tablet, and Streamlit stacks 2-up to 1-up
 # on phones by itself. Only short values go in a metric - st.metric renders a
 # large font and clips with an ellipsis, which turned "Star (Host + Hub)" into
 # "Star (Host ...". Long free-text fields are printed as text below so they
 # wrap instead of truncating.
-badge_cols = st.columns(2)
-badge_cols[0].metric("Category", selected["category"])
-badge_cols[1].metric("Invented", selected["year"])
-badge_cols[0].metric("Difficulty", selected.get("difficulty", "—"))
-badge_cols[1].metric("Lifecycle", (selected.get("lifecycle") or "—").capitalize())
-
-spec_cols = st.columns(2)
-spec_cols[0].metric("Max rate", format_bps(selected.get("data_rate_max_bps")))
-spec_cols[1].metric("Max reach", format_m(selected.get("distance_max_m")))
-spec_cols[0].metric(
-    "Max nodes",
-    selected.get("nodes_max") if selected.get("nodes_max") is not None else "carrier-defined",
-)
+# Key-spec band: compact parameter/value grid (mono values, wraps to one
+# column on phones). Short values only - long free text stays as wrapping
+# prose below so it never truncates inside a metric.
 _impedance = (selected.get("electrical") or {}).get("impedance_ohm")
-spec_cols[1].metric("Impedance", f"{_impedance} Ω" if _impedance else "—")
-
-# These three are sentences, not values - they wrap rather than clip.
-st.markdown(
-    f"**Topology:** {selected.get('topology') or '—'}  \n"
-    f"**OSI layer:** {selected.get('osi_layer') or '—'}  \n"
-    f"**Standard:** {selected.get('standard_doc') or '—'}"
-)
+components.spec_table([
+    ("Max rate", format_bps(selected.get("data_rate_max_bps"))),
+    ("Max reach", format_m(selected.get("distance_max_m"))),
+    ("Max nodes",
+     str(selected.get("nodes_max")) if selected.get("nodes_max") is not None else "carrier-defined"),
+    ("Topology", selected.get("topology") or "-"),
+    ("OSI layer", selected.get("osi_layer") or "-"),
+    ("Standard", selected.get("standard_doc") or "-"),
+])
 st.caption("Maxima are representative and never simultaneous.")
 
 st.markdown("#### 🚀 Speed")
@@ -404,7 +403,10 @@ if technical:
                 rows.append({"Parameter": "Rise time (10–90 %)",
                              "Value": f"{spec['rise_time_ns']:g} ns"})
             if spec.get("bit_period_ns"):
-                rows.append({"Parameter": "Bit period",
+                is_can_carrier = (selected.get("id") in ("can", "isotp") or
+                                  spec.get("inherited_from") in ("can", "isotp") or
+                                  spec.get("logic_1_is_vdiff_high") is False)
+                rows.append({"Parameter": "Representative bit period (example)" if is_can_carrier else "Bit period",
                              "Value": f"{spec['bit_period_ns']:g} ns "
                                       f"({1000.0 / spec['bit_period_ns']:,.1f} Mbit/s)"})
             if spec.get("prop_delay_ns_per_m"):
@@ -428,6 +430,10 @@ if technical:
                 st.dataframe(rows, width="stretch", hide_index=True)
             if spec.get("notes"):
                 st.caption(spec["notes"])
+            if spec.get("bit_period_ns") and (selected.get("id") in ("can", "isotp") or
+                                               spec.get("inherited_from") in ("can", "isotp") or
+                                               spec.get("logic_1_is_vdiff_high") is False):
+                st.caption("CAN timing depends on the configured bus rate; this inherited 2 µs value is a 500 kbit/s example (1 Mbit/s is 1 µs/bit).")
         st.divider()
         st.markdown("### 🚌 Bus & protocol parameters")
         st.caption(
@@ -541,10 +547,17 @@ with d1:
         if selected.get("frame_note"):
             st.caption(f"ℹ️ {selected['frame_note']}")
         st.caption(
-            "Segment widths are proportional to bit count. Fields with a range "
-            "(e.g. `0-64`) are drawn at a fixed nominal width because their real "
-            "size varies per frame."
+            "Segment widths are compressed and bounded for readability; exact bit "
+            "counts are preserved in the legend. Fields with a range (e.g. `0-64`) "
+            "use a fixed nominal width because their real size varies per frame."
         )
+        # The unchanged 12-inch figure scales down on phones. Keep its exact
+        # field identities/counts available as readable, wrapping native text.
+        with st.expander("Frame field values"):
+            components.spec_table([
+                (f"{index} · {field['name']}", f"{field.get('bits', '')} bit")
+                for index, field in enumerate(selected.get("frame_fields", []), start=1)
+            ])
     else:
         st.info(
             "This protocol doesn't define a fixed bit-level frame structure (e.g., it's a networking/application-layer or wireless protocol without a simple fixed frame)."
