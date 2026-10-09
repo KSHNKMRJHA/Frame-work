@@ -252,13 +252,19 @@ def _onboarding_dialog():
     """
     idx = st.session_state.get(_ONBOARD_STEPS_KEY, 0)
     title, body = _ONBOARD_STEPS[idx]
+    pal = theme.current_palette()
     dots = "".join(
-        f'<span class="{"on" if i == idx else ""}"></span>'
+        f'<span style="display:inline-block; width:0.4rem; height:0.4rem; '
+        f'border-radius:50%; margin-left:0.35rem; background:'
+        f'{pal["accent"] if i == idx else pal["border_strong"]};"></span>'
         for i in range(len(_ONBOARD_STEPS))
     )
     st.markdown(
-        f'<div class="fw-modal-hero"><div style="font-size:1.5rem">{title}</div>'
-        f'<div class="fw-step-dots">{dots}</div></div>',
+        f'<div style="padding-bottom:0.6rem; margin-bottom:0.7rem; '
+        f'border-bottom:1px solid {pal["border"]};">'
+        f'<div style="font-size:1.5rem; font-weight:700; color:{pal["text"]};">'
+        f'{title}</div>'
+        f'<div style="margin-top:0.5rem;">{dots}</div></div>',
         unsafe_allow_html=True,
     )
     st.markdown(body)
@@ -558,8 +564,8 @@ def sidebar_identity():
             f"""
             <div style="padding:0.15rem 0 0.6rem 0; line-height:1.35;">
                 <div style="font-size:1.12rem; font-weight:700;">{APP_ICON} {APP_NAME}</div>
-                <div style="font-size:0.78rem; color:#94a3b8;">{version_label()} · {BUILD_CHANNEL}</div>
-                <div style="font-size:0.70rem; color:#64748b;">build {build_number()}</div>
+                <div style="font-size:0.78rem; color:{theme.current_palette()['text_muted']};">{version_label()} · {BUILD_CHANNEL}</div>
+                <div style="font-size:0.70rem; color:{theme.current_palette()['text_faint']};">build {build_number()}</div>
             </div>
             """,
             unsafe_allow_html=True,
