@@ -21,20 +21,30 @@ CALCULATORS = next(
     if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "calculators" for t in node.targets)
 )
 CUSTOM = """() => [...document.querySelectorAll('[data-testid="stMain"] [style]')]
- .filter(e => e.style.fontVariantNumeric === 'tabular-nums')
+ .filter(e => e.style.fontVariantNumeric === 'tabular-nums' || e.style.display === 'flex')
  .filter(e => {const r=e.getBoundingClientRect();return r.width>0&&r.height>0;})
  .filter(e => e.scrollWidth>e.clientWidth+2)
  .map(e => e.innerText.slice(0,80))"""
+
+
+def settle(page):
+    """Wait for the native running-script control to disappear before QA."""
+    page.wait_for_timeout(300)
+    page.get_by_role("button", name="Stop", exact=True).wait_for(state="hidden", timeout=60000)
+    page.wait_for_timeout(150)
 
 
 def inspect(page, key, records):
     clipped, overflow = measure(page)
     custom = page.evaluate(CUSTOM)
     errors = page.locator('[data-testid="stException"]').all_text_contents()
+    leaked = [text for text in page.locator('[data-testid="stMain"] code').all_text_contents()
+              if text.strip() in ("</div>", "</span>")]
+    main_overflow = page.locator('[data-testid="stMain"]').evaluate("e => e.scrollWidth-e.clientWidth")
     record = {"view": key, "clipped": clipped, "overflow": overflow,
-              "customOverflow": custom, "errors": errors}
+              "mainOverflow": main_overflow, "customOverflow": custom, "errors": errors, "leakedMarkup": leaked}
     records.append(record)
-    assert not errors and not clipped and not custom and overflow <= 2, record
+    assert not errors and not clipped and not custom and not leaked and overflow <= 2 and main_overflow <= 2, record
 
 
 def run(url, engines):
@@ -53,10 +63,10 @@ def run(url, engines):
                         try:
                             started = time.perf_counter()
                             page.goto(f"{url}/{route}", wait_until="networkidle", timeout=60000)
-                            page.wait_for_timeout(1000)
+                            settle(page)
                             if page.get_by_role("dialog").count():
                                 page.get_by_role("button", name="Skip", exact=True).click()
-                                page.wait_for_timeout(600)
+                                settle(page)
                             loads.append({"view": key, "seconds": round(time.perf_counter()-started, 3)})
                             actual = page.evaluate(_THEME_JS)
                             assert actual["app"] == expected[scheme]["app"], (key, actual)
@@ -77,24 +87,24 @@ def run(url, engines):
                                     box.click()
                                     box.fill(calculator)
                                     page.get_by_role("option", name=calculator, exact=True).click()
-                                    page.wait_for_timeout(600)
+                                    settle(page)
                                     page.evaluate(_OPEN_ALL)
                                     inspect(page, key+f"/calculator-{i}", records)
                                     if engine == "chromium" and width == 390:
                                         page.screenshot(path=str(SHOTS / f"{scheme}-390-calculator-{i}.png"))
                             if route == "Quiz_Assessment":
                                 page.get_by_role("button", name="🎯 Start New Quiz", exact=True).click()
-                                page.wait_for_timeout(700)
+                                settle(page)
                                 radios = page.get_by_role("radiogroup")
                                 assert radios.count() == 10, key
                                 for i in range(3):
                                     radios.nth(i).get_by_role("radio").first.press("Space")
-                                    page.wait_for_timeout(250)
+                                    settle(page)
                                 print(f"Quiz progress {key}: {page.get_by_text('answers selected', exact=False).all_text_contents()}", flush=True)
                                 page.get_by_text("3/10 answers selected", exact=True).wait_for(timeout=10000)
                                 inspect(page, key+"/quiz-active", records)
                                 page.get_by_role("button", name="✅ Submit Quiz", exact=True).click()
-                                page.wait_for_timeout(700)
+                                settle(page)
                                 page.get_by_role("button", name="🔁 Try Another Quiz", exact=True).wait_for(timeout=10000)
                                 assert all(radios.nth(i).get_by_role("radio").first.is_disabled() for i in range(10)), key
                                 inspect(page, key+"/quiz-scored", records)

@@ -40,6 +40,12 @@ def _esc(value):
     return escape(str(value if value is not None else ""))
 
 
+def _render(markup):
+    """Keep optional fragments from becoming indented Markdown code blocks."""
+    st.markdown("\n".join(line.strip() for line in markup.splitlines() if line.strip()),
+                unsafe_allow_html=True)
+
+
 def _pal():
     """The active palette, resolved once per call."""
     return theme.current_palette()
@@ -101,7 +107,7 @@ def page_hero(eyebrow, title, description="", meta=None, accent=None):
         if description
         else ""
     )
-    st.markdown(
+    _render(
         f"""
         <div style="padding:0.15rem 0 0.75rem 0; border-bottom:1px solid {p['border']};">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem;">
@@ -116,7 +122,6 @@ def page_hero(eyebrow, title, description="", meta=None, accent=None):
             </div>
         </div>
         """,
-        unsafe_allow_html=True,
     )
 
 # ----------------------------------------------------------- protocol_hero --
@@ -164,7 +169,7 @@ def protocol_hero(name, category="", year="", inventor="", difficulty="",
         else ""
     )
 
-    st.markdown(
+    _render(
         f"""
         <div style="padding:0.2rem 0 0.85rem 0; border-bottom:1px solid {p['border']};
                     border-left:3px solid {accent}; padding-left:0.7rem;">
@@ -173,7 +178,6 @@ def protocol_hero(name, category="", year="", inventor="", difficulty="",
             {chips_html}
         </div>
         """,
-        unsafe_allow_html=True,
     )
 
 
@@ -198,7 +202,7 @@ def section_header(title, index=None, description="", accent=None):
         if description
         else ""
     )
-    st.markdown(
+    _render(
         f"""
         <div style="margin:1.1rem 0 0.5rem 0; padding-bottom:0.3rem;
                     border-bottom:1px solid {p['border']};">
@@ -208,7 +212,6 @@ def section_header(title, index=None, description="", accent=None):
             {desc}
         </div>
         """,
-        unsafe_allow_html=True,
     )
 
 
@@ -222,13 +225,12 @@ def info_badge(text, tone="neutral", icon=""):
     text_html = _esc(text)
     prefix = f"{_esc(icon)} " if icon else ""
     color = _tone_color(tone)
-    st.markdown(
+    _render(
         f"<span style=\"display:inline-block; font-family:{_esc(theme.MONO_STACK)}; "
         f"font-size:0.72rem; font-weight:600; color:{color}; "
         f"background:{_tint(color)}; border:1px solid {color}; "
         f"border-radius:999px; padding:0.12rem 0.6rem; white-space:normal; overflow-wrap:anywhere; max-width:100%;\">"
         f"{prefix}{text_html}</span>",
-        unsafe_allow_html=True,
     )
 
 
@@ -247,7 +249,7 @@ def engineering_metric(label, value, unit="", tone="accent", help=None):
         if unit
         else ""
     )
-    st.markdown(
+    _render(
         f"""
         <div style="padding:0.35rem 0; min-width:0;">
             <div style="font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase;
@@ -257,7 +259,6 @@ def engineering_metric(label, value, unit="", tone="accent", help=None):
                         margin-top:0.1rem; line-height:1.2; overflow-wrap:anywhere;">{_esc(value)}{unit_html}</div>
         </div>
         """,
-        unsafe_allow_html=True,
     )
 
 
@@ -290,7 +291,7 @@ def callout(text, kind="info", label="", icon=""):
     icon = icon or default_icon
     label = label or default_label
     label_html = f"<span style='font-weight:700;'>{_esc(label)}</span>"
-    st.markdown(
+    _render(
         f"""<div style="border-left:3px solid {color}; background:{_tint(color)};
                     border-radius:0 6px 6px 0; padding:0.6rem 0.85rem; margin:0.5rem 0;">
             <div style="font-size:0.95rem; color:{p['text']}; line-height:1.55;">
@@ -298,7 +299,6 @@ def callout(text, kind="info", label="", icon=""):
                 — {_esc(text)}
             </div>
         </div>""",
-        unsafe_allow_html=True,
     )
 
 
@@ -330,11 +330,10 @@ def spec_table(rows, min_width="230px", unit_color=None):
             </div>"""
         for k, v in rows
     )
-    st.markdown(
+    _render(
         f"<div style='display:grid; grid-template-columns:"
         f"repeat(auto-fit, minmax(min({_esc(min_width)}, 100%), 1fr)); "
         f"column-gap:1.5rem; margin:0.35rem 0;'>{items}</div>",
-        unsafe_allow_html=True,
     )
 
 
@@ -351,11 +350,10 @@ def status_led(text, tone="ok", dot="●"):
     """
     p = _pal()
     color = _tone_color(tone)
-    st.markdown(
+    _render(
         f"<span style='display:inline-flex; align-items:center; gap:0.4rem; "
         f"font-family:{_esc(theme.MONO_STACK)}; font-size:0.8rem; color:{p['text_muted']};'>"
         f"<span style='color:{color}; font-size:0.7rem; line-height:1;'>{_esc(dot)}</span>"
         f"{_esc(text)}</span>",
-        unsafe_allow_html=True,
     )
 
