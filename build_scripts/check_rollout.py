@@ -61,6 +61,19 @@ def puzzle_status():
         assert app.session_state["user_state"]["xp"] == 15 and saved.call_count == 1
 
 
+def geography_accounting():
+    """The coverage caption counts protocols, including multi-country origins."""
+    from streamlit.testing.v1 import AppTest
+    from utils import origins
+    from utils.data_loader import load_protocols
+
+    expected = sum(bool(origins.resolve_origin(p.get("place"))["countries"]) for p in load_protocols())
+    app = AppTest.from_file(str(next((ROOT / "pages").glob("7_*.py")))).run()
+    assert not app.exception
+    caption = next(m.value for m in app.markdown if m.value.startswith("Coverage:"))
+    assert int(re.search(r"Coverage:\s*\*\*(\d+)\*\*", caption)[1]) == expected
+
+
 def check():
     pages = [ROOT / "app.py", *sorted((ROOT / "pages").glob("*.py"))]
     for path in pages:
@@ -98,6 +111,7 @@ def check():
     assert not re.search(r"(?:write_text|open).*config\.toml", settings)
     quiz_progress()
     puzzle_status()
+    geography_accounting()
     print(f"Rollout checks passed: {len(pages)} pages; supported markup, native theme ownership")
 
 

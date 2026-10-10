@@ -36,8 +36,9 @@ with m3:
 with m4:
     components.engineering_metric("Unresolved", summary["unknown_count"])
 
+concrete_country_ids = {p["id"] for group in summary["per_country"].values() for p in group}
 st.caption(
-    f"Coverage: **{summary['mapped_count'] + len({c for info in summary['international'] for c in info['countries']})}**"
+    f"Coverage: **{len(concrete_country_ids)}**"
     f" of {summary['total']} protocols resolve to at least one concrete country. "
     "Counts always add up to the total - unresolved origins are reported, never dropped."
 )
