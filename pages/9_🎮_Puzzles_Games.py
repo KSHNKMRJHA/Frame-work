@@ -103,7 +103,6 @@ with game[0]:
 
     unanswered = [n for n, v in user_matches.items() if v == CHOOSE]
     already_scored = st.session_state.get("match_submitted", False)
-    components.status_led("Round scored" if already_scored else "Ready to check", tone="neutral" if already_scored else "signal")
 
     if st.button("✅ Check Matches", disabled=already_scored):
         if unanswered:
@@ -126,6 +125,8 @@ with game[0]:
                     mark = "✅" if user_matches[n] == puzzle["answer"][n] else "❌"
                     st.markdown(f"{mark} **{n}** → {puzzle['answer'][n]}")
 
+    round_done = st.session_state.get("match_submitted", False)
+    components.status_led("Round scored" if round_done else "Ready to check", tone="neutral" if round_done else "signal")
     if already_scored:
         st.info("Round scored. Click **🎲 New Matching Round** for another one.")
 
@@ -153,7 +154,6 @@ with game[1]:
             f"fields in the correct transmission order (first to last).")
 
     frame_scored = st.session_state.get("frame_submitted", False)
-    components.status_led("Round scored" if frame_scored else "Ready to check", tone="neutral" if frame_scored else "signal")
 
     # Each position offers only the fields not already used above it, so the
     # same field cannot be placed twice (previously every dropdown offered the
@@ -186,6 +186,8 @@ with game[1]:
             if fp.get("frame_note"):
                 st.caption(f"ℹ️ {fp['frame_note']}")
 
+    round_done = st.session_state.get("frame_submitted", False)
+    components.status_led("Round scored" if round_done else "Ready to check", tone="neutral" if round_done else "signal")
     if frame_scored:
         st.info("Puzzle scored. Click **🎲 New Frame Puzzle** for another one.")
 
@@ -213,7 +215,6 @@ with game[2]:
     target = st.session_state.guess_target
     done = st.session_state.get("guess_done", False)
     attempts = st.session_state.get("guess_attempts", 0)
-    components.status_led("Solved" if done else "Mystery in progress", tone="ok" if done else "signal")
 
     clues = [
         f"Category: **{target['category']}**",
@@ -256,6 +257,8 @@ with game[2]:
             st.error(f"Not quite — that's guess {attempts + 1}. "
                      "Each wrong guess costs 5 XP off the reward, same as revealing a clue.")
 
+    mystery_done = st.session_state.get("guess_done", False)
+    components.status_led("Solved" if mystery_done else "Mystery in progress", tone="ok" if mystery_done else "signal")
     if done:
         st.info("Solved. Click **🎲 New Mystery Protocol** to play again.")
 

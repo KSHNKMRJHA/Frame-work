@@ -44,6 +44,23 @@ def quiz_progress():
         assert saved.call_count == 1
 
 
+def puzzle_status():
+    """A newly scored native matching round reports its completed state."""
+    from streamlit.testing.v1 import AppTest
+    from utils import state
+
+    puzzle_page = next((ROOT / "pages").glob("9_*.py"))
+    with patch.object(state, "load_state", return_value=copy.deepcopy(state.DEFAULT_STATE)), patch.object(state, "save_state") as saved:
+        app = AppTest.from_file(str(puzzle_page)).run()
+        puzzle = app.session_state["match_puzzle"]
+        for name in puzzle["left"]:
+            next(s for s in app.selectbox if s.key == f"match_sel_{name}").set_value(puzzle["answer"][name]).run()
+        next(b for b in app.button if "Check Matches" in b.label).click().run()
+        assert not app.exception and app.session_state["match_submitted"]
+        assert any("Round scored" in m.value for m in app.markdown)
+        assert app.session_state["user_state"]["xp"] == 15 and saved.call_count == 1
+
+
 def check():
     pages = [ROOT / "app.py", *sorted((ROOT / "pages").glob("*.py"))]
     for path in pages:
@@ -80,6 +97,7 @@ def check():
     assert "active_theme_type()" in settings and "Streamlit's own menu" in settings
     assert not re.search(r"(?:write_text|open).*config\.toml", settings)
     quiz_progress()
+    puzzle_status()
     print(f"Rollout checks passed: {len(pages)} pages; supported markup, native theme ownership")
 
 
