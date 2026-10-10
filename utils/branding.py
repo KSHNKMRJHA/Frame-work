@@ -192,7 +192,7 @@ def sidebar_sections():
     with st.sidebar:
         st.markdown(
             f'<div style="font-size:.70rem;font-weight:700;letter-spacing:.14em;'
-            f'text-transform:uppercase;color:{pal["text_faint"]};margin:.9rem 0 .25rem 0">'
+            f'text-transform:uppercase;color:{pal["text_muted"]};margin:.9rem 0 .25rem 0">'
             f'Navigate</div>', unsafe_allow_html=True
         )
         for heading, pages in ui_state.NAV_SECTIONS:
@@ -252,13 +252,19 @@ def _onboarding_dialog():
     """
     idx = st.session_state.get(_ONBOARD_STEPS_KEY, 0)
     title, body = _ONBOARD_STEPS[idx]
+    pal = theme.current_palette()
     dots = "".join(
-        f'<span class="{"on" if i == idx else ""}"></span>'
+        f'<span style="display:inline-block; width:0.4rem; height:0.4rem; '
+        f'border-radius:50%; margin-left:0.35rem; background:'
+        f'{pal["accent"] if i == idx else pal["border_strong"]};"></span>'
         for i in range(len(_ONBOARD_STEPS))
     )
     st.markdown(
-        f'<div class="fw-modal-hero"><div style="font-size:1.5rem">{title}</div>'
-        f'<div class="fw-step-dots">{dots}</div></div>',
+        f'<div style="padding-bottom:0.6rem; margin-bottom:0.7rem; '
+        f'border-bottom:1px solid {pal["border"]};">'
+        f'<div style="font-size:1.5rem; font-weight:700; color:{pal["text"]};">'
+        f'{title}</div>'
+        f'<div style="margin-top:0.5rem;">{dots}</div></div>',
         unsafe_allow_html=True,
     )
     st.markdown(body)
@@ -373,7 +379,7 @@ def protocol_summary_card(selected):
         ax.text(0.30, y, value, color=pal["text"], fontsize=10, va="top")
         y -= 0.026
 
-    ax.text(0.06, 0.035, f"FrameWork  ·  {selected['id']}", color=pal["text_faint"],
+    ax.text(0.06, 0.035, f"FrameWork  ·  {selected['id']}", color=pal["text_muted"],
             fontsize=9, va="bottom")
 
     buf = io.BytesIO()
@@ -398,7 +404,13 @@ def electrical_levels_text(spec):
     if rise:
         lines.append(f"Rise time     {rise:g} ns")
     if bit:
-        lines.append(f"Bit period    {bit:g} ns  ({1000.0 / bit:,.1f} Mbit/s)")
+        can_carrier = (spec.get("inherited_from") in ("can", "isotp") or
+                       (spec.get("signaling") == "differential" and
+                        spec.get("vdiff_high_volts") == 2.0 and
+                        spec.get("vcm_volts") == 2.5) or
+                       spec.get("logic_1_is_vdiff_high") is False)
+        label = "CAN bit example" if can_carrier else "Bit period"
+        lines.append(f"{label:<16}{bit:g} ns  ({1000.0 / bit:,.1f} Mbit/s)")
     return lines
 
 
@@ -476,24 +488,24 @@ def level_bars(spec):
             return
         vcm = spec.get("vcm_volts") or 0.0
         hi, lo = float(hi), float(lo)
-        top = vcm + max(abs(hi), abs(lo)) / 2.0
-        bottom = vcm - max(abs(hi), abs(lo)) / 2.0
+        rails = differential_rail_extrema(vcm, hi, lo)
+        floor, ceiling = rails["floor"], rails["ceiling"]
+        vp_max, vp_min = rails["vplus_max"], rails["vplus_min"]
+        vn_max, vn_min = rails["vminus_max"], rails["vminus_min"]
         bars = [
-            _bar(f"V+ max  {vcm + hi / 2:+.2f} V", vcm + hi / 2, bottom, top, "hi"),
-            _bar(f"V+ min  {vcm + lo / 2:+.2f} V", vcm + lo / 2, bottom, top, "lo"),
-            _bar(f"V− max  {vcm - hi / 2:+.2f} V", vcm - hi / 2, bottom, top, "hi"),
-            _bar(f"V− min  {vcm - lo / 2:+.2f} V", vcm - lo / 2, bottom, top, "lo"),
+            _bar(f"V+ max  {vp_max:+.2f} V", vp_max, floor, ceiling, "hi"),
+            _bar(f"V+ min  {vp_min:+.2f} V", vp_min, floor, ceiling, "lo"),
+            _bar(f"V− max  {vn_max:+.2f} V", vn_max, floor, ceiling, "hi"),
+            _bar(f"V− min  {vn_min:+.2f} V", vn_min, floor, ceiling, "lo"),
         ]
         note = f"VDiff swing {abs(hi - lo):.2f} V about a {vcm:.2f} V common mode"
     elif signaling == "rf":
         dbm = spec.get("vdiff_high_volts") or 0
-        st.markdown(
-            f'<div class="fw-card"><div class="fw-card-top">'
-            f'<span class="fw-sig">Transmit power</span></div>'
-            f'<div class="fw-bigval">{dbm:g} <span>dBm</span></div>'
-            f'<div class="fw-card-desc">into a {spec.get("impedance_ohm") or 50:g} Ω '
-            f'matched load</div></div>',
-            unsafe_allow_html=True)
+        from utils import components
+
+        with st.container(border=True):
+            components.engineering_metric("Transmit power", f"{dbm:g}", "dBm", tone="signal")
+            st.caption(f"into a {spec.get('impedance_ohm') or 50:g} Ω matched load")
         return
     else:
         voh, vol = spec.get("voh_volts"), spec.get("vol_volts")
@@ -509,8 +521,20 @@ def level_bars(spec):
         f'<div style="margin:.4rem 0 .2rem 0;display:grid;gap:.28rem">'
         f'{"".join(bars)}</div>'
         f'<div style="font-size:.75rem;margin-top:.25rem;'
-        f'color:{theme.current_palette()["text_faint"]};font-variant-numeric:tabular-nums">'
+        f'color:{theme.current_palette()["text_muted"]};font-variant-numeric:tabular-nums">'
         f'{note}</div>', unsafe_allow_html=True)
+
+
+def differential_rail_extrema(vcm, vdiff_high, vdiff_low):
+    """Return correctly ordered extrema for both conductors' two states."""
+    vp_states = (vcm + vdiff_high / 2.0, vcm + vdiff_low / 2.0)
+    vn_states = (vcm - vdiff_high / 2.0, vcm - vdiff_low / 2.0)
+    return {
+        "vplus_max": max(vp_states), "vplus_min": min(vp_states),
+        "vminus_max": max(vn_states), "vminus_min": min(vn_states),
+        "floor": min(*vp_states, *vn_states),
+        "ceiling": max(*vp_states, *vn_states),
+    }
 
 
 def _bar(label, value, floor, ceiling, kind):
@@ -558,8 +582,8 @@ def sidebar_identity():
             f"""
             <div style="padding:0.15rem 0 0.6rem 0; line-height:1.35;">
                 <div style="font-size:1.12rem; font-weight:700;">{APP_ICON} {APP_NAME}</div>
-                <div style="font-size:0.78rem; color:#94a3b8;">{version_label()} · {BUILD_CHANNEL}</div>
-                <div style="font-size:0.70rem; color:#64748b;">build {build_number()}</div>
+                <div style="font-size:0.78rem; color:{theme.current_palette()['text_muted']};">{version_label()} · {BUILD_CHANNEL}</div>
+                <div style="font-size:0.70rem; color:{theme.current_palette()['text_muted']};">build {build_number()}</div>
             </div>
             """,
             unsafe_allow_html=True,

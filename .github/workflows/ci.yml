@@ -56,6 +56,21 @@ jobs:
       - name: Unit tests — CRC vectors, formulas, boundary guards, generators
         run: python build_scripts/check_logic.py
 
+      - name: CAN electrical and logical-state consistency
+        run: python build_scripts/check_can_consistency.py
+
+      - name: SignalBench components, navigation, diagrams and rollout
+        env:
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          python build_scripts/check_components.py
+          python build_scripts/check_navigation.py
+          python build_scripts/check_diagrams.py
+          python build_scripts/check_theme.py
+          python build_scripts/check_mindmap.py
+          python build_scripts/check_origins.py
+          python build_scripts/check_rollout.py
+
       - name: Lint
         run: |
           pip install ruff
@@ -72,7 +87,9 @@ jobs:
   # engines.
   browser:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
+    env:
+      OPENBLAS_NUM_THREADS: "1"
     steps:
       - uses: actions/checkout@v4
 
@@ -118,6 +135,12 @@ jobs:
 
       - name: Page sweep — phone width
         run: python build_scripts/page_sweep.py 390
+
+      - name: SignalBench approved Home and CAN profile
+        run: python build_scripts/check_signalbench_visual.py
+
+      - name: SignalBench all-page Dark/Light responsive matrix
+        run: python build_scripts/check_rollout_visual.py --engines chromium
 
       # Always keep the screenshots: they are the fastest way to see what a
       # failure actually looked like.

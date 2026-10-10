@@ -4,7 +4,7 @@ from utils.data_loader import load_protocols, get_categories
 from utils.mindmap import full_mindmap, category_mindmap
 from utils import theme as theme_mod
 
-from utils import branding
+from utils import branding, components
 
 branding.page_config("Mind Map", "🗺️")
 branding.sidebar_identity()
@@ -12,8 +12,9 @@ branding.sidebar_identity()
 protocols = load_protocols()
 categories = get_categories(protocols)
 
-st.title("🗺️ Protocol Mind Map")
-st.caption("A visual map of how every protocol connects — from the root concept down through categories to individual protocols and their close relatives.")
+components.page_hero("Relationship explorer", "Protocol mind map",
+                     "Trace categories, individual protocols, and their close relatives.",
+                     meta=f"{len(protocols)} protocol identities")
 
 tab1, tab2 = st.tabs(["🌐 Full Universe Map", "🔬 Zoom Into a Category"])
 
@@ -23,14 +24,15 @@ tab1, tab2 = st.tabs(["🌐 Full Universe Map", "🔬 Zoom Into a Category"])
 pal = theme_mod.current_palette()
 
 with tab1:
-    st.info(
-        f"This map shows **all {len(protocols)} protocols** grouped by category, "
+    components.callout(
+        f"This map shows all {len(protocols)} protocols grouped by category, "
         "radiating from the central concept. Larger nodes = categories; "
         "small nodes = individual protocols, each labelled with its full name."
     )
     with st.spinner("Rendering mind map..."):
         fig = full_mindmap(protocols, palette=pal)
     st.pyplot(fig, width='stretch')
+    st.caption("Full protocol names are preserved. Use category exploration or list view for a closer inspection on small screens.")
 
 with tab2:
     cat = st.selectbox("Choose a category to explore its internal relationships:", categories)

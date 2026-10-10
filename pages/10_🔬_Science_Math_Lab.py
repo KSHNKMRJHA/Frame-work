@@ -3,13 +3,12 @@ import streamlit as st
 from utils import science
 from utils.data_loader import load_protocols as science_load_protocols
 
-from utils import branding
+from utils import branding, components
 
 branding.page_config("Science & Math Lab", "🔬")
 branding.sidebar_identity()
 
-st.title("🔬 Science & Math Lab")
-st.caption(
+components.page_hero("Calculation workstation", "Science & math lab",
     "The real engineering formulas behind every protocol you just read about — fully interactive, "
     "using standard textbook equations verified against known reference values."
 )
@@ -32,6 +31,7 @@ calculators = [
     "📐 Frame Overhead Analyzer",
 ]
 
+components.section_header("Select an instrument", index="01")
 choice = st.selectbox(
     "Select a calculator:",
     calculators,
@@ -42,7 +42,7 @@ choice = st.selectbox(
 if choice == calculators[0]:
     with st.expander("UART Baud Rate & Bit-Timing"):
         st.caption("Calculate divisor, actual baud rate, error %, and bit time for a given MCU clock, baud rate, and oversampling factor.")
-        st.subheader("UART Baud Rate & Bit-Timing Calculator")
+        components.section_header("UART Baud Rate & Bit-Timing Calculator")
         st.write(
             "Every UART needs to divide its clock down to the target baud rate. Because the divisor "
             "must be an integer, there's almost always a small rounding error — too much error and "
@@ -77,10 +77,14 @@ if choice == calculators[0]:
         # "-3.55%" rendered as "-3....". Streamlit stacks 2-up to 1-up on phones.
         m1, m2 = st.columns(2)
         m3, m4 = st.columns(2)
-        m1.metric("Divisor (rounded)", r["divisor"])
-        m2.metric("Actual Baud Rate", f"{r['actual_baud']:.1f}")
-        m3.metric("Error", f"{r['error_pct']:.2f}%")
-        m4.metric("Bit Time", f"{r['bit_time_us']:.2f} µs")
+        with m1:
+            components.engineering_metric("Divisor (rounded)", r["divisor"])
+        with m2:
+            components.engineering_metric("Actual Baud Rate", f"{r['actual_baud']:.1f}")
+        with m3:
+            components.engineering_metric("Error", f"{r['error_pct']:.2f}%")
+        with m4:
+            components.engineering_metric("Bit Time", f"{r['bit_time_us']:.2f} µs")
         if r["acceptable"]:
             st.success("✅ Error is within the typical ±2% tolerance most UARTs can handle reliably.")
         else:
@@ -88,13 +92,14 @@ if choice == calculators[0]:
                 "⚠️ Error exceeds ~2% — this combination may cause framing errors on real hardware. Try a different clock or baud rate."
             )
         st.latex(
-            r"\text{Divisor} = \frac{F_{CLK}}{\text{Oversampling} \times \text{Baud}}, \quad \text{Actual Baud} = \frac{F_{CLK}}{\text{Oversampling} \times \text{Divisor}_{rounded}}"
+            r"\begin{aligned}D &= \frac{F_{CLK}}{OSR \times \text{Baud}} \\ \text{Baud}_{actual} &= \frac{F_{CLK}}{OSR \times D_{rounded}}\end{aligned}"
         )
+        st.caption("D is the clock divisor; OSR is the selected oversampling factor.")
 
 elif choice == calculators[1]:
     with st.expander("Shannon & Nyquist Capacity"):
         st.caption("Compute Shannon channel capacity and Nyquist maximum symbol rate for a given bandwidth, SNR, and modulation order.")
-        st.subheader("Shannon Capacity & Nyquist Rate")
+        components.section_header("Shannon Capacity & Nyquist Rate")
         st.write(
             "Claude Shannon's 1948 theorem defines the absolute maximum error-free data rate of any "
             "noisy channel. Harry Nyquist's earlier (1928) theorem gives the maximum symbol rate of a "
@@ -129,8 +134,10 @@ elif choice == calculators[1]:
         cap = science.shannon_capacity(bw, snr)
         nyq = science.nyquist_max_rate(bw, levels)
         m1, m2 = st.columns(2)
-        m1.metric("Shannon Capacity", f"{cap / 1e6:.2f} Mbps")
-        m2.metric("Nyquist Max Rate", f"{nyq / 1e6:.2f} Mbps")
+        with m1:
+            components.engineering_metric("Shannon Capacity", f"{cap / 1e6:.2f} Mbps")
+        with m2:
+            components.engineering_metric("Nyquist Max Rate", f"{nyq / 1e6:.2f} Mbps")
         st.latex(r"C = B \cdot \log_2(1 + SNR)")
         st.latex(r"R_{max} = 2B \cdot \log_2(M)")
         st.info(
@@ -140,7 +147,7 @@ elif choice == calculators[1]:
 elif choice == calculators[2]:
     with st.expander("CRC Calculator"):
         st.caption("Compute CRC-16/CCITT-FALSE, CRC-16/MODBUS, and CRC-32/ISO-HDLC checksums. Input as plain text or space-separated hex bytes.")
-        st.subheader("CRC Calculator (used by Modbus, CAN, Ethernet, and more)")
+        components.section_header("CRC Calculator (used by Modbus, CAN, Ethernet, and more)")
         st.write(
             "Cyclic Redundancy Checks detect transmission errors. Enter plain text, or space-separated "
             "hex bytes (e.g. `31 32 33 34 35 36 37 38 39`), to compute common CRCs used across the "
@@ -156,9 +163,12 @@ elif choice == calculators[2]:
         st.caption(f"Interpreted as **{read_as}** — {len(data)} byte(s): `{data.hex(' ')}`")
         if data:
             c1, c2, c3 = st.columns(3)
-            c1.metric("CRC-16/CCITT-FALSE", f"0x{science.crc16_ccitt_false(data):04X}")
-            c2.metric("CRC-16/MODBUS", f"0x{science.crc16_modbus(data):04X}")
-            c3.metric("CRC-32 (Ethernet/IEEE)", f"0x{science.crc32_ieee(data):08X}")
+            with c1:
+                components.engineering_metric("CRC-16/CCITT-FALSE", f"0x{science.crc16_ccitt_false(data):04X}")
+            with c2:
+                components.engineering_metric("CRC-16/MODBUS", f"0x{science.crc16_modbus(data):04X}")
+            with c3:
+                components.engineering_metric("CRC-32 (Ethernet/IEEE)", f"0x{science.crc32_ieee(data):08X}")
             st.caption(
                 "Verified against standard test vectors: input '123456789' → CCITT-FALSE 0x29B1, MODBUS 0x4B37, CRC-32 0xCBF43926."
             )
@@ -171,7 +181,7 @@ elif choice == calculators[2]:
 elif choice == calculators[3]:
     with st.expander("Frequency ↔ Wavelength"):
         st.caption("Convert between frequency and wavelength; compute quarter-wave antenna length using a velocity factor.")
-        st.subheader("Frequency ↔ Wavelength & Antenna Length")
+        components.section_header("Frequency ↔ Wavelength & Antenna Length")
         st.write(
             "Radio waves travel at the speed of light. This relationship determines antenna sizing for every wireless protocol — from 433 MHz LoRa to 6 GHz Wi-Fi."
         )
@@ -193,12 +203,14 @@ elif choice == calculators[3]:
             wl = science.freq_to_wavelength(freq_mhz * 1e6)
             qw = science.quarter_wave_antenna_length(freq_mhz * 1e6)
             c1, c2 = st.columns(2)
-            c1.metric("Wavelength", f"{wl * 100:.2f} cm", help="Wavelength in centimetres")
-            c2.metric(
-                "Quarter-Wave Antenna Length (VF=0.95)",
-                f"{qw * 100:.2f} cm",
-                help="Quarter-wavelength monopole length with velocity factor 0.95",
-            )
+            with c1:
+                components.engineering_metric("Wavelength", f"{wl * 100:.2f} cm", help="Wavelength in centimetres")
+            with c2:
+                components.engineering_metric(
+                    "Quarter-Wave Antenna Length (VF=0.95)",
+                    f"{qw * 100:.2f} cm",
+                    help="Quarter-wavelength monopole length with velocity factor 0.95",
+                )
         else:
             wl_cm = st.number_input(
                 "Wavelength (cm)",
@@ -209,9 +221,9 @@ elif choice == calculators[3]:
                 help="Wavelength in centimetres",
             )
             freq = science.wavelength_to_freq(wl_cm / 100)
-            st.metric("Frequency", f"{freq / 1e6:.2f} MHz", help="Computed frequency from wavelength")
+            components.engineering_metric("Frequency", f"{freq / 1e6:.2f} MHz", help="Computed frequency from wavelength")
 
-        st.latex(r"\lambda = \frac{c}{f}, \quad c = 299\,792\,458\ m/s")
+        st.latex(r"\begin{aligned}\lambda &= \frac{c}{f} \\ c &= 299\,792\,458\ m/s\end{aligned}")
         st.caption(
             "Common reference bands: 433 MHz (LoRa/SRD), 868/915 MHz (LoRaWAN region bands), 2.4 GHz (Wi-Fi/BLE/Zigbee), 5-6 GHz (Wi-Fi)."
         )
@@ -219,7 +231,7 @@ elif choice == calculators[3]:
 elif choice == calculators[4]:
     with st.expander("CAN Bit Timing"):
         st.caption("Compute total time quanta, sample point position, and prescaler for a CAN controller given clock, bitrate, and segment lengths.")
-        st.subheader("CAN Bit Timing Calculator")
+        components.section_header("CAN Bit Timing Calculator")
         st.write(
             "A CAN bit is divided into time quanta (TQ) across four segments: Sync, Propagation, Phase "
             "Segment 1, and Phase Segment 2. Where you place the 'sample point' inside the bit affects "
@@ -271,10 +283,14 @@ elif choice == calculators[4]:
         # "-3.55%" rendered as "-3....". Streamlit stacks 2-up to 1-up on phones.
         m1, m2 = st.columns(2)
         m3, m4 = st.columns(2)
-        m1.metric("Total Time Quanta / Bit", ct["total_tq"])
-        m2.metric("Bit Time", f"{ct['bit_time_ns']:.0f} ns")
-        m3.metric("Sample Point", f"{ct['sample_point_pct']:.1f}%")
-        m4.metric("Prescaler (BRP)", f"{ct['prescaler_exact']:.3f}")
+        with m1:
+            components.engineering_metric("Total Time Quanta / Bit", ct["total_tq"])
+        with m2:
+            components.engineering_metric("Bit Time", f"{ct['bit_time_ns']:.0f} ns")
+        with m3:
+            components.engineering_metric("Sample Point", f"{ct['sample_point_pct']:.1f}%")
+        with m4:
+            components.engineering_metric("Prescaler (BRP)", f"{ct['prescaler_exact']:.3f}")
 
         if 75 <= ct["sample_point_pct"] <= 87.5:
             st.success("✅ Sample point is in the 75-87.5% range recommended by the Bosch CAN specification and CiA.")
@@ -302,7 +318,7 @@ elif choice == calculators[4]:
 elif choice == calculators[5]:
     with st.expander("I²C Pull-Up Resistor Designer"):
         st.caption("Compute the feasible pull-up resistor window for an I²C bus given voltage, speed mode, capacitance, and receiver thresholds.")
-        st.subheader("I²C Pull-Up Resistor Designer")
+        components.section_header("I²C Pull-Up Resistor Designer")
         st.write(
             "An I²C line only rises because of its pull-up resistor: too small and the "
             "open-drain driver can't sink the current (V_OL rises above spec), too large "
@@ -352,10 +368,14 @@ elif choice == calculators[5]:
         # "-3.55%" rendered as "-3....". Streamlit stacks 2-up to 1-up on phones.
         m1, m2 = st.columns(2)
         m3, m4 = st.columns(2)
-        m1.metric("R_p minimum", f"{r['rp_min_ohm']:.0f} Ω")
-        m2.metric("R_p maximum", f"{r['rp_max_ohm']:.0f} Ω")
-        m3.metric("Suggested (E24)", f"{r['suggested_ohm']:.0f} Ω" if r["suggested_ohm"] else "—")
-        m4.metric("Rise time @ R_p min", f"{r['tr_at_min_ns']:.0f} ns")
+        with m1:
+            components.engineering_metric("R_p minimum", f"{r['rp_min_ohm']:.0f} Ω")
+        with m2:
+            components.engineering_metric("R_p maximum", f"{r['rp_max_ohm']:.0f} Ω")
+        with m3:
+            components.engineering_metric("Suggested (E24)", f"{r['suggested_ohm']:.0f} Ω" if r["suggested_ohm"] else "—")
+        with m4:
+            components.engineering_metric("Rise time @ R_p min", f"{r['tr_at_min_ns']:.0f} ns")
 
         if not r["feasible"]:
             st.error(
@@ -374,7 +394,7 @@ elif choice == calculators[5]:
                 f"⚠️ {cb} pF exceeds this mode's {r['cb_max_pf']:.0f} pF bus-capacitance limit "
                 "(UM10204) — shorten the wiring or add a bus buffer."
             )
-        st.latex(r"R_{p\min} = \frac{V_{DD} - V_{OL}}{I_{OL}}, \qquad R_{p\max} = \frac{t_r}{0.8473 \cdot C_b}")
+        st.latex(r"\begin{aligned}R_{p\min} &= \frac{V_{DD} - V_{OL}}{I_{OL}} \\ R_{p\max} &= \frac{t_r}{0.8473 \cdot C_b}\end{aligned}")
         st.caption(
             "R_p max derives from the rise-time spec (t_r = 0.8473·R_p·C_b, TI SLVA689). "
             "Mode limits: t_r = 1000/300/120 ns (Sm/Fm/Fm+); C_b max = 400 pF (Sm/Fm), 550 pF (Fm+)."
@@ -383,13 +403,14 @@ elif choice == calculators[5]:
 elif choice == calculators[6]:
     with st.expander("RS-485 Fail-Safe Biasing"):
         st.caption("Compute idle differential voltage from external bias resistors; check TIA/EIA-485 +200 mV fail-safe requirement.")
-        st.subheader("RS-485 Fail-Safe Biasing Calculator")
+        components.section_header("RS-485 Fail-Safe Biasing Calculator")
         st.write(
             "When every RS-485 driver is in high-Z (nobody transmitting), the pair floats and "
             "the receivers would see noise. External bias resistors hold a positive idle "
             "differential — TIA/EIA-485 requires at least **+200 mV** for a guaranteed recessive state."
         )
-        c1, c2, c3, c4 = st.columns(4)
+        c1, c2 = st.columns(2)
+        c3, c4 = st.columns(2)
         bvcc = c1.selectbox(
             "Bias supply (V)",
             [3.3, 5.0],
@@ -424,9 +445,12 @@ elif choice == calculators[6]:
         b = science.rs485_fail_safe_bias(bvcc, rpu, rpd, r_load=12000.0 / nodes)
         max_r = science.rs485_max_equal_bias(bvcc, r_load=12000.0 / nodes)
         m1, m2, m3 = st.columns(3)
-        m1.metric("Idle V_os", f"{b['vos_mv']:.0f} mV")
-        m2.metric("Margin over 200 mV", f"{b['margin_mv']:+.0f} mV")
-        m3.metric("Bias current", f"{b['quiescent_ma']:.2f} mA")
+        with m1:
+            components.engineering_metric("Idle V_os", f"{b['vos_mv']:.0f} mV")
+        with m2:
+            components.engineering_metric("Margin over 200 mV", f"{b['margin_mv']:+.0f} mV")
+        with m3:
+            components.engineering_metric("Bias current", f"{b['quiescent_ma']:.2f} mA")
 
         if b["meets_fail_safe"]:
             st.success(
@@ -448,13 +472,14 @@ elif choice == calculators[6]:
 elif choice == calculators[7]:
     with st.expander("CAN Bus Load"):
         st.caption("Compute bus load percentage for a steady stream of CAN frames, including worst-case with bit stuffing.")
-        st.subheader("CAN Bus Load & Frame Timing")
+        components.section_header("CAN Bus Load & Frame Timing")
         st.write(
             "CAN bus load is the number you size a network by: past ~50-70 % load, "
             "worst-case latency for the highest-priority message grows sharply. This "
             "counts every field of the frame plus the worst case added by bit stuffing."
         )
-        c1, c2, c3, c4 = st.columns(4)
+        c1, c2 = st.columns(2)
+        c3, c4 = st.columns(2)
         can_br = c1.selectbox(
             "Bitrate (kbps)",
             [125, 250, 500, 1000],
@@ -488,10 +513,14 @@ elif choice == calculators[7]:
         # "-3.55%" rendered as "-3....". Streamlit stacks 2-up to 1-up on phones.
         m1, m2 = st.columns(2)
         m3, m4 = st.columns(2)
-        m1.metric("Frame (nominal)", f"{load['total_bits']} bits")
-        m2.metric("Frame time", f"{load['frame_time_us']:.1f} µs")
-        m3.metric("Bus load", f"{load['bus_load_pct']:.1f} %")
-        m4.metric("Worst case (w/ stuffing)", f"{load['worst_bus_load_pct']:.1f} %")
+        with m1:
+            components.engineering_metric("Frame (nominal)", f"{load['total_bits']} bits")
+        with m2:
+            components.engineering_metric("Frame time", f"{load['frame_time_us']:.1f} µs")
+        with m3:
+            components.engineering_metric("Bus load", f"{load['bus_load_pct']:.1f} %")
+        with m4:
+            components.engineering_metric("Worst case (w/ stuffing)", f"{load['worst_bus_load_pct']:.1f} %")
 
         pct = load["worst_bus_load_pct"]
         if pct > 70:
@@ -506,7 +535,7 @@ elif choice == calculators[7]:
         else:
             st.success(f"✅ {pct:.1f} % worst-case load leaves comfortable headroom.")
         st.latex(
-            r"\text{Frame}_{\text{base}} = 44 + 8D \ (64 + 8D \text{ extended}), \quad \text{Load} = \frac{\text{frames/s} \times \text{bits}}{\text{bitrate}}"
+            r"\begin{aligned}\text{Frame}_{base} &= 44 + 8D \\ \text{Frame}_{extended} &= 64 + 8D \\ \text{Load} &= \frac{\text{frames/s} \times \text{bits}}{\text{bitrate}}\end{aligned}"
         )
         st.caption(
             "44 + 8D counts SOF + arbitration + control + data + CRC + ACK + EOF (+3 bits of "
@@ -517,7 +546,7 @@ elif choice == calculators[7]:
 elif choice == calculators[8]:
     with st.expander("RF Link Budget"):
         st.caption("Free-space path loss link budget: compute FSPL, EIRP, received power, and link margin given TX power, antenna gains, frequency, distance, and sensitivity.")
-        st.subheader("RF Link Budget (Free-Space)")
+        components.section_header("RF Link Budget (Free-Space)")
         st.write(
             "Does your wireless link actually close? Free-space path loss gives the "
             "best-case attenuation; add antenna gains and system losses to get received "
@@ -589,10 +618,14 @@ elif choice == calculators[8]:
         # "-3.55%" rendered as "-3....". Streamlit stacks 2-up to 1-up on phones.
         m1, m2 = st.columns(2)
         m3, m4 = st.columns(2)
-        m1.metric("FSPL", f"{lb['fspl_db']:.1f} dB", help="Free-space path loss")
-        m2.metric("EIRP", f"{lb['eirp_dbm']:.1f} dBm", help="Effective isotropic radiated power")
-        m3.metric("Received power", f"{lb['rx_power_dbm']:.1f} dBm", help="Received power at antenna terminals")
-        m4.metric("Link margin", f"{lb['margin_db']:.1f} dB", help="Margin above receiver sensitivity; positive = link closes")
+        with m1:
+            components.engineering_metric("FSPL", f"{lb['fspl_db']:.1f} dB", help="Free-space path loss")
+        with m2:
+            components.engineering_metric("EIRP", f"{lb['eirp_dbm']:.1f} dBm", help="Effective isotropic radiated power")
+        with m3:
+            components.engineering_metric("Received power", f"{lb['rx_power_dbm']:.1f} dBm", help="Received power at antenna terminals")
+        with m4:
+            components.engineering_metric("Link margin", f"{lb['margin_db']:.1f} dB", help="Margin above receiver sensitivity; positive = link closes")
 
         if lb["link_ok"]:
             st.success(
@@ -608,7 +641,7 @@ elif choice == calculators[8]:
                 f"❌ Link does not close: received {lb['rx_power_dbm']:.1f} dBm is below "
                 f"{sens:.0f} dBm sensitivity. Raise power/gain or shorten the range."
             )
-        st.latex(r"\text{FSPL} = 20\log_{10}(d_{\text{km}}) + 20\log_{10}(f_{\text{MHz}}) + 32.44 \ \text{dB}")
+        st.latex(r"\begin{aligned}\text{FSPL} &= 20\log_{10}(d_{\text{km}}) \\ &\quad + 20\log_{10}(f_{\text{MHz}}) \\ &\quad + 32.44\ \text{dB}\end{aligned}")
         st.caption(
             "Free space is a best case: real links add fading, obstruction, and "
             "cable/connector losses — budget 10-20 dB of extra margin for anything outdoors."
@@ -617,13 +650,14 @@ elif choice == calculators[8]:
 elif choice == calculators[9]:
     with st.expander("Logic Noise Margin"):
         st.caption("Compute CMOS noise margins NM_H and NM_L from driver/receiver threshold voltages.")
-        st.subheader("Logic Noise Margin (level compatibility)")
+        components.section_header("Logic Noise Margin (level compatibility)")
         st.write(
             "NM_H = VOHmin − VIHmin and NM_L = VILmax − VOLmax. Both must be positive — "
             "a negative margin means the driver cannot reliably drive the receiver "
             "(e.g. a 5 V sensor into mismatched thresholds). Defaults are 3.3 V CMOS."
         )
-        c1, c2, c3, c4 = st.columns(4)
+        c1, c2 = st.columns(2)
+        c3, c4 = st.columns(2)
         voh = c1.number_input(
             "VOHmin (V)",
             min_value=0.0,
@@ -658,20 +692,23 @@ elif choice == calculators[9]:
         )
         nm = science.noise_margin(voh, vih, vol, vil)
         m1, m2, m3 = st.columns(3)
-        m1.metric("NM_H", f"{nm['nm_high_mv']:.0f} mV")
-        m2.metric("NM_L", f"{nm['nm_low_mv']:.0f} mV")
-        m3.metric("Worst margin", f"{nm['worst_mv']:.0f} mV")
+        with m1:
+            components.engineering_metric("NM_H", f"{nm['nm_high_mv']:.0f} mV")
+        with m2:
+            components.engineering_metric("NM_L", f"{nm['nm_low_mv']:.0f} mV")
+        with m3:
+            components.engineering_metric("Worst margin", f"{nm['worst_mv']:.0f} mV")
         if nm["compatible"]:
             st.success("✅ Both margins positive — levels are compatible with noise headroom.")
         else:
             st.error("❌ Negative margin — add a level shifter or pick compatible logic families.")
-        st.latex(r"NM_H = V_{OHmin} - V_{IHmin}, \qquad NM_L = V_{ILmax} - V_{OLmax}")
+        st.latex(r"\begin{aligned}NM_H &= V_{OHmin} - V_{IHmin} \\ NM_L &= V_{ILmax} - V_{OLmax}\end{aligned}")
         st.caption("CMOS rule of thumb: VIH ≈ 0.7×VDD, VIL ≈ 0.3×VDD. Always confirm in both datasheets.")
 
 elif choice == calculators[10]:
     with st.expander("Throughput & Efficiency"):
         st.caption("Compute UART frame efficiency and SPI throughput including CS gaps and protocol overhead.")
-        st.subheader("Throughput & Efficiency")
+        components.section_header("Throughput & Efficiency")
         st.write(
             "Every serial byte pays framing overhead. 8N1 wastes 20% on start+stop; "
             "parity and extra stop bits cost more. SPI pays no framing per bit but "
@@ -698,8 +735,10 @@ elif choice == calculators[10]:
         )
         eff = science.uart_frame_efficiency(db, pb, sb)
         m1, m2 = st.columns(2)
-        m1.metric("UART efficiency", f"{eff['efficiency_pct']:.1f} %")
-        m2.metric("Frame size", f"{eff['frame_bits']:g} bits ({eff['overhead_bits']:g} overhead)")
+        with m1:
+            components.engineering_metric("UART efficiency", f"{eff['efficiency_pct']:.1f} %")
+        with m2:
+            components.engineering_metric("Frame size", f"{eff['frame_bits']:g} bits ({eff['overhead_bits']:g} overhead)")
         st.divider()
         c4, c5, c6, c7 = st.columns(4)
         sclk = c4.number_input(
@@ -736,15 +775,18 @@ elif choice == calculators[10]:
         )
         th = science.spi_throughput(sclk * 1e6, int(bits), gap_us=gap, overhead_bits=int(ovh))
         m3, m4, m5 = st.columns(3)
-        m3.metric("Transfer time", f"{th['total_time_us']:.2f} µs")
-        m4.metric("Payload rate", f"{th['payload_bps'] / 1e6:.2f} Mbps")
-        m5.metric("Efficiency", f"{th['efficiency_pct']:.1f} %")
+        with m3:
+            components.engineering_metric("Transfer time", f"{th['total_time_us']:.2f} µs")
+        with m4:
+            components.engineering_metric("Payload rate", f"{th['payload_bps'] / 1e6:.2f} Mbps")
+        with m5:
+            components.engineering_metric("Efficiency", f"{th['efficiency_pct']:.1f} %")
         st.caption("Gate SCLK when idle and batch registers into bursts — CS gaps dominate at small transfers.")
 
 elif choice == calculators[11]:
     with st.expander("RS-485 Maximum Stub Length"):
         st.caption("Compute the maximum unterminated stub length from driver rise time and cable velocity factor; why RS-485 demands daisy-chaining.")
-        st.subheader("RS-485 Maximum Stub Length")
+        components.section_header("RS-485 Maximum Stub Length")
         st.write(
             "Stubs ring back into the bit when they exceed ~1/10 of the driver edge "
             "length. This is why RS-485 demands daisy-chaining: stars and long drops "
@@ -768,7 +810,7 @@ elif choice == calculators[11]:
             help="Velocity factor: 1.0 = free space, ~0.66 = typical CAT5/100Ω coax",
         )
         stub = science.rs485_max_stub_length(edge, vf)
-        st.metric("Max stub length", f"{stub['max_stub_cm']:.0f} cm")
+        components.engineering_metric("Max stub length", f"{stub['max_stub_cm']:.0f} cm")
         st.latex(r"L_{stub} < \frac{t_r \cdot c \cdot VF}{10}")
         st.caption(
             "MAX485-class edges (~30 ns) give ~60 cm. Faster drivers need SHORTER stubs — slow the edge or daisy-chain."
@@ -777,7 +819,7 @@ elif choice == calculators[11]:
 elif choice == calculators[12]:
     with st.expander("Ethernet Efficiency"):
         st.caption("Compute on-wire Ethernet frame efficiency: payload bytes divided by total frame bytes (payload + 38-byte overhead).")
-        st.subheader("Ethernet On-Wire Efficiency")
+        components.section_header("Ethernet On-Wire Efficiency")
         st.write(
             "Every Ethernet frame pays 38 bytes: 7 preamble + 1 SFD + 12 MAC + 2 type + "
             "4 FCS + 12 interframe gap. Small packets are mostly overhead — the reason "
@@ -792,9 +834,12 @@ elif choice == calculators[12]:
         )
         ee = science.ethernet_frame_efficiency(int(pay))
         m1, m2, m3 = st.columns(3)
-        m1.metric("On-wire frame", f"{ee['total_on_wire']} bytes")
-        m2.metric("Efficiency", f"{ee['efficiency_pct']:.1f} %")
-        m3.metric("Overhead", f"{ee['overhead_bytes']} bytes")
+        with m1:
+            components.engineering_metric("On-wire frame", f"{ee['total_on_wire']} bytes")
+        with m2:
+            components.engineering_metric("Efficiency", f"{ee['efficiency_pct']:.1f} %")
+        with m3:
+            components.engineering_metric("Overhead", f"{ee['overhead_bytes']} bytes")
         if ee["min_frame_applies"]:
             st.warning("⚠️ Below 46 bytes the frame is padded to the 64-byte minimum — efficiency collapses.")
         else:
@@ -804,7 +849,7 @@ elif choice == calculators[12]:
 elif choice == calculators[13]:
     with st.expander("Frame Overhead Analyzer"):
         st.caption("Pick any protocol with a documented frame layout and compute fixed overhead, total bits, and payload efficiency for a chosen payload size.")
-        st.subheader("Frame Overhead Analyzer")
+        components.section_header("Frame Overhead Analyzer")
         st.write(
             "Every frame carries addressing, length, integrity and framing fields on top "
             "of the data. This analyzer reads the real `frame_fields` stored for each "
@@ -832,10 +877,14 @@ elif choice == calculators[13]:
             # "-3.55%" rendered as "-3....". Streamlit stacks 2-up to 1-up on phones.
             m1, m2 = st.columns(2)
             m3, m4 = st.columns(2)
-            m1.metric("Fixed overhead", f"{res['fixed_overhead_bits']} bits")
-            m2.metric("Total frame", f"{res['total_bits']} bits ({res['total_bytes']} B)")
-            m3.metric("Payload efficiency", f"{res['efficiency_pct']:.1f}%")
-            m4.metric("Overhead per message", f"{res['fixed_overhead_bits'] / 8:.0f} bytes")
+            with m1:
+                components.engineering_metric("Fixed overhead", f"{res['fixed_overhead_bits']} bits")
+            with m2:
+                components.engineering_metric("Total frame", f"{res['total_bits']} bits ({res['total_bytes']} B)")
+            with m3:
+                components.engineering_metric("Payload efficiency", f"{res['efficiency_pct']:.1f}%")
+            with m4:
+                components.engineering_metric("Overhead per message", f"{res['fixed_overhead_bits'] / 8:.0f} bytes")
 
             if res["efficiency_pct"] >= 85:
                 st.success("✅ Efficient at this payload size — headers amortise well.")
@@ -856,6 +905,7 @@ elif choice == calculators[13]:
                 )
             if sel.get("frame_note"):
                 st.info(f"ℹ️ {sel['frame_note']}")
-            st.latex(r"\text{Efficiency} = \frac{\text{payload bits}}{\text{fixed overhead} + \text{payload}} \times 100\%")
+            st.latex(r"\eta = \frac{P}{H + P} \times 100\%")
+            st.caption("η is efficiency; P is payload bits; H is fixed overhead bits.")
 
 branding.page_footer()

@@ -14,7 +14,7 @@ import pandas as pd
 from parametric import format_bps, format_m
 from utils.data_loader import load_protocols, get_categories
 
-from utils import branding
+from utils import branding, components
 from utils import ui_state
 
 branding.page_config("Selector", "🧭")
@@ -22,8 +22,7 @@ branding.sidebar_identity()
 
 protocols = load_protocols()
 
-st.title("🧭 Protocol Selector")
-st.caption(
+components.page_hero("Decision assistant", "Protocol selector",
     "Tell the wizard your constraints — it ranks all 140 protocols by how many "
     "it provably meets. Numbers are representative maxima (never simultaneous), "
     "so treat the shortlist as a starting point, then read the full profile."
@@ -48,17 +47,19 @@ DIST_STEPS = [
     ("≥ 10 km (long-range RF)", 10_000),
 ]
 
-c1, c2, c3 = st.columns(3)
+components.section_header("Environment & rate", index="01")
+c1, c2 = st.columns(2)
 with c1:
     cat = st.selectbox("Environment", ["Any"] + get_categories(protocols))
 with c2:
     rate_label = st.selectbox("Data rate needed", [label for label, _ in RATE_STEPS], index=0)
+components.section_header("Reach & devices", index="02")
+c3, c4 = st.columns(2)
 with c3:
     dist_label = st.selectbox("Distance needed", [label for label, _ in DIST_STEPS], index=0)
-c4, c5 = st.columns(2)
 with c4:
     nodes_need = st.number_input("Devices on one segment", min_value=1, max_value=100000, value=2, step=1)
-with c5:
+with st.container():
     include_legacy = st.checkbox(
         "Include legacy / retiring protocols",
         value=False,
@@ -140,7 +141,16 @@ if not ranked:
     )
     st.stop()
 
-st.subheader(f"🎯 {len(ranked)} matching protocols (best first)")
+components.section_header(f"{len(ranked)} matching protocols", index="03",
+                          description="Ranked by confirmed constraints met, then maximum rate. Carrier-defined limits stay flagged.")
+for position, result in enumerate(ranked[:3], start=1):
+    with st.container(border=True):
+        components.section_header(result["Protocol"], index=f"{position:02}")
+        components.info_badge(result["Category"], tone="signal")
+        components.spec_table([("Max rate", result["Max rate"]),
+                               ("Max reach", result["Max reach"]),
+                               ("Max nodes", result["Max nodes"])])
+        st.caption(result["Why it matches"])
 st.dataframe(
     pd.DataFrame(
         [
@@ -166,7 +176,7 @@ st.dataframe(
 )
 
 st.divider()
-st.subheader("📖 Read the winner's full profile")
+components.section_header("Inspect a full profile", index="04")
 # Identity, not the display name: two protocols can share a label, and the
 # Encyclopedia needs the stable id to open the right profile. The name is only
 # ever shown to the user.
@@ -178,10 +188,8 @@ pick_id = st.selectbox(
     format_func=lambda pid: row_label.get(pid, pid),
     key="fw_selector_pick",
 )
-# No "Open" prefix and no arrow: the selectbox label above already says it, and
-# protocol names are long enough that the extras overflowed the button at tablet
-# width ("Aurora (Xilinx/AMD Protocol)" needs 190px in a 187px button).
-if st.button(row_label.get(pick_id, pick_id), width="stretch"):
+# Keep the action concise while the selectbox identifies the exact destination.
+if st.button("Open in Encyclopedia", type="primary", width="stretch"):
     # Carry the protocol id across the page switch. `open_protocol` is the
     # session-state handoff and query_params makes the destination shareable -
     # either alone would work, both together survive a hard reload.

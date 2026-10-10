@@ -8,7 +8,7 @@ from utils.data_loader import load_protocols, get_categories
 from utils import state as state_utils
 from utils.quiz_engine import generate_matching_puzzle, generate_frame_order_puzzle
 
-from utils import branding
+from utils import branding, components
 
 branding.page_config("Puzzles & Games", "🎮")
 branding.sidebar_identity()
@@ -20,8 +20,7 @@ if "user_state" not in st.session_state:
     st.session_state.user_state = state_utils.load_state()
 us = st.session_state.user_state
 
-st.title("🎮 Puzzles & Games")
-st.caption("Learn by playing — three game modes built directly from the protocol database.")
+components.page_hero("Practice challenges", "Puzzles & games", "Three game modes built directly from the protocol database.")
 
 game = st.tabs(["🔗 Speed Matching Game", "🧩 Frame Field Reorder Puzzle", "🕵️ Guess the Protocol"])
 
@@ -71,7 +70,7 @@ def _accepted_answers(protocol):
 
 # ============================================================ GAME 1 =======
 with game[0]:
-    st.subheader("🔗 Match the Protocol to its Speed")
+    components.section_header("🔗 Match the Protocol to its Speed")
     cat = st.selectbox("Category (optional filter)", categories, key="match_cat")
 
     def _new_match_round(seed):
@@ -126,12 +125,14 @@ with game[0]:
                     mark = "✅" if user_matches[n] == puzzle["answer"][n] else "❌"
                     st.markdown(f"{mark} **{n}** → {puzzle['answer'][n]}")
 
+    round_done = st.session_state.get("match_submitted", False)
+    components.status_led("Round scored" if round_done else "Ready to check", tone="neutral" if round_done else "signal")
     if already_scored:
         st.info("Round scored. Click **🎲 New Matching Round** for another one.")
 
 # ============================================================ GAME 2 =======
 with game[1]:
-    st.subheader("🧩 Reorder the Frame Fields")
+    components.section_header("🧩 Reorder the Frame Fields")
     st.write("Some protocols have a strict, standardized bit-level frame layout. "
              "Can you put the fields back in the correct order?")
 
@@ -185,12 +186,14 @@ with game[1]:
             if fp.get("frame_note"):
                 st.caption(f"ℹ️ {fp['frame_note']}")
 
+    round_done = st.session_state.get("frame_submitted", False)
+    components.status_led("Round scored" if round_done else "Ready to check", tone="neutral" if round_done else "signal")
     if frame_scored:
         st.info("Puzzle scored. Click **🎲 New Frame Puzzle** for another one.")
 
 # ============================================================ GAME 3 =======
 with game[2]:
-    st.subheader("🕵️ Guess the Protocol")
+    components.section_header("🕵️ Guess the Protocol")
     st.write("Read the clues one at a time. Fewer clues used = more points!")
 
     def _new_mystery():
@@ -254,6 +257,8 @@ with game[2]:
             st.error(f"Not quite — that's guess {attempts + 1}. "
                      "Each wrong guess costs 5 XP off the reward, same as revealing a clue.")
 
+    mystery_done = st.session_state.get("guess_done", False)
+    components.status_led("Solved" if mystery_done else "Mystery in progress", tone="ok" if mystery_done else "signal")
     if done:
         st.info("Solved. Click **🎲 New Mystery Protocol** to play again.")
 
