@@ -9,7 +9,7 @@
 | `APP_NAME` | `"FrameWork"` | Application name |
 | `APP_TAGLINE` | `"Every embedded communication protocol..."` | Tagline |
 | `APP_ICON` | `"🛰️"` | Emoji icon |
-| `VERSION` | `"1.1.1"` | Semantic version |
+| `VERSION` | `"1.2.0"` | Semantic version |
 
 ## Functions
 
