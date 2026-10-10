@@ -6,11 +6,21 @@ Captures remain ignored runtime artifacts.
 """
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
 from visual_check import launch_chromium
+
+# The Home hero renders a version chip derived from utils.branding.VERSION.
+# Read it from the source of truth so this gate tracks every future release
+# instead of pinning a single hardcoded string that silently rots.
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+from utils.branding import VERSION  # noqa: E402
+
+EXPECTED_CHIP = f"v{VERSION}"
 
 SHOTS = Path(__file__).resolve().parent / "_shots" / "signalbench-profile"
 PROBE = """() => {
@@ -69,7 +79,7 @@ def run(url):
                         sidebar.locator('button[data-testid="stBaseButton-headerNoPadding"]').click()
                         page.wait_for_timeout(400)
                 # Inspect the actual pill style; quoted font names must not truncate it.
-                chip = page.locator('[data-testid="stMain"] span').filter(has_text="v1.1.1").first
+                chip = page.locator('[data-testid="stMain"] span').filter(has_text=EXPECTED_CHIP).first
                 css = chip.evaluate("""e => {const s=getComputedStyle(e);return {
                     background:s.backgroundColor,border:s.borderTopWidth,radius:s.borderRadius,
                     size:s.fontSize,text:e.innerText};}""")

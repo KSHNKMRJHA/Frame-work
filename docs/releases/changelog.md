@@ -9,6 +9,54 @@ Versioning: [Semantic Versioning](https://semver.org/)
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-10-10
+
+### Added
+- Introduced the SignalBench visual system across FrameWork — a documentation-grade, engineering-instrument design language ("read like documentation, feel like an engineering instrument, progress like a learning platform").
+- Added a reusable theme-aware UI primitive layer (`utils/components.py`): page hero, protocol hero, section header, info badge, engineering metric, callout, spec table, and status LED. All primitives resolve colors from the active palette and render as native inline-styled HTML — no global CSS/JS injection.
+- Added rollout-specific regression and browser verification: `check_components.py`, `check_rollout.py`, `check_rollout_visual.py`, `check_signalbench_visual.py`, and `check_can_consistency.py`.
+- Added CAN physical-state/logical-state consistency regression coverage wired into CI.
+
+### Changed
+- Redesigned every application page with a consistent SignalBench visual language (Home, Encyclopedia, Compare, Selector, Glossary, Timeline, Mind Map, Geography, Quiz, Puzzles, Science/Math Lab, Settings, Info).
+- Reworked Home into a compact engineering landing page: theme-aware hero with version chip, compact engineering-metric strip, and a grouped responsive Reference / Context / Practice / Tools navigation grid.
+- Reworked Encyclopedia protocol profiles around a compact protocol hero (name, category, year, inventor, difficulty), a key-spec band, technical narrative, an electrical-layer spec table, and preserved native technical tabs (Frame, Topology, Pinout, Waveform, Line Coding).
+- Unified all protocol diagrams under the active Light/Dark theme via a curated blue/cyan/green/amber/violet technical palette, replacing the previous fixed 10-color palette. Frame geometry, bit weighting, min/max box fractions, water-filling normalization, row wrapping, legend fallback, exact bit labels, field order, and DMX512 4096-bit handling are all preserved.
+- Replaced visible hardcoded Home hero colors with palette-derived values for true Light/Dark parity.
+- Removed the remaining undefined legacy `fw-*` class-only presentation hooks, migrating them to supported inline-styled/shared components.
+- Improved mobile layouts at 900px and 390px across all pages.
+- Preserved native Streamlit controls and native Light/Dark/System theme ownership — no fake per-session theme switching and no runtime config mutation.
+
+### Fixed
+- Corrected CAN nominal electrical representation:
+  - dominant = logical 0: CAN_H ≈ 3.5 V, CAN_L ≈ 1.5 V, VDiff ≈ +2.0 V
+  - recessive = logical 1: CAN_H ≈ CAN_L ≈ 2.5 V, VDiff ≈ 0 V
+- Corrected generic differential conductor maximum/minimum presentation.
+- Corrected CAN logical-state descriptions.
+- Corrected Geography/origin coverage so it counts all 140 protocol identities.
+- Fixed several responsive overflow/cropping issues discovered during rollout, including readable calculator equations and metric help on phone widths.
+- Kept puzzle status labels in sync after scoring.
+
+### Verification
+- 140 protocols / 140 unique protocol IDs / 13 categories / 12 modules.
+- Python 3.10 and Python 3.11 CI.
+- Chromium, Firefox, and WebKit.
+- Dark and Light themes.
+- 1440px, 900px, and 390px full-page responsive sweeps.
+- Generated database reproducibility (`data/protocols.json` matches `build_data.py`).
+- Desktop/mobile protocol JSON synchronization.
+- Desktop/mobile quiz logic synchronization.
+- CAN physical-state regression.
+- Diagram regression including all real frame definitions and DMX512 extreme-width handling.
+- Full rollout regression suite (components, navigation, diagrams, theme, mind map, origins).
+- Ruff lint and page-import smoke checks.
+
+### Known limitations
+- The Full Universe Mind Map remains information-dense at 390px because all 140 protocol labels are intentionally retained for full identity coverage.
+- A browser Back/Forward that changes only the `?p=` query string does not re-seed an already-running Streamlit Encyclopedia session until a reload. Current selection is not corrupted, and deep links resolve correctly on initial load and refresh.
+
+---
+
 ## [1.1.1] - 2026-10-04
 
 ### Fixed
@@ -169,6 +217,7 @@ Versioning: [Semantic Versioning](https://semver.org/)
 
 | Version | Date | Protocols | Modules | Key Milestone |
 |---------|------|-----------|---------|---------------|
+| 1.2.0 | 2026-10-10 | 140 | 12 | SignalBench UI rollout, shared component layer, diagram theming, CAN electrical/logic fix |
 | 1.1.1 | 2026-10-04 | 140 | 12 | Navigation, diagram, map, geography and theme fixes |
 | 1.1.0 | 2026-10-03 | 140 | 12 | Vectorform redesign, native theming, browser verification gates |
 | 1.0.0 | 2024-01-15 | 118 | 10 | Initial public release |
