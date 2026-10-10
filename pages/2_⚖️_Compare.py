@@ -4,7 +4,7 @@ import pandas as pd
 from utils.data_loader import load_protocols
 from utils.diagrams import speed_comparison_chart
 
-from utils import branding
+from utils import branding, components, theme
 
 branding.page_config("Compare", "⚖️")
 branding.sidebar_identity()
@@ -12,8 +12,7 @@ branding.sidebar_identity()
 protocols = load_protocols()
 names = [p["name"] for p in protocols]
 
-st.title("⚖️ Compare Protocols")
-st.caption(
+components.page_hero("Decision workspace", "Compare protocols",
     "Select 2 to 4 protocols to compare side-by-side across every dimension — speed, topology, pins, use-cases, advantages, and limitations."
 )
 
@@ -28,6 +27,8 @@ sel_protocols = [p for p in protocols if p["name"] in chosen]
 ids = [p["id"] for p in sel_protocols]
 
 # ---- Comparison table ----
+components.section_header("Parameters & differences", index="01",
+                          description="Compare the same engineering dimensions across the selected protocols.")
 rows = {
     "Category": [p["category"] for p in sel_protocols],
     "Year Invented": [p["year"] for p in sel_protocols],
@@ -53,10 +54,18 @@ rows = {
 df = pd.DataFrame(rows, index=[p["name"] for p in sel_protocols]).T
 # Mixed int/str cells (e.g. Year Invented vs prose) break Arrow
 # serialization on modern pyarrow — the table is for reading, so strings.
-st.dataframe(df.astype(str), width="stretch")
+readable = df.astype(str)
+different = readable.nunique(axis=1) > 1
+st.caption(f"{different.sum()} of {len(readable)} parameters differ. Highlighted rows contain different values.")
+pal = theme.current_palette()
+styled = readable.style.apply(
+    lambda row: [f"background-color: {pal['surface_alt']}" if different[row.name] else "" for _ in row],
+    axis=1,
+)
+st.dataframe(styled, width="stretch")
 
 st.divider()
-st.subheader("📈 Speed Comparison")
+components.section_header("Speed comparison", index="02")
 fig = speed_comparison_chart(protocols, ids=ids)
 if fig:
     st.pyplot(fig, width="stretch")
@@ -64,10 +73,13 @@ else:
     st.info("Selected protocols don't have directly comparable numeric speed values.")
 
 st.divider()
-cols = st.columns(len(sel_protocols))
-for col, p in zip(cols, sel_protocols):
+components.section_header("Design trade-offs", index="03")
+cols = st.columns(2)
+for i, p in enumerate(sel_protocols):
+    col = cols[i % 2]
     with col:
-        st.markdown(f"### {p['name']}")
+        components.section_header(p["name"])
+        components.info_badge(p["category"], tone="signal")
         st.markdown("**✅ Advantages**")
         for a in p.get("advantages", []):
             st.markdown(f"- {a}")
@@ -79,7 +91,7 @@ for col, p in zip(cols, sel_protocols):
             st.markdown(f"- {u}")
 
 st.divider()
-st.subheader("🏁 Which should you pick?")
+components.section_header("Choose against your constraints", index="04")
 st.write(
     "There's no single 'best' protocol — the right choice always depends on your constraints: "
     "required speed, distance, power budget, pin count, cost, and determinism needs. "
