@@ -157,17 +157,14 @@ with tabs[1]:
 # ======================================================== GITHUB/LINKS =====
 with tabs[2]:
     components.section_header("🐙 GitHub & Links")
-    st.markdown(
-        f"""
-| | |
-|---|---|
-| **Repository** | [{REPO_URL}]({REPO_URL}) |
-| **Web app** | [{WEB_URL}]({WEB_URL}) |
-| **LinkedIn** | [{LINKEDIN_URL}]({LINKEDIN_URL}) |
-| **Version** | {branding.version_label()} ({branding.BUILD_CHANNEL}) |
-| **Build number** | `{branding.build_number()}` |
-        """
-    )
+    components.spec_table([
+        ("Repository", REPO_URL), ("Web app", WEB_URL), ("LinkedIn", LINKEDIN_URL),
+        ("Version", f"{branding.version_label()} ({branding.BUILD_CHANNEL})"),
+        ("Build number", branding.build_number()),
+    ])
+    st.link_button("GitHub repository", REPO_URL, width="stretch")
+    st.link_button("Open web app", WEB_URL, width="stretch")
+    st.link_button("LinkedIn", LINKEDIN_URL, width="stretch")
 
     components.section_header("Clone & contribute")
     st.code(

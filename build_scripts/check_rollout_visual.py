@@ -47,7 +47,7 @@ def inspect(page, key, records):
     assert not errors and not clipped and not custom and not leaked and overflow <= 2 and main_overflow <= 2, record
 
 
-def run(url, engines):
+def run(url, engines, routes=None):
     SHOTS.mkdir(parents=True, exist_ok=True)
     records, loads, failures = [], [], []
     expected = _expected_palettes()
@@ -58,7 +58,7 @@ def run(url, engines):
                 for width in (1440, 900, 390):
                     context = browser.new_context(viewport={"width": width, "height": 1000}, color_scheme=scheme)
                     page = context.new_page()
-                    for route in ["", *PAGES]:
+                    for route in (["", *PAGES] if routes is None else ["" if r == "Home" else r for r in routes]):
                         key = f"{engine}/{scheme}/{width}/{route or 'Home'}"
                         try:
                             started = time.perf_counter()
@@ -115,7 +115,8 @@ def run(url, engines):
                     context.close()
                     print(f"Completed {engine} {scheme} {width}px", flush=True)
             browser.close()
-    (SHOTS / "matrix.json").write_text(json.dumps({"records": records, "loads": loads, "failures": failures}, indent=2), encoding="utf-8")
+    report = "matrix.json" if routes is None else f"matrix-{'-'.join(routes)}.json"
+    (SHOTS / report).write_text(json.dumps({"records": records, "loads": loads, "failures": failures}, indent=2), encoding="utf-8")
     assert not failures, f"{len(failures)} matrix views failed; see _shots/rollout/matrix.json"
     print(f"Rollout visual matrix passed: {len(loads)} page visits, {len(records)} inspected states")
 
@@ -124,5 +125,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", default="http://localhost:8501")
     parser.add_argument("--engines", nargs="+", choices=("chromium", "firefox", "webkit"), default=["chromium", "firefox", "webkit"])
+    parser.add_argument("--routes", nargs="+", choices=("Home", *PAGES), help="Limit a diagnostic rerun; omitted runs every page")
     args = parser.parse_args()
-    run(args.url.rstrip("/"), args.engines)
+    run(args.url.rstrip("/"), args.engines, args.routes)
