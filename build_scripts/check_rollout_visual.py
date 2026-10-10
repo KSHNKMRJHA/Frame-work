@@ -7,9 +7,10 @@ import argparse
 import ast
 import json
 import time
+import traceback
 from pathlib import Path
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import expect, sync_playwright
 
 from page_sweep import PAGES, _OPEN_ALL, measure
 from visual_check import _THEME_JS, _expected_palettes, launch_chromium
@@ -47,20 +48,51 @@ def inspect(page, key, records):
     assert not errors and not clipped and not custom and not leaked and overflow <= 2 and main_overflow <= 2, record
 
 
-def run(url, engines, routes=None):
+def check_quiz(page, key, records):
+    """Wait for application states across streamed Streamlit rerenders."""
+    page.get_by_role("button", name="🎯 Start New Quiz", exact=True).click()
+    expect(page.get_by_role("radiogroup")).to_have_count(10, timeout=10000)
+    page.get_by_text("0/10 answers selected", exact=True).wait_for(timeout=10000)
+    progress = []
+    for i in range(3):
+        # The native input is transparent; click its visible label. Locators
+        # resolve again for each rerender rather than retaining DOM handles.
+        page.get_by_role("radiogroup").nth(i).locator("label").first.click()
+        page.get_by_text(f"{i+1}/10 answers selected", exact=True).wait_for(timeout=10000)
+        expect(page.get_by_role("radio", checked=True)).to_have_count(i+1)
+        progress.append(f"{i+1}/10 answers selected")
+    inspect(page, key+"/quiz-active", records)
+    records[-1]["quizProgress"] = progress
+    records[-1]["questionCount"] = page.get_by_role("radiogroup").count()
+    page.get_by_role("button", name="✅ Submit Quiz", exact=True).click()
+    page.get_by_role("button", name="🔁 Try Another Quiz", exact=True).wait_for(timeout=10000)
+    expect(page.get_by_role("radiogroup")).to_have_count(10)
+    radios = page.get_by_role("radio")
+    assert radios.count() >= 10, (key, "missing answer controls")
+    for i in range(radios.count()):
+        expect(page.get_by_role("radio").nth(i)).to_be_disabled()
+    inspect(page, key+"/quiz-scored", records)
+    records[-1]["disabledRadios"] = radios.count()
+
+
+def run(url, engines, routes=None, schemes=("dark", "light"), widths=(1440, 900, 390), attempts=1):
     SHOTS.mkdir(parents=True, exist_ok=True)
     records, loads, failures = [], [], []
     expected = _expected_palettes()
     with sync_playwright() as p:
         for engine in engines:
             browser = launch_chromium(p)[0] if engine == "chromium" else getattr(p, engine).launch()
-            for scheme in ("dark", "light"):
-                for width in (1440, 900, 390):
+            for scheme in schemes:
+                for width in widths:
                     context = browser.new_context(viewport={"width": width, "height": 1000}, color_scheme=scheme)
                     page = context.new_page()
-                    for route in (["", *PAGES] if routes is None else ["" if r == "Home" else r for r in routes]):
+                    page_errors = []
+                    page.on("pageerror", lambda error: page_errors.append(str(error)))
+                    selected_routes = ["", *PAGES] if routes is None else ["" if r == "Home" else r for r in routes]
+                    for route in selected_routes * attempts:
                         key = f"{engine}/{scheme}/{width}/{route or 'Home'}"
                         try:
+                            page_errors.clear()
                             started = time.perf_counter()
                             page.goto(f"{url}/{route}", wait_until="networkidle", timeout=60000)
                             settle(page)
@@ -103,24 +135,15 @@ def run(url, engines, routes=None):
                                             results.first.scroll_into_view_if_needed()
                                             page.screenshot(path=str(SHOTS / f"{scheme}-390-calculator-{i}-results.png"))
                             if route == "Quiz_Assessment":
-                                page.get_by_role("button", name="🎯 Start New Quiz", exact=True).click()
-                                settle(page)
-                                radios = page.get_by_role("radiogroup")
-                                assert radios.count() == 10, key
-                                for i in range(3):
-                                    radios.nth(i).get_by_role("radio").first.press("Space")
-                                    settle(page)
-                                print(f"Quiz progress {key}: {page.get_by_text('answers selected', exact=False).all_text_contents()}", flush=True)
-                                page.get_by_text("3/10 answers selected", exact=True).wait_for(timeout=10000)
-                                inspect(page, key+"/quiz-active", records)
-                                page.get_by_role("button", name="✅ Submit Quiz", exact=True).click()
-                                settle(page)
-                                page.get_by_role("button", name="🔁 Try Another Quiz", exact=True).wait_for(timeout=10000)
-                                assert all(radios.nth(i).get_by_role("radio").first.is_disabled() for i in range(10)), key
-                                inspect(page, key+"/quiz-scored", records)
+                                check_quiz(page, key, records)
+                            assert not page_errors, (key, page_errors)
+                            loads[-1]["totalSeconds"] = round(time.perf_counter()-started, 3)
                             print(f"PASS {key}", flush=True)
                         except Exception as exc:  # noqa: BLE001
-                            failures.append({"view": key, "error": str(exc)})
+                            failures.append({"view": key, "error": str(exc), "traceback": traceback.format_exc()})
+                            failure_name = key.replace("/", "-")
+                            page.screenshot(path=str(SHOTS / f"{failure_name}-failure.png"))
+                            (SHOTS / f"{failure_name}-failure.html").write_text(page.content(), encoding="utf-8")
                             print(f"FAIL {key}: {str(exc)[:300]}", flush=True)
                     context.close()
                     print(f"Completed {engine} {scheme} {width}px", flush=True)
@@ -136,5 +159,10 @@ if __name__ == "__main__":
     parser.add_argument("--url", default="http://localhost:8501")
     parser.add_argument("--engines", nargs="+", choices=("chromium", "firefox", "webkit"), default=["chromium", "firefox", "webkit"])
     parser.add_argument("--routes", nargs="+", choices=("Home", *PAGES), help="Limit a diagnostic rerun; omitted runs every page")
+    parser.add_argument("--schemes", nargs="+", choices=("dark", "light"), default=["dark", "light"])
+    parser.add_argument("--widths", nargs="+", type=int, choices=(1440, 900, 390), default=[1440, 900, 390])
+    parser.add_argument("--attempts", type=int, default=1, help="Explicit repetitions; failed attempts remain failures")
     args = parser.parse_args()
-    run(args.url.rstrip("/"), args.engines, args.routes)
+    if args.attempts < 1:
+        parser.error("--attempts must be positive")
+    run(args.url.rstrip("/"), args.engines, args.routes, args.schemes, args.widths, args.attempts)
