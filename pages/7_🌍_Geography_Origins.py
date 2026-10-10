@@ -6,15 +6,14 @@ import plotly.express as px
 from utils import origins
 from utils.data_loader import load_protocols
 
-from utils import branding
+from utils import branding, components, theme
 
 branding.page_config("Geography", "🌍")
 branding.sidebar_identity()
 
 protocols = load_protocols()
 
-st.title("🌍 Geography & Origins")
-st.caption(
+components.page_hero("Origin reference", "Geography & origins",
     "Where in the world did each protocol come from? A geographic tour of the organizations and countries that built the connected world."
 )
 
@@ -27,11 +26,15 @@ summary = origins.summarize(protocols)
 # Two rows of two. A single row of four left each metric ~98px wide at 900px,
 # and st.metric clips its label with an ellipsis rather than wrapping it.
 m1, m2 = st.columns(2)
-m1.metric("Protocols", summary["total"])
-m2.metric("Single-country origins", summary["mapped_count"])
+with m1:
+    components.engineering_metric("Protocols", summary["total"])
+with m2:
+    components.engineering_metric("Single-country origins", summary["mapped_count"])
 m3, m4 = st.columns(2)
-m3.metric("International / multi-country", summary["international_count"])
-m4.metric("Unresolved", summary["unknown_count"])
+with m3:
+    components.engineering_metric("International / multi-country", summary["international_count"])
+with m4:
+    components.engineering_metric("Unresolved", summary["unknown_count"])
 
 st.caption(
     f"Coverage: **{summary['mapped_count'] + len({c for info in summary['international'] for c in info['countries']})}**"
@@ -67,8 +70,14 @@ if map_rows:
         title="World Map: Protocol Origins (hover a country for its protocols)",
     )
     fig2.update_layout(height=520)
+    pal = theme.current_palette()
+    fig2.update_layout(paper_bgcolor=pal["bg"], font_color=pal["text"],
+                       margin=dict(l=10, r=10, t=70, b=10))
+    fig2.update_geos(bgcolor=pal["bg"], landcolor=pal["surface_alt"],
+                     showland=True, coastlinecolor=pal["border_strong"])
     st.plotly_chart(fig2, width="stretch")
 
+components.section_header("Country accounting", index="01")
 st.dataframe(
     pd.DataFrame([
         {
@@ -84,7 +93,7 @@ st.dataframe(
 )
 
 st.divider()
-st.subheader("🏢 Standards Organizations You Should Know")
+components.section_header("Standards organizations", index="02")
 orgs = {}
 for p in protocols:
     org = p.get("organization") or "—"
@@ -95,11 +104,11 @@ org_cols = st.columns(2)
 for i, (org, plist) in enumerate(sorted(orgs.items(), key=lambda x: -len(x[1]))[:16]):
     with org_cols[i % 2]:
         with st.container(border=True):
-            st.markdown(f"**{org}**")
+            components.section_header(org)
             st.caption(", ".join(plist[:6]) + (f" +{len(plist) - 6} more" if len(plist) > 6 else ""))
 
 st.divider()
-st.subheader("🔍 Explore by Country")
+components.section_header("Explore by country", index="03")
 # Same normalisation source as the map above - one parser, one answer.
 selected_country = st.selectbox(
     "Pick a country:", sorted(summary["per_country"].keys(), key=lambda c: (-len(summary["per_country"][c]), c))
