@@ -90,7 +90,7 @@ def page_hero(eyebrow, title, description="", meta=None, accent=None):
     p = _pal()
     accent = _esc(accent or p["accent"])
     meta_html = (
-        f"<div style='font-size:0.8rem; color:{p['text_faint']}; "
+        f"<div style='font-size:0.8rem; color:{p['text_muted']}; "
         f"font-family:{_esc(theme.MONO_STACK)}; white-space:nowrap;'>{_esc(meta)}</div>"
         if meta
         else ""

@@ -192,7 +192,7 @@ def sidebar_sections():
     with st.sidebar:
         st.markdown(
             f'<div style="font-size:.70rem;font-weight:700;letter-spacing:.14em;'
-            f'text-transform:uppercase;color:{pal["text_faint"]};margin:.9rem 0 .25rem 0">'
+            f'text-transform:uppercase;color:{pal["text_muted"]};margin:.9rem 0 .25rem 0">'
             f'Navigate</div>', unsafe_allow_html=True
         )
         for heading, pages in ui_state.NAV_SECTIONS:
@@ -379,7 +379,7 @@ def protocol_summary_card(selected):
         ax.text(0.30, y, value, color=pal["text"], fontsize=10, va="top")
         y -= 0.026
 
-    ax.text(0.06, 0.035, f"FrameWork  ·  {selected['id']}", color=pal["text_faint"],
+    ax.text(0.06, 0.035, f"FrameWork  ·  {selected['id']}", color=pal["text_muted"],
             fontsize=9, va="bottom")
 
     buf = io.BytesIO()
@@ -521,7 +521,7 @@ def level_bars(spec):
         f'<div style="margin:.4rem 0 .2rem 0;display:grid;gap:.28rem">'
         f'{"".join(bars)}</div>'
         f'<div style="font-size:.75rem;margin-top:.25rem;'
-        f'color:{theme.current_palette()["text_faint"]};font-variant-numeric:tabular-nums">'
+        f'color:{theme.current_palette()["text_muted"]};font-variant-numeric:tabular-nums">'
         f'{note}</div>', unsafe_allow_html=True)
 
 
@@ -583,7 +583,7 @@ def sidebar_identity():
             <div style="padding:0.15rem 0 0.6rem 0; line-height:1.35;">
                 <div style="font-size:1.12rem; font-weight:700;">{APP_ICON} {APP_NAME}</div>
                 <div style="font-size:0.78rem; color:{theme.current_palette()['text_muted']};">{version_label()} · {BUILD_CHANNEL}</div>
-                <div style="font-size:0.70rem; color:{theme.current_palette()['text_faint']};">build {build_number()}</div>
+                <div style="font-size:0.70rem; color:{theme.current_palette()['text_muted']};">build {build_number()}</div>
             </div>
             """,
             unsafe_allow_html=True,

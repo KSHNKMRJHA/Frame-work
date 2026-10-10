@@ -148,7 +148,7 @@ st.markdown(
   <p style="font-size:1.02rem; color:{_home_pal['text_muted']}; margin-top:0.4rem; max-width:72ch; line-height:1.5;">
     {APP_TAGLINE}
   </p>
-  <p style="font-size:0.78rem; color:{_home_pal['text_faint']}; margin-top:0.55rem;">
+  <p style="font-size:0.78rem; color:{_home_pal['text_muted']}; margin-top:0.55rem;">
     {branding.build_line()}
   </p>
 </div>
