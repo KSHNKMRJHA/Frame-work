@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Visual verification of the Vectorform UI against a running Streamlit app.
+"""Visual verification of SignalBench against a running Streamlit app.
 
 Drives the *installed* Chrome through Playwright, so no browser download is
 needed. Captures screenshots at desktop / tablet / phone widths and asserts
@@ -114,12 +114,9 @@ def probe_tokens(page):
     """
     return page.evaluate(
         """() => {
-            const cs = getComputedStyle(document.documentElement);
             // The theme lands on the .stApp shell, not stAppViewContainer.
             const app = document.querySelector('.stApp');
             return {
-                accent: cs.getPropertyValue('--fw-accent').trim(),
-                bg: cs.getPropertyValue('--fw-bg').trim(),
                 appBg: app ? getComputedStyle(app).backgroundColor : '',
                 bodyColor: getComputedStyle(document.body).color,
             };
@@ -130,10 +127,12 @@ def probe_tokens(page):
 def probe_tabular(page):
     return page.evaluate(
         """() => {
-            const m = document.querySelector('[data-testid="stMetricValue"]');
+            const m = [...document.querySelectorAll('[data-testid="stMain"] [style]')]
+                .find(e => e.style.fontVariantNumeric === 'tabular-nums')
+                || document.querySelector('[data-testid="stMetricValue"]');
             if (!m) return 'no-metric';
             const s = getComputedStyle(m);
-            return (s.fontVariantNumeric || '') + '|' + (s.fontFeatureSettings || '');
+            return (s.fontVariantNumeric || '') + '|' + (s.fontFamily || '');
         }"""
     )
 
@@ -195,15 +194,14 @@ def run(url):
         page.wait_for_timeout(3500)
 
         tok = probe_tokens(page)
-        log(rows, f"app bg={tok['appBg']} body text={tok['bodyColor']} "
-                  f"(css vars: accent={tok['accent'] or 'stripped'})")
+        log(rows, f"app bg={tok['appBg']} body text={tok['bodyColor']}")
         if tok["appBg"] in ("", "rgba(0, 0, 0, 0)", "transparent"):
             failures.append("app shell has no background - theme not applied")
 
         tab = probe_tabular(page)
         log(rows, f"metric typography: {tab}")
-        if tab == "no-metric":
-            failures.append("no st.metric found to style")
+        if "tabular-nums" not in tab or "mono" not in tab.lower():
+            failures.append(f"engineering values lack tabular monospace typography: {tab}")
 
         groups = page.evaluate(
             """() => [...document.querySelectorAll('div')]
