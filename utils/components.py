@@ -261,6 +261,9 @@ def engineering_metric(label, value, unit="", tone="accent", help=None):
         """,
     )
 
+    if help:
+        st.caption(help)
+
 
 
 # ---------------------------------------------------------------- callout --
