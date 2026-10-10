@@ -55,7 +55,7 @@ It combines:
 - A **comparison tool** for head-to-head protocol trade-off analysis
 - A **procedurally-generated quiz engine** (never runs out of new question combinations)
 - **Puzzle games**: speed matching, frame-field reordering, and "guess the protocol"
-- A **Science & Math Lab** with 13 real, verified engineering calculators (UART/SPI
+- A **Science & Math Lab** with 14 real, verified engineering calculators (UART/SPI
   timing & efficiency, Shannon/Nyquist capacity, CRC-16/32, frequency↔wavelength,
   CAN bit timing & bus load, I²C pull-ups, RS-485 biasing & stubs, Ethernet efficiency,
   RF link budget, logic noise margin)

@@ -72,6 +72,7 @@ def run(url, engines, routes=None):
                             assert actual["app"] == expected[scheme]["app"], (key, actual)
                             inspect(page, key+"/initial", records)
                             if engine == "chromium":
+                                page.locator('[data-testid="stMain"]').evaluate("e => {e.scrollTop=0;}")
                                 page.screenshot(path=str(SHOTS / f"{scheme}-{width}-{route or 'Home'}.png"), animations="disabled", timeout=60000)
                             page.evaluate(_OPEN_ALL)
                             inspect(page, key+"/expanded", records)
@@ -91,7 +92,12 @@ def run(url, engines, routes=None):
                                     page.evaluate(_OPEN_ALL)
                                     inspect(page, key+f"/calculator-{i}", records)
                                     if engine == "chromium" and width == 390:
+                                        page.locator('[data-testid="stMain"]').evaluate("e => {e.scrollTop=0;}")
                                         page.screenshot(path=str(SHOTS / f"{scheme}-390-calculator-{i}.png"))
+                                        results = page.locator('[data-testid="stMain"] [style*="tabular-nums"]')
+                                        if results.count():
+                                            results.first.scroll_into_view_if_needed()
+                                            page.screenshot(path=str(SHOTS / f"{scheme}-390-calculator-{i}-results.png"))
                             if route == "Quiz_Assessment":
                                 page.get_by_role("button", name="🎯 Start New Quiz", exact=True).click()
                                 settle(page)
@@ -117,7 +123,7 @@ def run(url, engines, routes=None):
             browser.close()
     report = "matrix.json" if routes is None else f"matrix-{'-'.join(routes)}.json"
     (SHOTS / report).write_text(json.dumps({"records": records, "loads": loads, "failures": failures}, indent=2), encoding="utf-8")
-    assert not failures, f"{len(failures)} matrix views failed; see _shots/rollout/matrix.json"
+    assert not failures, f"{len(failures)} matrix views failed; see _shots/rollout/{report}"
     print(f"Rollout visual matrix passed: {len(loads)} page visits, {len(records)} inspected states")
 
 
