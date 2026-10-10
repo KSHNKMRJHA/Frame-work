@@ -8,7 +8,7 @@ from utils.data_loader import load_protocols, get_categories
 from utils import state as state_utils
 from utils.quiz_engine import generate_matching_puzzle, generate_frame_order_puzzle
 
-from utils import branding
+from utils import branding, components
 
 branding.page_config("Puzzles & Games", "🎮")
 branding.sidebar_identity()
@@ -20,8 +20,7 @@ if "user_state" not in st.session_state:
     st.session_state.user_state = state_utils.load_state()
 us = st.session_state.user_state
 
-st.title("🎮 Puzzles & Games")
-st.caption("Learn by playing — three game modes built directly from the protocol database.")
+components.page_hero("Practice challenges", "Puzzles & games", "Three game modes built directly from the protocol database.")
 
 game = st.tabs(["🔗 Speed Matching Game", "🧩 Frame Field Reorder Puzzle", "🕵️ Guess the Protocol"])
 
@@ -71,7 +70,7 @@ def _accepted_answers(protocol):
 
 # ============================================================ GAME 1 =======
 with game[0]:
-    st.subheader("🔗 Match the Protocol to its Speed")
+    components.section_header("🔗 Match the Protocol to its Speed")
     cat = st.selectbox("Category (optional filter)", categories, key="match_cat")
 
     def _new_match_round(seed):
@@ -104,6 +103,7 @@ with game[0]:
 
     unanswered = [n for n, v in user_matches.items() if v == CHOOSE]
     already_scored = st.session_state.get("match_submitted", False)
+    components.status_led("Round scored" if already_scored else "Ready to check", tone="neutral" if already_scored else "signal")
 
     if st.button("✅ Check Matches", disabled=already_scored):
         if unanswered:
@@ -131,7 +131,7 @@ with game[0]:
 
 # ============================================================ GAME 2 =======
 with game[1]:
-    st.subheader("🧩 Reorder the Frame Fields")
+    components.section_header("🧩 Reorder the Frame Fields")
     st.write("Some protocols have a strict, standardized bit-level frame layout. "
              "Can you put the fields back in the correct order?")
 
@@ -153,6 +153,7 @@ with game[1]:
             f"fields in the correct transmission order (first to last).")
 
     frame_scored = st.session_state.get("frame_submitted", False)
+    components.status_led("Round scored" if frame_scored else "Ready to check", tone="neutral" if frame_scored else "signal")
 
     # Each position offers only the fields not already used above it, so the
     # same field cannot be placed twice (previously every dropdown offered the
@@ -190,7 +191,7 @@ with game[1]:
 
 # ============================================================ GAME 3 =======
 with game[2]:
-    st.subheader("🕵️ Guess the Protocol")
+    components.section_header("🕵️ Guess the Protocol")
     st.write("Read the clues one at a time. Fewer clues used = more points!")
 
     def _new_mystery():
@@ -212,6 +213,7 @@ with game[2]:
     target = st.session_state.guess_target
     done = st.session_state.get("guess_done", False)
     attempts = st.session_state.get("guess_attempts", 0)
+    components.status_led("Solved" if done else "Mystery in progress", tone="ok" if done else "signal")
 
     clues = [
         f"Category: **{target['category']}**",
