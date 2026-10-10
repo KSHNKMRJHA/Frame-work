@@ -92,8 +92,9 @@ if choice == calculators[0]:
                 "⚠️ Error exceeds ~2% — this combination may cause framing errors on real hardware. Try a different clock or baud rate."
             )
         st.latex(
-            r"\text{Divisor} = \frac{F_{CLK}}{\text{Oversampling} \times \text{Baud}}, \quad \text{Actual Baud} = \frac{F_{CLK}}{\text{Oversampling} \times \text{Divisor}_{rounded}}"
+            r"\begin{aligned}D &= \frac{F_{CLK}}{OSR \times \text{Baud}} \\ \text{Baud}_{actual} &= \frac{F_{CLK}}{OSR \times D_{rounded}}\end{aligned}"
         )
+        st.caption("D is the clock divisor; OSR is the selected oversampling factor.")
 
 elif choice == calculators[1]:
     with st.expander("Shannon & Nyquist Capacity"):
@@ -222,7 +223,7 @@ elif choice == calculators[3]:
             freq = science.wavelength_to_freq(wl_cm / 100)
             components.engineering_metric("Frequency", f"{freq / 1e6:.2f} MHz", help="Computed frequency from wavelength")
 
-        st.latex(r"\lambda = \frac{c}{f}, \quad c = 299\,792\,458\ m/s")
+        st.latex(r"\begin{aligned}\lambda &= \frac{c}{f} \\ c &= 299\,792\,458\ m/s\end{aligned}")
         st.caption(
             "Common reference bands: 433 MHz (LoRa/SRD), 868/915 MHz (LoRaWAN region bands), 2.4 GHz (Wi-Fi/BLE/Zigbee), 5-6 GHz (Wi-Fi)."
         )
@@ -393,7 +394,7 @@ elif choice == calculators[5]:
                 f"⚠️ {cb} pF exceeds this mode's {r['cb_max_pf']:.0f} pF bus-capacitance limit "
                 "(UM10204) — shorten the wiring or add a bus buffer."
             )
-        st.latex(r"R_{p\min} = \frac{V_{DD} - V_{OL}}{I_{OL}}, \qquad R_{p\max} = \frac{t_r}{0.8473 \cdot C_b}")
+        st.latex(r"\begin{aligned}R_{p\min} &= \frac{V_{DD} - V_{OL}}{I_{OL}} \\ R_{p\max} &= \frac{t_r}{0.8473 \cdot C_b}\end{aligned}")
         st.caption(
             "R_p max derives from the rise-time spec (t_r = 0.8473·R_p·C_b, TI SLVA689). "
             "Mode limits: t_r = 1000/300/120 ns (Sm/Fm/Fm+); C_b max = 400 pF (Sm/Fm), 550 pF (Fm+)."
@@ -534,7 +535,7 @@ elif choice == calculators[7]:
         else:
             st.success(f"✅ {pct:.1f} % worst-case load leaves comfortable headroom.")
         st.latex(
-            r"\text{Frame}_{\text{base}} = 44 + 8D \ (64 + 8D \text{ extended}), \quad \text{Load} = \frac{\text{frames/s} \times \text{bits}}{\text{bitrate}}"
+            r"\begin{aligned}\text{Frame}_{base} &= 44 + 8D \\ \text{Frame}_{extended} &= 64 + 8D \\ \text{Load} &= \frac{\text{frames/s} \times \text{bits}}{\text{bitrate}}\end{aligned}"
         )
         st.caption(
             "44 + 8D counts SOF + arbitration + control + data + CRC + ACK + EOF (+3 bits of "
@@ -640,7 +641,7 @@ elif choice == calculators[8]:
                 f"❌ Link does not close: received {lb['rx_power_dbm']:.1f} dBm is below "
                 f"{sens:.0f} dBm sensitivity. Raise power/gain or shorten the range."
             )
-        st.latex(r"\text{FSPL} = 20\log_{10}(d_{\text{km}}) + 20\log_{10}(f_{\text{MHz}}) + 32.44 \ \text{dB}")
+        st.latex(r"\begin{aligned}\text{FSPL} &= 20\log_{10}(d_{\text{km}}) \\ &\quad + 20\log_{10}(f_{\text{MHz}}) \\ &\quad + 32.44\ \text{dB}\end{aligned}")
         st.caption(
             "Free space is a best case: real links add fading, obstruction, and "
             "cable/connector losses — budget 10-20 dB of extra margin for anything outdoors."
@@ -701,7 +702,7 @@ elif choice == calculators[9]:
             st.success("✅ Both margins positive — levels are compatible with noise headroom.")
         else:
             st.error("❌ Negative margin — add a level shifter or pick compatible logic families.")
-        st.latex(r"NM_H = V_{OHmin} - V_{IHmin}, \qquad NM_L = V_{ILmax} - V_{OLmax}")
+        st.latex(r"\begin{aligned}NM_H &= V_{OHmin} - V_{IHmin} \\ NM_L &= V_{ILmax} - V_{OLmax}\end{aligned}")
         st.caption("CMOS rule of thumb: VIH ≈ 0.7×VDD, VIL ≈ 0.3×VDD. Always confirm in both datasheets.")
 
 elif choice == calculators[10]:
@@ -904,6 +905,7 @@ elif choice == calculators[13]:
                 )
             if sel.get("frame_note"):
                 st.info(f"ℹ️ {sel['frame_note']}")
-            st.latex(r"\text{Efficiency} = \frac{\text{payload bits}}{\text{fixed overhead} + \text{payload}} \times 100\%")
+            st.latex(r"\eta = \frac{P}{H + P} \times 100\%")
+            st.caption("η is efficiency; P is payload bits; H is fixed overhead bits.")
 
 branding.page_footer()

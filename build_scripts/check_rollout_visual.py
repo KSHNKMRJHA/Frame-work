@@ -20,8 +20,8 @@ CALCULATORS = next(
     ast.literal_eval(node.value) for node in ast.walk(ast.parse(SCIENCE.read_text(encoding="utf-8")))
     if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "calculators" for t in node.targets)
 )
-CUSTOM = """() => [...document.querySelectorAll('[data-testid="stMain"] [style]')]
- .filter(e => e.style.fontVariantNumeric === 'tabular-nums' || e.style.display === 'flex')
+CUSTOM = """() => [...document.querySelectorAll('[data-testid="stMain"] [style], [data-testid="stMain"] .katex-display')]
+ .filter(e => e.style.fontVariantNumeric === 'tabular-nums' || e.style.display === 'flex' || e.matches('.katex-display'))
  .filter(e => {const r=e.getBoundingClientRect();return r.width>0&&r.height>0;})
  .filter(e => e.scrollWidth>e.clientWidth+2)
  .map(e => e.innerText.slice(0,80))"""
