@@ -85,6 +85,10 @@ def run(url, engines, routes=None):
                             if route == "Science_Math_Lab":
                                 box = page.get_by_role("combobox", name="Select a calculator:")
                                 for i, calculator in enumerate(CALCULATORS):
+                                    # Result captures scroll far below the chooser. Return
+                                    # before opening its popup so scrolling cannot close it.
+                                    page.locator('[data-testid="stMain"]').evaluate("e => {e.scrollTop=0;}")
+                                    page.wait_for_timeout(150)
                                     box.click()
                                     box.fill(calculator)
                                     page.get_by_role("option", name=calculator, exact=True).click()
