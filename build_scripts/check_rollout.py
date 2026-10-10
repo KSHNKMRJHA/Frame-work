@@ -70,7 +70,7 @@ def geography_accounting():
     expected = sum(bool(origins.resolve_origin(p.get("place"))["countries"]) for p in load_protocols())
     app = AppTest.from_file(str(next((ROOT / "pages").glob("7_*.py")))).run()
     assert not app.exception
-    caption = next(m.value for m in app.markdown if m.value.startswith("Coverage:"))
+    caption = next(m.proto.body for m in app.get("caption") if m.proto.body.startswith("Coverage:"))
     assert int(re.search(r"Coverage:\s*\*\*(\d+)\*\*", caption)[1]) == expected
 
 
