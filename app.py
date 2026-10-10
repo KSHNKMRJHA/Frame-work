@@ -363,11 +363,11 @@ with st.container(border=True):
 
     with right:
 
-        st.metric("Typical Speed", potd.get("speed", "N/A"))
+        components.engineering_metric("Typical Speed", potd.get("speed", "N/A"), tone="signal")
 
-        st.metric("Topology", potd.get("topology", "N/A"))
+        components.engineering_metric("Topology", potd.get("topology", "N/A"), tone="neutral")
 
-        st.metric("Difficulty", potd.get("difficulty", "N/A"))
+        components.engineering_metric("Difficulty", potd.get("difficulty", "N/A"), tone="neutral")
 
 
 

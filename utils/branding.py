@@ -501,13 +501,11 @@ def level_bars(spec):
         note = f"VDiff swing {abs(hi - lo):.2f} V about a {vcm:.2f} V common mode"
     elif signaling == "rf":
         dbm = spec.get("vdiff_high_volts") or 0
-        st.markdown(
-            f'<div class="fw-card"><div class="fw-card-top">'
-            f'<span class="fw-sig">Transmit power</span></div>'
-            f'<div class="fw-bigval">{dbm:g} <span>dBm</span></div>'
-            f'<div class="fw-card-desc">into a {spec.get("impedance_ohm") or 50:g} Ω '
-            f'matched load</div></div>',
-            unsafe_allow_html=True)
+        from utils import components
+
+        with st.container(border=True):
+            components.engineering_metric("Transmit power", f"{dbm:g}", "dBm", tone="signal")
+            st.caption(f"into a {spec.get('impedance_ohm') or 50:g} Ω matched load")
         return
     else:
         voh, vol = spec.get("voh_volts"), spec.get("vol_volts")

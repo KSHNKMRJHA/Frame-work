@@ -233,7 +233,7 @@ def info_badge(text, tone="neutral", icon=""):
 
 
 # ----------------------------------------------------- engineering_metric --
-def engineering_metric(label, value, unit="", tone="accent"):
+def engineering_metric(label, value, unit="", tone="accent", help=None):
     """A compact labelled value for a single engineering quantity.
 
     Intentionally NOT a big dashboard tile. Label is a small uppercase mono
@@ -251,10 +251,10 @@ def engineering_metric(label, value, unit="", tone="accent"):
         f"""
         <div style="padding:0.35rem 0; min-width:0;">
             <div style="font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase;
-                        color:{p['text_muted']}; font-weight:600;">{_esc(label)}</div>
+                        color:{p['text_muted']}; font-weight:600; overflow-wrap:anywhere;" title="{_esc(help)}">{_esc(label)}</div>
             <div style="font-family:{_esc(theme.MONO_STACK)}; font-variant-numeric:tabular-nums;
                         font-size:1.12rem; font-weight:700; color:{color};
-                        margin-top:0.1rem; line-height:1.2;">{_esc(value)}{unit_html}</div>
+                        margin-top:0.1rem; line-height:1.2; overflow-wrap:anywhere;">{_esc(value)}{unit_html}</div>
         </div>
         """,
         unsafe_allow_html=True,
